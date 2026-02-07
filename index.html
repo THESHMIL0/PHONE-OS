@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Arcade OS v12</title>
+    <title>Arcade OS v13</title>
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
         
-        /* --- CRT EFFECT (NEW!) --- */
+        /* --- CRT EFFECT --- */
         body::after {
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
@@ -50,7 +50,7 @@
         }
         .app-icon:active { transform: scale(0.9); background: #333; border-color: #0f0; }
 
-        /* --- GAME CONTROLS --- */
+        /* --- CONTROLS --- */
         .back-btn { position: absolute; top: 10px; left: 10px; background: #222; color: white; border: 1px solid #444; padding: 5px 15px; border-radius: 5px; z-index: 20; }
         canvas { background: #000; border: 2px solid #333; max-width: 100%; image-rendering: pixelated; }
         .controls { display: flex; gap: 15px; margin-top: 15px; }
@@ -74,7 +74,7 @@
             cursor: pointer; width: 100%;
         }
 
-        /* --- SPECIFIC GAMES --- */
+        /* --- GAMES SPECIFIC --- */
         .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
         .ttt-cell { width: 80px; height: 80px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 1px solid #333; }
         .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
@@ -85,16 +85,14 @@
 <body>
     <div class="phone-container">
         <div class="status-bar">
-            <span>ARCADE v12</span>
+            <span>ARCADE v13</span>
             <div onclick="toggleTurbo()" style="border:1px solid #333; padding:5px 10px; border-radius:10px; font-size:12px; cursor:pointer;">
                 <span id="turbo-badge" style="color:#555">TURBO</span>
             </div>
             <span onclick="activateGodMode()" style="cursor:pointer;">🔋</span>
         </div>
 
-        <div id="cheat-toast" style="position:absolute; top:60px; width:100%; text-align:center; color:gold; font-weight:bold; display:none; z-index:200; text-shadow:0 0 10px gold;">
-            GOD MODE ACTIVATED! ⚡
-        </div>
+        <div id="cheat-toast" style="position:absolute; top:60px; width:100%; text-align:center; color:gold; font-weight:bold; display:none; z-index:200; text-shadow:0 0 10px gold;">GOD MODE ACTIVATED! ⚡</div>
 
         <div id="game-overlay" class="game-over-overlay hidden">
             <div class="game-over-box">
@@ -183,7 +181,7 @@
             osc.start(now); osc.stop(now+(type==='boss'?1.0:0.3));
         }
 
-        // --- SYSTEM & CHEATS ---
+        // --- SYSTEM ---
         function unlock() { if(document.getElementById('pass-input').value === PASS) { switchScreen('home-screen'); sfx('win'); } }
         function goHome() { stopAllGames(); closeOverlay(); switchScreen('home-screen'); }
         function switchScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
@@ -191,12 +189,10 @@
         function activateGodMode() {
             cheatClicks++;
             if(cheatClicks === 5) {
-                godMode = !godMode;
-                sfx('win');
+                godMode = !godMode; sfx('win');
                 const toast = document.getElementById('cheat-toast');
                 toast.innerText = godMode ? "GOD MODE ACTIVATED! ⚡" : "GOD MODE OFF";
-                toast.style.display = "block";
-                setTimeout(() => toast.style.display = "none", 2000);
+                toast.style.display = "block"; setTimeout(() => toast.style.display = "none", 2000);
                 cheatClicks = 0;
             }
         }
@@ -206,9 +202,8 @@
             if(turbo) sfx('shoot');
         }
 
-        // --- OVERLAY ---
         function showGameOver(title, score, game) {
-            if(godMode) return; // Cheater never dies!
+            if(godMode) return;
             sfx('die');
             let hiscore = parseInt(localStorage.getItem(game+'High')) || 0;
             if(score > hiscore) { hiscore = score; localStorage.setItem(game+'High', hiscore); }
@@ -221,7 +216,7 @@
         function closeOverlay() { document.getElementById('game-overlay').classList.add('hidden'); }
         function restartCurrentGame() { closeOverlay(); if(currentGame==='snake') startSnake(); if(currentGame==='runner') startRunner(); if(currentGame==='space') startSpace(); }
         function openApp(app) { switchScreen(app+'-screen'); if(app==='snake') startSnake(); if(app==='space') startSpace(); if(app==='runner') startRunner(); if(app==='ttt') startTTT(); if(app==='memory') startMemory(); if(app==='clicker') updateMoney(); }
-        function stopAllGames() { clearInterval(snakeInt); cancelAnimationFrame(spaceLoop); cancelAnimationFrame(runLoop); }
+        function stopAllGames() { clearInterval(snakeInt); cancelAnimationFrame(spaceLoop); cancelAnimationFrame(runLoop); active=false; } // Added active=false to kill TTT
 
         // --- PARTICLES ---
         let particles = [];
@@ -248,7 +243,7 @@
             ctx.fillStyle="#000"; ctx.fillRect(0,0,300,300); ctx.fillStyle="red"; ctx.fillRect(food.x,food.y,18,18); ctx.fillStyle=godMode?"gold":"#0f0"; snake.forEach(s=>ctx.fillRect(s.x,s.y,18,18)); drawParticles(ctx);
         }
 
-        // --- SPACE SHOOTER (WITH BOSS) ---
+        // --- SPACE SHOOTER (FIXED BOSS) ---
         let ship, bullets=[], aliens=[], boss=null, spaceLoop, spaceScore=0;
         function startSpace() { ship={x:135,dx:0}; bullets=[]; aliens=[]; boss=null; spaceScore=0; particles=[]; loopSpace(document.getElementById('space-canvas').getContext('2d')); }
         function moveShip(d) { ship.dx=d*5; } function stopShip() { ship.dx=0; } function fireLaser() { bullets.push({x:ship.x+12,y:360}); sfx('shoot'); }
@@ -257,10 +252,12 @@
             ctx.fillStyle=godMode?"gold":"#0ff"; ctx.fillRect(ship.x,370,30,30);
             bullets.forEach((b,i)=>{ b.y-=10; ctx.fillStyle="yellow"; ctx.fillRect(b.x,b.y,5,10); if(b.y<0) bullets.splice(i,1); });
             
-            // BOSS LOGIC
-            if(spaceScore > 0 && spaceScore % 500 === 0 && !boss) { boss = {x:100, y:20, hp:10, dir:1}; sfx('boss'); }
+            // BOSS (Shoots Back Now!)
+            if(spaceScore > 0 && spaceScore % 500 === 0 && !boss) { boss = {x:100, y:20, hp:10, dir:1, cooldown:0}; sfx('boss'); }
             if(boss) {
                 boss.x += boss.dir * 2; if(boss.x > 240 || boss.x < 0) boss.dir *= -1;
+                boss.cooldown++;
+                if(boss.cooldown > 50) { aliens.push({x:boss.x+20, y:boss.y+20}); boss.cooldown=0; } // BOSS ATTACK
                 ctx.fillStyle = "purple"; ctx.fillRect(boss.x, boss.y, 60, 40); ctx.fillStyle="white"; ctx.fillText("HP: "+boss.hp, boss.x+10, boss.y-5);
                 bullets.forEach((b,j)=>{ if(b.x>boss.x && b.x<boss.x+60 && b.y<boss.y+40) { boss.hp--; bullets.splice(j,1); createExplosion(b.x, b.y, 'purple'); if(boss.hp<=0) { boss=null; spaceScore+=200; createExplosion(150,50,'white'); sfx('win'); } } });
             } else {
@@ -274,34 +271,54 @@
             drawParticles(ctx); spaceLoop = requestAnimationFrame(()=>loopSpace(ctx));
         }
 
-        // --- RUNNER (DAY/NIGHT) ---
+        // --- RUNNER (FIXED LOGIC) ---
         let dino, obstacles=[], runLoop, rScore=0, rTime=0;
         function startRunner() { dino={y:160,dy:0,jump:false}; obstacles=[]; rScore=0; rTime=0; particles=[]; loopRunner(document.getElementById('run-canvas').getContext('2d')); }
         function jump() { if(!dino.jump) { dino.dy=-10; dino.jump=true; sfx('jump'); } }
         function loopRunner(ctx) {
             dino.dy+=0.6; dino.y+=dino.dy; if(dino.y>160) { dino.y=160; dino.dy=0; dino.jump=false; }
             if(Math.random()<0.02) obstacles.push({x:300});
-            rTime++; let bg = rTime % 1000 < 500 ? "#87CEEB" : "#000033"; // Day/Night
+            rTime++; let bg = rTime % 1000 < 500 ? "#87CEEB" : "#000033";
             ctx.fillStyle=bg; ctx.fillRect(0,0,300,200);
             ctx.fillStyle=godMode?"gold":"#0ff"; ctx.fillRect(30,dino.y,20,20);
             for(let i=0; i<obstacles.length; i++) {
                 let o = obstacles[i]; o.x-=(turbo?8:5); ctx.fillStyle="red"; ctx.fillRect(o.x,160,20,40);
-                if(o.x<50 && o.x>10 && dino.y>140) { cancelAnimationFrame(runLoop); showGameOver("CRASHED!", rScore, 'runner'); return; }
+                if(o.x<45 && o.x>15 && dino.y>140) { // FIXED HITBOX
+                    cancelAnimationFrame(runLoop); showGameOver("CRASHED!", rScore, 'runner'); return; 
+                }
             }
             rScore++; document.getElementById('run-score').innerText=rScore; runLoop = requestAnimationFrame(()=>loopRunner(ctx));
         }
 
-        // --- SIMPLE APPS ---
+        // --- SIMPLE APPS (FIXED GHOSTS) ---
         function clickCoin() { money += (turbo?2:1); localStorage.setItem('money', money); updateMoney(); sfx('win'); }
         function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
-        let board=[], turn='X', active=true;
+        
+        let board=[], turn='X', active=true, lockBoard=false;
         function startTTT() { board=Array(9).fill(""); active=true; turn='X'; const el=document.getElementById('ttt-board'); el.innerHTML=""; board.forEach((_,i)=>{ let c=document.createElement('div'); c.className='ttt-cell'; c.onclick=()=>moveTTT(i,c); el.appendChild(c); }); document.getElementById('ttt-msg').innerText = "VS CPU"; }
-        function moveTTT(i,c) { if(board[i] || !active) return; board[i]=turn; c.innerText=turn; c.style.color = turn==='X'?'#0f0':'#f00'; sfx('jump'); if(checkWin(turn)) { active=false; document.getElementById('ttt-msg').innerText=turn+" WINS!"; sfx('win'); return; } if(!board.includes("")) { active=false; document.getElementById('ttt-msg').innerText="DRAW"; return; } turn = turn==='X'?'O':'X'; if(turn==='O') setTimeout(()=>{ let empty = board.map((v,k)=>v===""?k:null).filter(v=>v!==null); if(empty.length) document.getElementById('ttt-board').children[empty[Math.floor(Math.random()*empty.length)]].click(); }, turbo?100:500); }
+        function moveTTT(i,c) { 
+            if(board[i] || !active) return;
+            board[i]=turn; c.innerText=turn; c.style.color = turn==='X'?'#0f0':'#f00'; sfx('jump');
+            if(checkWin(turn)) { active=false; document.getElementById('ttt-msg').innerText=turn+" WINS!"; sfx('win'); return; }
+            if(!board.includes("")) { active=false; document.getElementById('ttt-msg').innerText="DRAW"; return; }
+            turn = turn==='X'?'O':'X';
+            if(turn==='O') setTimeout(()=>{
+                if(!active) return; // FIXED GHOST MOVE
+                let empty = board.map((v,k)=>v===""?k:null).filter(v=>v!==null);
+                if(empty.length) document.getElementById('ttt-board').children[empty[Math.floor(Math.random()*empty.length)]].click();
+            }, turbo?100:500);
+        }
         function checkWin(p) { return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(w=>board[w[0]]===p && board[w[1]]===p && board[w[2]]===p); }
+        
         let cards=[], flipped=[], matched=[];
         const emojis = ['🍎','🍎','👻','👻','⚡','⚡','💎','💎','🚀','🚀','🎮','🎮'];
         function startMemory() { const g=document.getElementById('mem-grid'); g.innerHTML=""; flipped=[]; matched=[]; cards = emojis.sort(()=>Math.random()-0.5); cards.forEach((e,i)=>{ let c=document.createElement('div'); c.className='mem-card'; c.onclick=()=>flipCard(c,e); g.appendChild(c); }); }
-        function flipCard(c,e) { if(flipped.length<2 && !flipped.includes(c) && !matched.includes(c)) { c.innerText=e; c.style.background='#fff'; flipped.push({el:c,val:e}); sfx('jump'); if(flipped.length===2) setTimeout(checkMatch, turbo?200:800); } }
+        function flipCard(c,e) { 
+            if(flipped.length<2 && !flipped.includes(c) && !matched.includes(c)) { 
+                c.innerText=e; c.style.background='#fff'; flipped.push({el:c,val:e}); sfx('jump'); 
+                if(flipped.length===2) setTimeout(checkMatch, turbo?200:800); 
+            } 
+        }
         function checkMatch() { const [c1,c2] = flipped; if(c1.val===c2.val) { matched.push(c1.el,c2.el); c1.el.style.background='#0f0'; c2.el.style.background='#0f0'; sfx('win'); } else { c1.el.innerText=""; c1.el.style.background="#222"; c2.el.innerText=""; c2.el.style.background="#222"; } flipped=[]; }
     </script>
 </body>
