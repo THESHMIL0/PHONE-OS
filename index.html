@@ -3,261 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>For Ayushka ❤️</title>
+    <title>LoveOS ❤️</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <div id="notification-area"></div>
-
     <div id="lock-screen" class="screen-layer">
         <div class="lock-content">
             <div class="lock-header">
                 <div id="lock-clock">00:00</div>
-                <div id="lock-date">Saturday, February 14</div>
-                <p class="lock-msg">Miss you, Ayuuu! ❤️</p>
+                <div id="lock-date">Feb 14 ❤️</div>
+                <p class="lock-msg">Swipe up for Love 😸</p>
             </div>
-
+            
             <div class="pin-wrapper">
-                <p class="instruction">Enter Passcode</p>
+                <p>Enter Our Date (1430)</p>
                 <div class="pin-display">
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
-                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div>
                 </div>
             </div>
 
             <div class="keypad">
-                <button onclick="addPin(1)">1</button>
-                <button onclick="addPin(2)">2</button>
-                <button onclick="addPin(3)">3</button>
-                <button onclick="addPin(4)">4</button>
-                <button onclick="addPin(5)">5</button>
-                <button onclick="addPin(6)">6</button>
-                <button onclick="addPin(7)">7</button>
-                <button onclick="addPin(8)">8</button>
-                <button onclick="addPin(9)">9</button>
-                <div class="empty"></div>
-                <button onclick="addPin(0)">0</button>
-                <button class="delete-btn" onclick="clearPin()">✖</button>
+                <button onclick="addPin(1)">1</button><button onclick="addPin(2)">2</button><button onclick="addPin(3)">3</button>
+                <button onclick="addPin(4)">4</button><button onclick="addPin(5)">5</button><button onclick="addPin(6)">6</button>
+                <button onclick="addPin(7)">7</button><button onclick="addPin(8)">8</button><button onclick="addPin(9)">9</button>
+                <div class="empty"></div><button onclick="addPin(0)">0</button><button class="delete-btn" onclick="clearPin()">✖</button>
             </div>
         </div>
     </div>
 
     <div id="home-screen" class="screen-layer hidden">
-        
-        <div class="status-bar">
-            <span id="small-clock">00:00</span>
-            <span>❤️ 5G</span>
-        </div>
+        <div class="status-bar"><span>12:00</span><span>❤️ 5G</span></div>
 
         <div class="app-grid">
             <div class="app-item" onclick="openApp('chat')">
-                <div class="app-icon green"><i class="fas fa-comment"></i></div>
-                <p>Messages</p>
+                <div class="app-icon" style="background: #ff9a9e;"><i class="fas fa-heart"></i></div>
+                <p>Love Chat</p>
             </div>
             <div class="app-item" onclick="openApp('photos')">
-                <div class="app-icon blue"><i class="fas fa-images"></i></div>
-                <p>Photos</p>
+                <div class="app-icon" style="background: #a18cd1;"><i class="fas fa-camera-retro"></i></div>
+                <p>Memories</p>
             </div>
             <div class="app-item" onclick="openApp('music')">
-                <div class="app-icon pink"><i class="fas fa-music"></i></div>
-                <p>Music</p>
+                <div class="app-icon" style="background: #fad0c4;"><i class="fas fa-music"></i></div>
+                <p>Our Vibe</p>
             </div>
             <div class="app-item" onclick="openApp('map')">
-                <div class="app-icon map-icon"><i class="fas fa-map-marker-alt"></i></div>
-                <p>Distance</p>
+                <div class="app-icon" style="background: #84fab0;"><i class="fas fa-map-marked-alt"></i></div>
+                <p>Us</p>
             </div>
             <div class="app-item" onclick="openApp('wallet')">
-                <div class="app-icon orange"><i class="fas fa-wallet"></i></div>
+                <div class="app-icon" style="background: #fbc2eb;"><i class="fas fa-ticket-alt"></i></div>
                 <p>Coupons</p>
-            </div>
-            <div class="app-item" onclick="openApp('camera')">
-                <div class="app-icon grey-dark"><i class="fas fa-camera"></i></div>
-                <p>Camera</p>
             </div>
         </div>
 
         <div class="dock-container">
             <div class="dock">
-                <div class="app-item" onclick="openApp('phone')">
-                    <div class="app-icon green"><i class="fas fa-phone"></i></div>
-                </div>
-                <div class="app-item">
-                    <div class="app-icon white"><i class="fas fa-globe"></i></div>
-                </div>
-                <div class="app-item">
-                    <div class="app-icon grey"><i class="fas fa-cog"></i></div>
-                </div>
+                <div class="app-item" onclick="makeCall()"><div class="app-icon green"><i class="fas fa-phone"></i></div></div>
+                <div class="app-item"><div class="app-icon white"><i class="fas fa-globe"></i></div></div>
             </div>
         </div>
 
         <div id="app-chat" class="app-window hidden">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('chat')">❮ Back</button>
-                <span>Ayuuu ❤️</span>
-                <div style="width: 30px;"></div>
+                <button onclick="closeApp('chat')">❮ Back</button><span>My Baby ❤️</span><div></div>
             </div>
             <div class="chat-body">
+                <div class="date-divider">Today</div>
                 <div class="msg received">Hey Theshuuuu! 😽</div>
-                <div class="msg sent">Hey Ayuuu! Miss you so much!</div>
-                <div class="msg received">I miss you more! Even though I'm in Goa...</div>
-                <div class="msg sent">Distance is just a number! Check your coupons! 🎟️</div>
+                <div class="msg sent">Hey Ayuuu! Miss you! ❤️</div>
+                <div class="msg received">Send me a selfie right now! 📸</div>
+                <div class="msg sent">Okay wait... check Gallery! 😸</div>
             </div>
             <div class="chat-input-bar">
-                <input type="text" placeholder="iMessage">
-                <button class="send-btn">⬆</button>
+                <input type="text" placeholder="Send love...">
+                <button>❤️</button>
             </div>
         </div>
 
-        <div id="app-photos" class="app-window hidden" style="background: black;">
-            <div class="app-header" style="background: rgba(20,20,20,0.9); color: white; border: none;">
-                <button class="back-btn" onclick="closeApp('photos')" style="color: white;">❮ Albums</button>
-                <span>Us ❤️</span>
-                <div style="width: 30px;"></div>
-            </div>
-            <div class="gallery-grid">
-                <img src="https://via.placeholder.com/150/FFB6C1/000000?text=Us+1" alt="Photo">
-                <img src="https://via.placeholder.com/150/87CEEB/000000?text=Us+2" alt="Photo">
-                <img src="https://via.placeholder.com/150/FF69B4/000000?text=Date" alt="Photo">
-            </div>
-        </div>
-
-        <div id="app-map" class="app-window hidden">
+        <div id="app-photos" class="app-window hidden" style="background: #ffe6e6;">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('map')">❮ Back</button>
-                <span>Together</span>
-                <div style="width: 30px;"></div>
+                <button onclick="closeApp('photos')">❮ Back</button><span>Our Album</span><div></div>
             </div>
-            <div class="map-content">
-                <div class="location-point">
-                    <i class="fas fa-map-pin" style="color: #ff3b30; font-size: 50px;"></i>
-                    <h2>Goa</h2>
-                    <p>Ayushka 👸</p>
-                </div>
-                <div class="distance-line">
-                    <span class="heart-anim">❤️</span>
-                    <span class="dotted">----------------</span>
-                    <span class="heart-anim">❤️</span>
-                </div>
-                <div class="location-point">
-                    <i class="fas fa-map-pin" style="color: #007aff; font-size: 50px;"></i>
-                    <h2>Kerala</h2>
-                    <p>Theshmil 🤴</p>
-                </div>
-                <p class="quote">"Distance means so little when someone means so much."</p>
+            <div class="polaroid-grid">
+                <div class="polaroid"><img src="https://via.placeholder.com/150" alt="Us"><caption>First Date ❤️</caption></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150" alt="Us"><caption>So Cute 😸</caption></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150" alt="Us"><caption>Goa Trip 🌴</caption></div>
             </div>
         </div>
 
         <div id="app-music" class="app-window hidden">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('music')">❮ Down</button>
-                <span>Now Playing</span>
-                <div style="width: 30px;"></div>
+                <button onclick="closeApp('music')">❮ Down</button><span>Now Playing</span><div></div>
             </div>
             <div class="music-player">
-                <div class="album-art"><i class="fas fa-music"></i></div>
-                <h2 id="song-title">Perfect</h2>
-                <p id="artist-name">Ed Sheeran</p>
+                <div class="vinyl-record"><i class="fas fa-music"></i></div>
+                <h2>Perfect</h2>
+                <p>Ed Sheeran</p>
                 <div class="controls">
-                    <button>⏮</button>
-                    <button class="play-btn">▶</button>
-                    <button>⏭</button>
+                    <button>⏮</button><button class="play-btn">▶</button><button>⏭</button>
                 </div>
             </div>
         </div>
 
-        <div id="app-phone" class="app-window hidden">
+        <div id="app-wallet" class="app-window hidden">
             <div class="app-header">
-                <button class="back-btn" onclick="closeApp('phone')">❮ End</button>
-                <span>Keypad</span>
-                <div style="width: 30px;"></div>
+                <button onclick="closeApp('wallet')">❮ Wallet</button><span>Coupons</span><div></div>
             </div>
-            <div class="phone-app-content">
-                <div id="phone-display"></div>
-                <div class="dialer-grid">
-                    <button onclick="addToPhone(1)">1</button>
-                    <button onclick="addToPhone(2)">2</button>
-                    <button onclick="addToPhone(3)">3</button>
-                    <button onclick="addToPhone(4)">4</button>
-                    <button onclick="addToPhone(5)">5</button>
-                    <button onclick="addToPhone(6)">6</button>
-                    <button onclick="addToPhone(7)">7</button>
-                    <button onclick="addToPhone(8)">8</button>
-                    <button onclick="addToPhone(9)">9</button>
-                    <button onclick="addToPhone('*')">*</button>
-                    <button onclick="addToPhone(0)">0</button>
-                    <button onclick="addToPhone('#')">#</button>
+            <div class="coupon-list">
+                <div class="coupon pink" onclick="useCoupon(this)">
+                    <div class="left">🎟️</div>
+                    <div class="right"><h3>Free Hug</h3><p>Valid anytime</p></div>
                 </div>
-                <div class="call-action">
-                    <button class="call-btn" onclick="makeCall()"><i class="fas fa-phone"></i></button>
-                    <button class="delete-num" onclick="clearPhone()">⌫</button>
+                <div class="coupon blue" onclick="useCoupon(this)">
+                    <div class="left">🍕</div>
+                    <div class="right"><h3>Food Date</h3><p>I pay! 😸</p></div>
+                </div>
+                <div class="coupon purple" onclick="useCoupon(this)">
+                    <div class="left">🥺</div>
+                    <div class="right"><h3>Forgive Me</h3><p>No anger allowed</p></div>
                 </div>
             </div>
         </div>
-
-        <div id="app-wallet" class="app-window hidden" style="background-color: #f2f2f7;">
-            <div class="app-header">
-                <button class="back-btn" onclick="closeApp('wallet')">❮ Wallet</button>
-                <span>Love Coupons</span>
-                <div style="width: 30px;"></div>
-            </div>
-            <div class="wallet-content">
-                <div class="coupon-card" onclick="useCoupon(this)">
-                    <div class="coupon-header" style="background: #FF9500;">
-                        <span>UNLIMITED</span>
-                    </div>
-                    <div class="coupon-body">
-                        <h3>Virtual Hugs</h3>
-                        <p>Redeemable anytime you feel sad.</p>
-                    </div>
+        
+        <div id="app-map" class="app-window hidden">
+            <div class="app-header"><button onclick="closeApp('map')">❮ Back</button><span>Distance</span><div></div></div>
+            <div class="map-content">
+                <div class="map-line">
+                    <div class="loc">🏡 Goa<br><span>Ayuuu</span></div>
+                    <div class="line">----------❤️----------</div>
+                    <div class="loc">🌴 Kerala<br><span>Theshu</span></div>
                 </div>
-
-                <div class="coupon-card" onclick="useCoupon(this)">
-                    <div class="coupon-header" style="background: #FF2D55;">
-                        <span>DATE NIGHT</span>
-                    </div>
-                    <div class="coupon-body">
-                        <h3>Movie Night</h3>
-                        <p>Valid for one online movie date.</p>
-                    </div>
-                </div>
-
-                <div class="coupon-card" onclick="useCoupon(this)">
-                    <div class="coupon-header" style="background: #34C759;">
-                        <span>FORGIVENESS</span>
-                    </div>
-                    <div class="coupon-body">
-                        <h3>Sorry Pass</h3>
-                        <p>End one fight instantly.</p>
-                    </div>
-                </div>
+                <p>"Distance is nothing when you mean everything."</p>
             </div>
         </div>
 
-        <div id="app-camera" class="app-window hidden" style="background-color: black;">
-            <div class="camera-ui">
-                <div class="cam-top">
-                    <i class="fas fa-bolt"></i>
-                    <span>HDR</span>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="cam-viewport">
-                    <p style="color: white; opacity: 0.5;">Camera Loading...</p>
-                </div>
-                <div class="cam-controls">
-                    <div class="cam-preview"></div>
-                    <div class="shutter-btn" onclick="takePhoto()"></div>
-                    <div class="cam-switch"><i class="fas fa-sync-alt"></i></div>
-                </div>
-            </div>
-             <button class="close-cam" onclick="closeApp('camera')">✖</button>
-        </div>
-
-    </div>
-
-    <script src="script.js"></script>
+    </div> <script src="script.js"></script>
 </body>
 </html>
