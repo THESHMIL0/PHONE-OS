@@ -2,51 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Phone OS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Phone</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="phone-frame">
-        <div class="notch"></div>
+    <div id="lock-screen" class="screen-layer">
+        <div class="lock-header">
+            <div id="lock-clock">12:00</div>
+            <div id="lock-date">Tuesday, February 14</div>
+        </div>
 
-        <div class="screen">
-            
-            <div class="status-bar">
-                <span id="clock">12:00</span>
-                <span>5G 100%</span>
+        <div class="pin-display">
+            <div class="pin-dot" id="dot-1"></div>
+            <div class="pin-dot" id="dot-2"></div>
+            <div class="pin-dot" id="dot-3"></div>
+            <div class="pin-dot" id="dot-4"></div>
+        </div>
+        <p class="instruction">Enter Passcode</p>
+
+        <div class="keypad">
+            <button onclick="addPin(1)">1</button>
+            <button onclick="addPin(2)">2</button>
+            <button onclick="addPin(3)">3</button>
+            <button onclick="addPin(4)">4</button>
+            <button onclick="addPin(5)">5</button>
+            <button onclick="addPin(6)">6</button>
+            <button onclick="addPin(7)">7</button>
+            <button onclick="addPin(8)">8</button>
+            <button onclick="addPin(9)">9</button>
+            <div class="empty"></div> <button onclick="addPin(0)">0</button>
+            <button class="delete-btn" onclick="clearPin()">⌫</button>
+        </div>
+    </div>
+
+    <div id="home-screen" class="screen-layer hidden">
+        <div class="status-bar">
+            <span id="small-clock">12:00</span>
+            <span>5G 100%</span>
+        </div>
+
+        <div class="app-grid">
+            <div class="app-icon" onclick="openApp('Messages')">
+                <div class="icon-box green">💬</div>
+                <p>Chat</p>
             </div>
-
-            <div class="app-grid">
-                <div class="app-icon" onclick="openApp('Messages')">
-                    <div class="icon-box" style="background-color: #4CAF50;">💬</div>
-                    <p>Chat</p>
-                </div>
-                
-                <div class="app-icon" onclick="openApp('Photos')">
-                    <div class="icon-box" style="background-color: linear-gradient(#ff00cc, #333399);">📸</div> <p>Photos</p>
-                </div>
-
-                <div class="app-icon" onclick="openApp('Settings')">
-                    <div class="icon-box" style="background-color: #808080;">⚙️</div>
-                    <p>Settings</p>
-                </div>
+            <div class="app-icon" onclick="openApp('Photos')">
+                <div class="icon-box blue">📸</div>
+                <p>Photos</p>
             </div>
-
-            <div id="app-window" class="app-window hidden">
-                <div class="app-header">
-                    <span id="app-title">App Name</span>
-                    <button class="close-btn" onclick="closeApp()">✖</button>
-                </div>
-                <div class="app-content" id="app-content">
-                    </div>
+            <div class="app-icon" onclick="openApp('Music')">
+                <div class="icon-box pink">🎵</div>
+                <p>Music</p>
             </div>
-
-        </div> <div class="home-bar" onclick="closeApp()"></div>
+            <div class="app-icon" onclick="openApp('Settings')">
+                <div class="icon-box grey">⚙️</div>
+                <p>Settings</p>
+            </div>
+        </div>
+        
+        <div class="dock">
+            <div class="app-icon">
+                <div class="icon-box green">📞</div>
+            </div>
+            <div class="app-icon">
+                <div class="icon-box white">🌐</div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
 </body>
-  </html>
-  
+</html>
