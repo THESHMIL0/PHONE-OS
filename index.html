@@ -3,328 +3,416 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LoveOS ❤️</title>
+    <title>LoveOS 2.0 ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- GLOBAL STYLES --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        /* --- 1. GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
         body { background: #000; width: 100vw; height: 100vh; overflow: hidden; color: #333; }
 
+        /* --- 2. SCREEN LAYERS --- */
         .screen-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; flex-direction: column; z-index: 10; 
-            transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
             background-color: #333;
         }
-        .hidden { transform: translateY(100%); opacity: 0; pointer-events: none; }
+        .hidden { transform: translateY(100%) scale(0.95); opacity: 0; pointer-events: none; }
 
-        /* WALLPAPERS */
-        #lock-screen { background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('p3.jpg'); background-size: cover; background-position: center; }
-        #home-screen { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('p2.jpg'); background-size: cover; background-position: center; }
+        /* --- 3. WALLPAPERS --- */
+        #lock-screen {
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('p3.jpg');
+            background-size: cover; background-position: center;
+        }
+        #home-screen {
+            background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('p2.jpg');
+            background-size: cover; background-position: center;
+        }
 
-        /* LOCK SCREEN */
-        .lock-content { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 20px; color: white; }
-        #lock-clock { font-size: 80px; font-weight: 200; text-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        #lock-date { font-size: 20px; font-weight: 600; text-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        /* --- 4. LOCK SCREEN UI --- */
+        .lock-content { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 20px 40px 20px; color: white; }
+        #lock-clock { font-size: 75px; font-weight: 200; text-shadow: 0 4px 15px rgba(0,0,0,0.4); line-height: 1; }
+        #lock-date { font-size: 19px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,0.4); margin-top: 5px; }
         
-        /* NOTIFICATIONS */
-        .notification-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .notif { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px; display: flex; gap: 10px; align-items: center; animation: slideIn 0.5s ease; cursor: pointer; }
+        /* Notifications */
+        .notif-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
+        .notif { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(15px); border-radius: 14px; padding: 12px; display: flex; gap: 12px; align-items: center; animation: slideIn 0.5s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .notif img { width: 35px; height: 35px; border-radius: 8px; }
-        .notif-text h4 { font-size: 13px; color: #000; margin-bottom: 2px; }
-        .notif-text p { font-size: 12px; color: #333; }
+        .notif-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; }
+        .notif-content h4 { font-size: 13px; color: #000; margin-bottom: 2px; }
+        .notif-content p { font-size: 13px; color: #333; margin: 0; }
 
-        /* KEYPAD */
-        .pin-wrapper { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .pin-display { display: flex; gap: 15px; margin-top: 10px; }
-        .pin-dot { width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; transition: 0.2s; }
-        .pin-dot.filled { background: white; }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 280px; margin-bottom: 20px; }
-        .keypad button { width: 75px; height: 75px; border-radius: 50%; background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 26px; color: white; backdrop-filter: blur(10px); }
+        /* Keypad */
+        .pin-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .pin-dots { display: flex; gap: 15px; }
+        .dot { width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; transition: 0.2s; }
+        .dot.filled { background: white; }
+        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 280px; }
+        .keypad button { width: 75px; height: 75px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 26px; color: white; backdrop-filter: blur(10px); }
+        .keypad button:active { background: rgba(255,255,255,0.5); }
 
-        /* HOME SCREEN */
-        .status-bar { padding: 15px 25px; display: flex; justify-content: space-between; font-weight: 600; color: white; text-shadow: 0 1px 3px rgba(0,0,0,0.5); font-size: 14px; }
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px; margin-top: 10px; }
+        /* --- 5. HOME SCREEN UI --- */
+        .status-bar { padding: 12px 24px; display: flex; justify-content: space-between; font-weight: 600; color: white; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px; padding: 20px; margin-top: 10px; }
         .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.1s; }
         .app-item:active { transform: scale(0.9); }
-        .app-icon { width: 60px; height: 60px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 28px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 5px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.2); }
-        .app-item p { font-size: 11px; color: white; font-weight: 500; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+        .icon { width: 62px; height: 62px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 6px; }
+        .app-item span { font-size: 11px; color: white; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
-        .dock-container { margin-top: auto; padding: 25px; display: flex; justify-content: center; }
-        .dock { background: rgba(255,255,255,0.25); backdrop-filter: blur(20px); padding: 18px; border-radius: 35px; display: flex; gap: 20px; border: 1px solid rgba(255,255,255,0.2); }
+        .dock { margin-top: auto; margin-bottom: 20px; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 18px; border-radius: 35px; display: flex; gap: 20px; align-self: center; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* APPS GENERAL */
-        .app-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f2f2f7; z-index: 20; display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* --- 6. APP WINDOWS (Shared) --- */
+        .app-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 20; display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .app-window.hidden { transform: translateX(100%); }
-        .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid #ccc; font-weight: 600; color: #000; z-index: 25; }
-        .app-header button { border: none; background: none; color: #007AFF; font-size: 17px; }
+        .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #ccc; font-weight: 700; color: #000; z-index: 25; }
+        .back-btn { color: #007AFF; font-size: 17px; background: none; border: none; font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
-        /* NEW APPS STYLES */
-        .letter-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .envelope { background: white; padding: 15px; border-radius: 10px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; }
-        .envelope-icon { font-size: 30px; color: #ff9a9e; }
-        
-        .quiz-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-        .quiz-card { background: white; padding: 20px; border-radius: 20px; width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        .quiz-btn { width: 100%; padding: 15px; margin-top: 10px; background: #f0f0f0; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
-        .quiz-btn.correct { background: #4CD964; color: white; }
-        .quiz-btn.wrong { background: #FF3B30; color: white; }
+        /* --- 7. SPECIFIC APP STYLES --- */
+        /* Chat */
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 80px; background: #fff; }
+        .msg { padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 16px; line-height: 1.4; }
+        .sent { align-self: flex-end; background: #007AFF; color: white; border-bottom-right-radius: 2px; }
+        .received { align-self: flex-start; background: #E5E5EA; color: black; border-bottom-left-radius: 2px; }
+        .chat-bar { position: absolute; bottom: 0; width: 100%; padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; display: flex; gap: 10px; }
+        .chat-bar input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; }
 
-        /* Existing App Styles (Condensed) */
-        .chat-body { flex: 1; padding: 15px; background: #fff; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; padding-bottom: 80px; }
-        .msg { padding: 10px 16px; border-radius: 20px; max-width: 75%; font-size: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .sent { align-self: flex-end; background: #007AFF; color: white; } .received { align-self: flex-start; background: #E9E9EB; color: black; }
-        .chat-input-bar { position: absolute; bottom: 0; width: 100%; padding: 10px; background: #f0f0f0; display: flex; gap: 10px; border-top: 1px solid #ccc; }
-        .polaroid-grid { padding: 20px; display: flex; flex-direction: column; gap: 30px; align-items: center; overflow-y: auto; background: #ffe4e1; flex: 1; }
-        .polaroid { background: white; padding: 10px 10px 40px 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); transform: rotate(-2deg); width: 85%; text-align: center; }
+        /* Photos */
+        .gallery { padding: 20px; display: flex; flex-direction: column; gap: 30px; align-items: center; overflow-y: auto; background: #ffe4e1; flex: 1; }
+        .polaroid { background: white; padding: 10px 10px 45px 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transform: rotate(-2deg); width: 85%; text-align: center; }
         .polaroid img { width: 100%; border-radius: 2px; }
+        .polaroid p { margin-top: 15px; font-family: 'Brush Script MT', cursive; font-size: 24px; color: #333; }
+
+        /* Letters */
+        .letter-list { padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
+        .envelope { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
+        .envelope:active { transform: scale(0.98); }
+        /* Reading View Overlay */
+        .letter-reader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 50; display: flex; justify-content: center; align-items: center; padding: 20px; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .letter-reader.active { opacity: 1; pointer-events: auto; }
+        .paper { background: #fffdf0; padding: 30px; width: 100%; max-width: 400px; border-radius: 5px; box-shadow: 0 0 20px rgba(0,0,0,0.5); position: relative; }
+        .paper p { font-family: 'Courier New', monospace; font-size: 16px; line-height: 1.6; color: #333; white-space: pre-line; }
+
+        /* Quiz */
+        .quiz-container { padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+        .quiz-card { background: white; padding: 25px; border-radius: 20px; width: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .option-btn { width: 100%; padding: 15px; margin-top: 12px; background: #f2f2f7; border: none; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; }
+        
+        /* US App & Music are styled inline for simplicity/uniqueness */
+
     </style>
 </head>
 <body>
     <div id="lock-screen" class="screen-layer">
         <div class="lock-content">
-            <div style="text-align: center; width: 100%;">
+            <div style="width: 100%; text-align: center;">
                 <div id="lock-clock">00:00</div>
-                <div id="lock-date">Feb 14 ❤️</div>
+                <div id="lock-date">Saturday, February 14</div>
                 
-                <div class="notification-list" id="notif-list">
+                <div class="notif-container" id="notif-list">
                     </div>
             </div>
-            
-            <div class="pin-wrapper">
-                <p style="opacity: 0.8; color: white;">Enter Our Date (1430)</p>
-                <div class="pin-display">
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
-            </div>
 
-            <div class="keypad">
-                <button onclick="addPin(1)">1</button><button onclick="addPin(2)">2</button><button onclick="addPin(3)">3</button>
-                <button onclick="addPin(4)">4</button><button onclick="addPin(5)">5</button><button onclick="addPin(6)">6</button>
-                <button onclick="addPin(7)">7</button><button onclick="addPin(8)">8</button><button onclick="addPin(9)">9</button>
-                <div class="empty"></div><button onclick="addPin(0)">0</button><button class="delete-btn" onclick="clearPin()">✖</button>
+            <div class="pin-wrapper">
+                <p style="color: rgba(255,255,255,0.8);">Enter Our Date (1430)</p>
+                <div class="pin-dots">
+                    <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                </div>
+                <div class="keypad">
+                    <button onclick="pressKey(1)">1</button><button onclick="pressKey(2)">2</button><button onclick="pressKey(3)">3</button>
+                    <button onclick="pressKey(4)">4</button><button onclick="pressKey(5)">5</button><button onclick="pressKey(6)">6</button>
+                    <button onclick="pressKey(7)">7</button><button onclick="pressKey(8)">8</button><button onclick="pressKey(9)">9</button>
+                    <div class="empty"></div><button onclick="pressKey(0)">0</button><button onclick="clearPin()">✖</button>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="home-screen" class="screen-layer hidden">
-        <div class="status-bar"><span>12:00</span><span>❤️ 5G</span></div>
-
+        <div class="status-bar"><span>9:41</span><span>❤️ 5G</span></div>
+        
         <div class="app-grid">
             <div class="app-item" onclick="openApp('chat')">
-                <div class="app-icon" style="background: #34C759;"><i class="fas fa-comment"></i></div><p>Chat</p>
-            </div>
-            <div class="app-item" onclick="openApp('events')">
-                <div class="app-icon" style="background: #FF9500;"><i class="fas fa-calendar-alt"></i></div><p>Events</p>
+                <div class="icon" style="background: #34C759;"><i class="fas fa-comment"></i></div><span>Chat</span>
             </div>
             <div class="app-item" onclick="openApp('photos')">
-                <div class="app-icon" style="background: linear-gradient(#ff00cc, #333399);"><i class="fas fa-camera-retro"></i></div><p>Photos</p>
+                <div class="icon" style="background: linear-gradient(#ff00cc, #333399);"><i class="fas fa-camera-retro"></i></div><span>Photos</span>
             </div>
             <div class="app-item" onclick="openApp('music')">
-                <div class="app-icon" style="background: #FA2D48;"><i class="fas fa-music"></i></div><p>Music</p>
+                <div class="icon" style="background: #FA2D48;"><i class="fas fa-music"></i></div><span>Music</span>
             </div>
-            <div class="app-item" onclick="openApp('us')">
-                <div class="app-icon" style="background: #5856D6;"><i class="fas fa-plane"></i></div><p>Us</p>
+            <div class="app-item" onclick="openApp('events')">
+                <div class="icon" style="background: #FF9500;"><i class="fas fa-calendar-day"></i></div><span>Events</span>
             </div>
             <div class="app-item" onclick="openApp('wallet')">
-                <div class="app-icon" style="background: #AF52DE;"><i class="fas fa-ticket-alt"></i></div><p>Wallet</p>
+                <div class="icon" style="background: #AF52DE;"><i class="fas fa-wallet"></i></div><span>Wallet</span>
+            </div>
+            <div class="app-item" onclick="openApp('us')">
+                <div class="icon" style="background: #007AFF;"><i class="fas fa-plane"></i></div><span>Us</span>
             </div>
             <div class="app-item" onclick="openApp('letters')">
-                <div class="app-icon" style="background: #fff; color: #ff2d55;"><i class="fas fa-envelope-open-text"></i></div><p>Letters</p>
+                <div class="icon" style="background: #fff; color: #FF2D55;"><i class="fas fa-envelope-open-text"></i></div><span>Letters</span>
             </div>
             <div class="app-item" onclick="openApp('quiz')">
-                <div class="app-icon" style="background: #5AC8FA;"><i class="fas fa-gamepad"></i></div><p>Quiz</p>
+                <div class="icon" style="background: #5AC8FA;"><i class="fas fa-gamepad"></i></div><span>Quiz</span>
             </div>
         </div>
 
-        <div class="dock-container">
-            <div class="dock">
-                <div class="app-item" onclick="makeCall()"><div class="app-icon" style="background: #4CD964;"><i class="fas fa-phone"></i></div></div>
-                <div class="app-item"><div class="app-icon" style="background: #007AFF;"><i class="fas fa-globe"></i></div></div>
-                <div class="app-item"><div class="app-icon" style="background: #8E8E93;"><i class="fas fa-cog"></i></div></div>
+        <div class="dock">
+            <div class="app-item" onclick="alert('Calling Ayuuu... ❤️')"><div class="icon" style="background: #34C759;"><i class="fas fa-phone"></i></div></div>
+            <div class="app-item"><div class="icon" style="background: #007AFF;"><i class="fas fa-globe"></i></div></div>
+            <div class="app-item"><div class="icon" style="background: #8E8E93;"><i class="fas fa-cog"></i></div></div>
+        </div>
+    </div>
+    <div id="app-chat" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div></div>
+        <div class="chat-body" id="chat-feed">
+            <div style="text-align: center; color: #888; font-size: 12px; margin: 10px 0;">Today</div>
+            <div class="msg received">Hey Theshuuuu! 😽</div>
+            <div class="msg received">Did you make this website? It's so cool!</div>
+            <div class="msg sent">Yes! Happy 20 days baby! ❤️</div>
+            <div class="msg received">I miss you so much! 🌴</div>
+        </div>
+        <div class="chat-bar">
+            <input type="text" id="msg-input" placeholder="iMessage">
+            <button onclick="sendMessage()" style="color:#007AFF; font-weight:bold; border:none; background:none;">Send</button>
+        </div>
+    </div>
+
+    <div id="app-photos" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('photos')">❮ Back</button><span>Memories</span><div></div></div>
+        <div class="gallery">
+            <div class="polaroid"><img src="p1.jpg" alt="Us"><p>Dramapur 😸</p></div>
+            <div class="polaroid"><img src="p2.jpg" alt="Us"><p>My Fav ❤️</p></div>
+            <div class="polaroid"><img src="p3.jpg" alt="Us"><p>Night Walks 🌙</p></div>
+        </div>
+    </div>
+
+    <div id="app-music" class="app-window hidden">
+        <div class="app-header" style="background: #1c1c1e; color: white; border: none;"><button class="back-btn" onclick="closeApp('music')">❮ Down</button><span>Music</span><div></div></div>
+        <div style="flex:1; background: #1c1c1e; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+            <div id="record" style="width: 250px; height: 250px; border-radius: 50%; background: url('https://upload.wikimedia.org/wikipedia/en/4/45/Divide_cover.png'); background-size: cover; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 5px solid #111;"></div>
+            <h2 style="margin-top: 40px; font-size: 28px;">Perfect</h2>
+            <p style="color: #aaa; margin-top: 5px;">Ed Sheeran</p>
+            <div style="display: flex; gap: 40px; margin-top: 50px; font-size: 35px; align-items: center;">
+                <i class="fas fa-backward"></i>
+                <i class="fas fa-play-circle" id="play-btn" style="font-size: 60px; cursor: pointer;" onclick="toggleMusic()"></i>
+                <i class="fas fa-forward"></i>
             </div>
         </div>
-        <div id="app-chat" class="app-window hidden">
-            <div class="app-header"><button onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div></div>
-            <div class="chat-body" id="chat-feed">
-                <div class="msg received">Hey Theshuuuu! 😽</div>
-                <div class="msg sent">Hey Ayuuu! Happy 20 days! ❤️</div>
-                <div class="msg received">I miss you so much! 🌴</div>
-            </div>
-            <div class="chat-input-bar"><input type="text" id="msg-input" placeholder="iMessage"><button class="send-btn" onclick="sendMessage()">⬆</button></div>
-        </div>
+    </div>
 
-        <div id="app-photos" class="app-window hidden">
-            <div class="app-header"><button onclick="closeApp('photos')">❮ Back</button><span>Our Album</span><div></div></div>
-            <div class="polaroid-grid">
-                <div class="polaroid"><img src="p1.jpg" alt="Us"><caption>Dramapur 😸</caption></div>
-                <div class="polaroid"><img src="p2.jpg" alt="Us"><caption>My Fav ❤️</caption></div>
-                <div class="polaroid"><img src="p3.jpg" alt="Us"><caption>Night Walks 🌙</caption></div>
+    <div id="app-us" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('us')">❮ Back</button><span>Us ❤️</span><div></div></div>
+        <div style="flex:1; background: #E0F7FA; display: flex; flex-direction: column; align-items: center; padding-top: 40px;">
+            <div style="display:flex; justify-content:space-around; width:100%; align-items:center;">
+                <div style="text-align:center;"><div style="font-size:40px; background:white; width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center;">👸</div><b>Goa</b></div>
+                <div style="flex:1; height:2px; background:#ccc; margin:0 15px; position:relative;"><i class="fas fa-plane" style="position:absolute; top:-12px; left:50%; font-size:20px; color:#007AFF;"></i></div>
+                <div style="text-align:center;"><div style="font-size:40px; background:white; width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center;">🤴</div><b>Kerala</b></div>
             </div>
-        </div>
-
-        <div id="app-music" class="app-window hidden">
-            <div class="app-header" style="background:rgba(28,28,30,0.8); color:white; border:none;"><button onclick="closeApp('music')" style="color:white;">❮ Down</button><span>Now Playing</span><div></div></div>
-            <div class="music-player" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:#1c1c1e; color:white;">
-                <div class="vinyl-record" id="record" style="width:220px; height:220px; border-radius:50%; background:url('https://upload.wikimedia.org/wikipedia/en/4/45/Divide_cover.png'); background-size:cover; border:5px solid #111;"></div>
-                <h2 style="margin-top:30px;">Perfect</h2><p style="color:#aaa;">Ed Sheeran</p>
-                <div class="controls" style="margin-top:30px; display:flex; gap:30px; font-size:30px;">
-                    <i class="fas fa-backward"></i><i class="fas fa-play" onclick="toggleMusic()"></i><i class="fas fa-forward"></i>
-                </div>
+            <div style="background: white; width: 90%; padding: 30px; border-radius: 20px; margin-top: 40px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                <p style="color:#888; text-transform:uppercase; font-size:12px; letter-spacing:1px;">We have been together for</p>
+                <h1 id="love-timer" style="font-size: 40px; color: #FF2D55; margin: 10px 0;">00 Days</h1>
+                <p>Since Jan 18, 2026</p>
             </div>
+            <button onclick="alert('Flying Kiss Sent! 💋')" style="margin-top:30px; background:#FF2D55; color:white; border:none; padding:15px 40px; border-radius:30px; font-size:18px; font-weight:bold; box-shadow: 0 5px 15px rgba(255,45,85,0.3);">Send Kiss 💋</button>
         </div>
+    </div>
 
-        <div id="app-us" class="app-window hidden">
-            <div class="app-header"><button onclick="closeApp('us')">❮ Back</button><span>Us ❤️</span><div></div></div>
-            <div class="map-content" style="flex:1; display:flex; flex-direction:column; align-items:center; background:#e0f7fa; padding-top:30px;">
-                <div style="display:flex; justify-content:space-around; width:100%;">
-                    <div style="text-align:center;"><h1>👸</h1><span>Goa</span></div>
-                    <div style="flex:1; border-bottom:2px dashed #aaa; margin:0 10px; position:relative; top:-10px;">✈️</div>
-                    <div style="text-align:center;"><h1>🤴</h1><span>Kerala</span></div>
-                </div>
-                <div style="background:white; padding:20px; border-radius:20px; margin-top:30px; text-align:center;">
-                    <p>In Love For:</p><h2 id="love-counter">00 Days</h2>
-                </div>
+    <div id="app-events" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('events')">❮ Back</button><span>Big Days</span><div></div></div>
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+            <div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;">
+                <div style="background:#FF9500; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px; font-weight:bold;">JAN</div><div style="font-size:20px; font-weight:bold;">18</div></div>
+                <div><h3>We Met ❤️</h3><p>The start of everything</p></div>
+            </div>
+            <div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;">
+                <div style="background:#FF2D55; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px; font-weight:bold;">MAR</div><div style="font-size:20px; font-weight:bold;">14</div></div>
+                <div><h3>Theshu's Bday 🎂</h3><p>Party time!</p></div>
+            </div>
+            <div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;">
+                <div style="background:#5856D6; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px; font-weight:bold;">SEP</div><div style="font-size:20px; font-weight:bold;">22</div></div>
+                <div><h3>Ayuuu's Bday 👸</h3><p>My Queen's Day</p></div>
             </div>
         </div>
+    </div>
 
-        <div id="app-events" class="app-window hidden">
-             <div class="app-header"><button onclick="closeApp('events')">❮ Back</button><span>Events</span><div></div></div>
-             <div class="event-list" style="padding:20px;"><h2>We Met: Jan 18 ❤️</h2><h2>My Bday: Mar 14 🎂</h2><h2>Her Bday: Sep 22 👸</h2></div>
-        </div>
-        <div id="app-wallet" class="app-window hidden">
-             <div class="app-header"><button onclick="closeApp('wallet')">❮ Wallet</button><span>Coupons</span><div></div></div>
-             <div class="letter-grid"><div class="envelope" onclick="alert('Redeemed!')">🎟️ Free Hug</div><div class="envelope" onclick="alert('Redeemed!')">🍕 Food Date</div></div>
-        </div>
-
-        <div id="app-letters" class="app-window hidden">
-            <div class="app-header"><button onclick="closeApp('letters')">❮ Back</button><span>Open When...</span><div></div></div>
-            <div class="letter-grid">
-                <div class="envelope" onclick="alert('💌 Dear Ayuuu,\n\nI miss you more than words can say. Remember that I am always with you! ❤️')">
-                    <div class="envelope-icon"><i class="fas fa-envelope"></i></div>
-                    <div><h3>Open when you miss me</h3></div>
-                </div>
-                <div class="envelope" onclick="alert('💌 My Princess,\n\nSmile! You have the most beautiful smile in Goa. I love you! 😽')">
-                    <div class="envelope-icon"><i class="fas fa-envelope-open-text"></i></div>
-                    <div><h3>Open when you are sad</h3></div>
-                </div>
-                <div class="envelope" onclick="alert('💌 Cutie,\n\nGo sleep! I will meet you in our dreams. Goodnight! 🌙')">
-                    <div class="envelope-icon"><i class="fas fa-moon"></i></div>
-                    <div><h3>Open when you can\'t sleep</h3></div>
-                </div>
+    <div id="app-wallet" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('wallet')">❮ Back</button><span>Wallet</span><div></div></div>
+        <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+            <div onclick="this.style.opacity='0.5'; alert('Redeemed!')" style="background:white; height:100px; border-radius:15px; display:flex; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                <div style="width:80px; background:#FF2D55; display:flex; justify-content:center; align-items:center; font-size:30px;">🎟️</div>
+                <div style="flex:1; padding:20px; display:flex; flex-direction:column; justify-content:center;"><h3>Free Hug</h3><p>Valid Anytime</p></div>
+            </div>
+            <div onclick="this.style.opacity='0.5'; alert('Redeemed!')" style="background:white; height:100px; border-radius:15px; display:flex; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+                <div style="width:80px; background:#007AFF; display:flex; justify-content:center; align-items:center; font-size:30px;">🍕</div>
+                <div style="flex:1; padding:20px; display:flex; flex-direction:column; justify-content:center;"><h3>Food Date</h3><p>I pay! 😸</p></div>
             </div>
         </div>
+    </div>
 
-        <div id="app-quiz" class="app-window hidden">
-            <div class="app-header"><button onclick="closeApp('quiz')">❮ Back</button><span>Love Quiz</span><div></div></div>
-            <div class="quiz-container">
-                <div class="quiz-card">
-                    <h2>Where did we first meet? 🤔</h2>
-                    <button class="quiz-btn" onclick="checkAnswer(this, false)">Instagram</button>
-                    <button class="quiz-btn" onclick="checkAnswer(this, true)">Jan 18 (Real Life)</button>
-                    <button class="quiz-btn" onclick="checkAnswer(this, false)">In a Dream</button>
-                </div>
+    <div id="app-letters" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('letters')">❮ Back</button><span>Open When...</span><div></div></div>
+        <div class="letter-list">
+            <div class="envelope" onclick="openLetter(1)">
+                <div style="font-size:30px; color:#FF2D55;"><i class="fas fa-envelope-open-text"></i></div>
+                <div><h3>Open when you miss me</h3></div>
+            </div>
+            <div class="envelope" onclick="openLetter(2)">
+                <div style="font-size:30px; color:#007AFF;"><i class="fas fa-sad-tear"></i></div>
+                <div><h3>Open when you are sad</h3></div>
+            </div>
+            <div class="envelope" onclick="openLetter(3)">
+                <div style="font-size:30px; color:#FF9500;"><i class="fas fa-moon"></i></div>
+                <div><h3>Open when you can't sleep</h3></div>
             </div>
         </div>
+    </div>
 
+    <div id="letter-reader" class="letter-reader" onclick="closeLetter()">
+        <div class="paper" onclick="event.stopPropagation()">
+            <p id="letter-text">Loading...</p>
+            <button onclick="closeLetter()" style="margin-top:20px; width:100%; padding:10px; background:#333; color:white; border:none; border-radius:5px;">Close</button>
+        </div>
+    </div>
+
+    <div id="app-quiz" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('quiz')">❮ Back</button><span>Love Quiz</span><div></div></div>
+        <div class="quiz-container">
+            <div class="quiz-card">
+                <h2>Where did we first meet? 🤔</h2>
+                <button class="option-btn" onclick="checkQuiz(this, false)">Instagram</button>
+                <button class="option-btn" onclick="checkQuiz(this, true)">Jan 18 (Real Life)</button>
+                <button class="option-btn" onclick="checkQuiz(this, false)">In a Dream</button>
+            </div>
+        </div>
     </div>
     <script>
-        const correctPasscode = "1430"; 
-        const startDate = new Date("2026-01-18"); 
-        let currentInput = "";
+        const PIN = "1430";
+        const START_DATE = new Date("2026-01-18");
+        let currentPin = "";
+        let isPlaying = false;
 
-        // CLOCK
-        setInterval(() => {
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // 1. CLOCK
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             document.getElementById('lock-clock').innerText = time;
-        }, 1000);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        // NOTIFICATIONS ON LOCK SCREEN
+        // 2. NOTIFICATIONS
         setTimeout(() => {
-            const list = document.getElementById('notif-list');
-            list.innerHTML += `
-                <div class="notif">
-                    <div style="background:green; width:35px; height:35px; border-radius:8px; display:flex; justify-content:center; align-items:center; color:white;"><i class="fas fa-comment"></i></div>
-                    <div class="notif-text"><h4>WhatsApp</h4><p>Theshu: Miss you baby! ❤️</p></div>
+            document.getElementById('notif-list').innerHTML = `
+                <div class="notif" onclick="alert('Unlock to view!')">
+                    <div class="notif-icon" style="background:#34C759;"><i class="fas fa-comment"></i></div>
+                    <div class="notif-content"><h4>WhatsApp</h4><p>Theshu: Miss you baby! ❤️</p></div>
                 </div>
-                <div class="notif">
-                    <div style="background:pink; width:35px; height:35px; border-radius:8px; display:flex; justify-content:center; align-items:center; color:white;"><i class="fas fa-heart"></i></div>
-                    <div class="notif-text"><h4>Instagram</h4><p>Theshu tagged you in a story</p></div>
+                <div class="notif" onclick="alert('Unlock to view!')">
+                    <div class="notif-icon" style="background:linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);"><i class="fab fa-instagram"></i></div>
+                    <div class="notif-content"><h4>Instagram</h4><p>Theshu tagged you in a story</p></div>
                 </div>
             `;
         }, 1000);
 
-        // LOCK SCREEN
-        function addPin(num) {
-            if (currentInput.length < 4) {
-                currentInput += num;
-                document.querySelectorAll('.pin-dot')[currentInput.length - 1].classList.add('filled');
-                if (currentInput.length === 4) setTimeout(checkPin, 100);
+        // 3. UNLOCK SYSTEM
+        function pressKey(num) {
+            if (currentPin.length < 4) {
+                currentPin += num;
+                updateDots();
+                if (currentPin.length === 4) setTimeout(checkPin, 100);
             }
         }
-        function clearPin() { 
-            currentInput = ""; 
-            document.querySelectorAll('.pin-dot').forEach(dot => dot.classList.remove('filled')); 
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => {
+                if (i < currentPin.length) dot.classList.add('filled');
+                else dot.classList.remove('filled');
+            });
         }
+        function clearPin() { currentPin = ""; updateDots(); }
         function checkPin() {
-            if (currentInput === correctPasscode) {
+            if (currentPin === PIN) {
                 document.getElementById('lock-screen').classList.add('hidden');
                 document.getElementById('home-screen').classList.remove('hidden');
             } else {
-                alert("Wrong Date! Try 1430 😸"); clearPin();
+                alert("Wrong Date! Try 1430 😸");
+                clearPin();
             }
         }
 
-        // APPS
+        // 4. APP NAVIGATION
         function openApp(id) { document.getElementById(`app-${id}`).classList.remove('hidden'); }
         function closeApp(id) { document.getElementById(`app-${id}`).classList.add('hidden'); }
-        function makeCall() { alert("Calling Ayuuu... ❤️"); }
 
-        // QUIZ LOGIC
-        function checkAnswer(btn, isCorrect) {
-            if(isCorrect) {
-                btn.style.background = "#4CD964";
+        // 5. CHAT
+        function sendMessage() {
+            const input = document.getElementById('msg-input');
+            const text = input.value;
+            if (!text) return;
+            
+            const feed = document.getElementById('chat-feed');
+            feed.innerHTML += `<div class="msg sent">${text}</div>`;
+            input.value = "";
+            feed.scrollTop = feed.scrollHeight;
+
+            setTimeout(() => {
+                feed.innerHTML += `<div class="msg received">I love you more! ❤️😸</div>`;
+                feed.scrollTop = feed.scrollHeight;
+            }, 1500);
+        }
+
+        // 6. LETTERS
+        const letters = {
+            1: "💌 Dear Ayuuu,\n\nI know distance is hard, but remember that my heart is always with you. Close your eyes and imagine me hugging you. \n\nI love you! ❤️",
+            2: "💌 My Princess,\n\nDon't be sad! You have the prettiest smile in the world. \n\nLook at our photos and remember how happy we are! 😸",
+            3: "💌 Cutie,\n\nStop overthinking and go to sleep! I will meet you in our dreams. \n\nGoodnight baby! 🌙"
+        };
+        function openLetter(id) {
+            document.getElementById('letter-text').innerText = letters[id];
+            document.getElementById('letter-reader').classList.add('active');
+        }
+        function closeLetter() {
+            document.getElementById('letter-reader').classList.remove('active');
+        }
+
+        // 7. QUIZ
+        function checkQuiz(btn, isCorrect) {
+            if (isCorrect) {
+                btn.style.background = "#34C759";
+                btn.style.color = "white";
                 btn.innerText = "Correct! 🎉";
                 alert("YAY! You know me so well! ❤️");
             } else {
                 btn.style.background = "#FF3B30";
+                btn.style.color = "white";
                 btn.innerText = "Wrong 😝";
             }
         }
 
-        // CHAT LOGIC
-        function sendMessage() {
-            const input = document.getElementById('msg-input');
-            const feed = document.getElementById('chat-feed');
-            if(input.value.trim() === "") return;
-            feed.innerHTML += `<div class="msg sent">${input.value}</div>`;
-            input.value = "";
-            setTimeout(() => {
-                feed.innerHTML += `<div class="msg received">I love you more! ❤️</div>`;
-                feed.scrollTop = feed.scrollHeight;
-            }, 2000);
-        }
-
-        // MUSIC LOGIC
-        let isPlaying = false;
+        // 8. MUSIC
         function toggleMusic() {
             const record = document.getElementById('record');
-            if (isPlaying) record.style.animation = "none";
-            else record.style.animation = "spin 4s linear infinite";
+            const btn = document.getElementById('play-btn');
             isPlaying = !isPlaying;
+            if (isPlaying) {
+                record.style.animation = "spin 4s linear infinite";
+                btn.className = "fas fa-pause-circle";
+            } else {
+                record.style.animation = "none";
+                btn.className = "fas fa-play-circle";
+            }
         }
 
-        // TIMER
-        function updateLoveTimer() {
+        // 9. TIMER
+        function updateTimer() {
             const now = new Date();
-            const diff = now - startDate;
+            const diff = now - START_DATE;
             const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById("love-counter").innerText = days + " Days";
+            document.getElementById('love-timer').innerText = days + " Days";
         }
-        setInterval(updateLoveTimer, 1000);
-        updateLoveTimer();
+        updateTimer();
     </script>
 </body>
 </html>
