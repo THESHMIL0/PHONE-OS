@@ -1,71 +1,53 @@
-// --- CONFIGURATION ---
-const correctPasscode = "1430"; // Password
+const correctPasscode = "1430"; 
 let currentInput = "";
 
-// --- CLOCK FUNCTION ---
+// CLOCK
 function updateClock() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    
-    // Lock Screen Clock
     document.getElementById('lock-clock').innerText = `${hours}:${minutes}`;
-    // Home Screen Status Bar Clock
     document.getElementById('small-clock').innerText = `${hours}:${minutes}`;
 }
 setInterval(updateClock, 1000);
-updateClock(); // Run immediately
+updateClock();
 
-// --- KEYPAD LOGIC ---
-function addPin(number) {
+// KEYPAD
+function addPin(num) {
     if (currentInput.length < 4) {
-        currentInput += number;
+        currentInput += num;
         updateDots();
-        
-        // Auto-check when 4 digits are entered
-        if (currentInput.length === 4) {
-            setTimeout(checkPin, 100);
-        }
+        if (currentInput.length === 4) setTimeout(checkPin, 100);
     }
 }
-
-function clearPin() {
-    currentInput = "";
-    updateDots();
-}
-
+function clearPin() { currentInput = ""; updateDots(); }
 function updateDots() {
-    const dots = document.querySelectorAll('.pin-dot');
-    dots.forEach((dot, index) => {
-        if (index < currentInput.length) {
-            dot.classList.add('filled');
-        } else {
-            dot.classList.remove('filled');
-        }
+    document.querySelectorAll('.pin-dot').forEach((dot, i) => {
+        dot.classList.toggle('filled', i < currentInput.length);
     });
 }
-
 function checkPin() {
     if (currentInput === correctPasscode) {
-        unlockPhone();
+        document.getElementById('lock-screen').classList.add('hidden');
+        document.getElementById('home-screen').classList.remove('hidden');
     } else {
-        alert("Wrong Passcode! Try 1430");
-        clearPin();
+        alert("Wrong Passcode! Try 1430"); clearPin();
     }
 }
 
-function unlockPhone() {
-    const lockScreen = document.getElementById('lock-screen');
-    const homeScreen = document.getElementById('home-screen');
-    
-    // Add hidden class to lock screen (triggers CSS fade out)
-    lockScreen.classList.add('hidden');
-    
-    // Remove hidden class from home screen (triggers CSS fade in)
-    homeScreen.classList.remove('hidden');
+// OPENING & CLOSING APPS
+function openApp(appName) {
+    const appElement = document.getElementById(`app-${appName}`);
+    if (appElement) {
+        appElement.classList.remove('hidden');
+    } else {
+        alert("App under construction!");
+    }
 }
 
-// --- APP LOGIC ---
-function openApp(appName) {
-    alert("Opening " + appName + "...");
+function closeApp(appName) {
+    const appElement = document.getElementById(`app-${appName}`);
+    if (appElement) {
+        appElement.classList.add('hidden');
+    }
 }
