@@ -1,7 +1,7 @@
 // CONFIG
 const correctPasscode = "1430"; 
-// SET YOUR DATE HERE (YYYY-MM-DD)
-const startDate = new Date("2025-08-18"); 
+// DATE UPDATED: January 18, 2026 (YYYY-MM-DD)
+const startDate = new Date("2026-01-18"); 
 let currentInput = "";
 
 // CLOCK
