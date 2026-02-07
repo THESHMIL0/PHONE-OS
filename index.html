@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Phone OS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="phone-frame">
+        <div class="notch"></div>
+
+        <div class="screen">
+            
+            <div class="status-bar">
+                <span id="clock">12:00</span>
+                <span>5G 100%</span>
+            </div>
+
+            <div class="app-grid">
+                <div class="app-icon" onclick="openApp('Messages')">
+                    <div class="icon-box" style="background-color: #4CAF50;">💬</div>
+                    <p>Chat</p>
+                </div>
+                
+                <div class="app-icon" onclick="openApp('Photos')">
+                    <div class="icon-box" style="background-color: linear-gradient(#ff00cc, #333399);">📸</div> <p>Photos</p>
+                </div>
+
+                <div class="app-icon" onclick="openApp('Settings')">
+                    <div class="icon-box" style="background-color: #808080;">⚙️</div>
+                    <p>Settings</p>
+                </div>
+            </div>
+
+            <div id="app-window" class="app-window hidden">
+                <div class="app-header">
+                    <span id="app-title">App Name</span>
+                    <button class="close-btn" onclick="closeApp()">✖</button>
+                </div>
+                <div class="app-content" id="app-content">
+                    </div>
+            </div>
+
+        </div> <div class="home-bar" onclick="closeApp()"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+  </html>
+  
