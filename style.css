@@ -1,76 +1,204 @@
-/* Keep previous reset and body styles */
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; user-select: none; }
-body { background-color: #000; width: 100vw; height: 100vh; overflow: hidden; }
+/* RESET & GLOBAL STYLES */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #000;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
 
 /* LAYERS */
 .screen-layer {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%); /* Cute Pink Gradient */
-    display: flex; flex-direction: column; z-index: 10;
-    transition: all 0.4s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.5s;
 }
-.hidden { transform: scale(1.1); opacity: 0; pointer-events: none; }
 
-/* LOCK SCREEN & KEYPAD (Keep same as before) */
-.lock-content { padding-top: 60px; height: 100%; display: flex; flex-direction: column; align-items: center; color: white; }
-#lock-clock { font-size: 70px; font-weight: 300; }
-.lock-msg { margin-top: 10px; font-size: 18px; opacity: 0.9; }
-.pin-wrapper { margin-top: 30px; text-align: center; }
-.pin-display { display: flex; gap: 15px; margin-top: 10px; justify-content: center; }
-.pin-dot { width: 12px; height: 12px; border: 1.5px solid white; border-radius: 50%; transition: 0.2s; }
-.pin-dot.filled { background: white; }
-.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: auto; margin-bottom: 40px; }
-.keypad button { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; backdrop-filter: blur(5px); }
+.hidden {
+    transform: scale(1.2);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+}
 
-/* HOME SCREEN & APPS */
-.status-bar { padding: 15px 25px; display: flex; justify-content: space-between; font-weight: bold; color: white; }
-.app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; }
-.app-item { display: flex; flex-direction: column; align-items: center; color: white; font-size: 12px; cursor: pointer; }
-.app-icon { width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+/* --- LOCK SCREEN --- */
+.lock-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: space-between;
+    padding: 60px 20px 40px 20px;
+    align-items: center;
+    color: white;
+}
+
+.lock-header { text-align: center; }
+#lock-clock { font-size: 75px; font-weight: 300; line-height: 1; }
+#lock-date { font-size: 20px; font-weight: 500; margin-top: 10px; }
+.lock-msg { margin-top: 15px; font-size: 16px; opacity: 0.8; letter-spacing: 0.5px; }
+
+.pin-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-bottom: 20px;}
+.pin-display { display: flex; gap: 15px; }
+.pin-dot { width: 13px; height: 13px; border: 1.5px solid white; border-radius: 50%; transition: background 0.2s; }
+.pin-dot.filled { background-color: white; }
+.instruction { font-size: 14px; opacity: 0.8; }
+
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 280px; }
+.keypad button {
+    width: 75px; height: 75px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2); border: none;
+    color: white; font-size: 28px; backdrop-filter: blur(10px);
+    cursor: pointer; transition: background 0.2s;
+}
+.keypad button:active { background: rgba(255, 255, 255, 0.5); }
+.delete-btn { font-size: 20px !important; background: transparent !important; }
+
+/* --- HOME SCREEN --- */
+.status-bar {
+    padding: 14px 24px; display: flex; justify-content: space-between;
+    font-size: 14px; font-weight: 600; color: white;
+}
+
+.app-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;
+    padding: 20px; margin-top: 10px;
+}
+
+.app-item {
+    display: flex; flex-direction: column; align-items: center; cursor: pointer;
+}
+
+.app-icon {
+    width: 62px; height: 62px; border-radius: 14px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 32px; margin-bottom: 8px; color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.app-item p { color: white; font-size: 12px; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+
 /* Colors */
-.green { background: #4CD964; color: white; }
-.blue { background: #007AFF; color: white; }
-.pink { background: #FF2D55; color: white; }
-.map-icon { background: #FF9500; color: white; }
-.white { background: white; color: black; }
-.grey { background: #8E8E93; color: white; }
+.green { background: #34C759; }
+.blue { background: #007AFF; }
+.pink { background: #FF2D55; }
+.map-icon { background: #FF9500; }
+.white { background: #F2F2F7; color: black; }
+.grey { background: #8E8E93; }
 
-/* DOCK */
-.dock-container { margin-top: auto; padding: 20px; display: flex; justify-content: center; }
-.dock { background: rgba(255,255,255,0.3); backdrop-filter: blur(15px); padding: 15px; border-radius: 30px; display: flex; gap: 20px; }
+/* Dock */
+.dock-container { margin-top: auto; padding: 25px; display: flex; justify-content: center; }
+.dock {
+    background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(20px);
+    border-radius: 35px; padding: 18px; display: flex; gap: 22px;
+}
 
-/* --- APP WINDOW STYLES --- */
+/* --- APP WINDOWS --- */
 .app-window {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: white; z-index: 20; display: flex; flex-direction: column;
-    transition: transform 0.3s ease-in-out;
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
 }
-.app-window.hidden { transform: translateY(100%); opacity: 1; }
+.app-window.hidden { transform: translateY(100%); opacity: 1; pointer-events: none;}
 
 .app-header {
     height: 50px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 15px; border-bottom: 1px solid #eee; background: #f8f8f8; font-weight: bold;
+    padding: 0 15px; border-bottom: 1px solid #eee; background: #f9f9f9;
+    font-weight: 600; font-size: 17px;
 }
-.app-header button { border: none; background: none; font-size: 16px; color: #007AFF; cursor: pointer; }
+.back-btn { border: none; background: none; font-size: 17px; color: #007AFF; cursor: pointer; }
 
 /* CHAT APP */
-.chat-body { flex: 1; padding: 15px; background: #fff; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-.msg { padding: 10px 15px; border-radius: 20px; max-width: 75%; font-size: 14px; }
+.chat-body { flex: 1; padding: 15px; background: #fff; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+.msg { padding: 10px 16px; border-radius: 20px; max-width: 75%; font-size: 15px; line-height: 1.4; }
 .sent { align-self: flex-end; background: #007AFF; color: white; border-bottom-right-radius: 5px; }
-.received { align-self: flex-start; background: #e5e5ea; color: black; border-bottom-left-radius: 5px; }
-.chat-input-bar { padding: 10px; border-top: 1px solid #eee; display: flex; gap: 10px; }
-.chat-input-bar input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+.received { align-self: flex-start; background: #E9E9EB; color: black; border-bottom-left-radius: 5px; }
+.chat-input-bar {
+    padding: 10px 15px; border-top: 1px solid #ddd; background: #f9f9f9;
+    display: flex; gap: 10px; padding-bottom: 25px; /* Safe area */
+}
+.chat-input-bar input {
+    flex: 1; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc;
+    outline: none; font-size: 16px;
+}
+.send-btn { background: #007AFF; color: white; border: none; border-radius: 50%; width: 35px; height: 35px; font-weight: bold; }
 
 /* PHOTOS APP */
-.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding-top: 2px; }
-.gallery-grid img { width: 100%; height: 100px; object-fit: cover; }
+.gallery-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    padding-top: 2px; overflow-y: auto;
+}
+.gallery-grid img { width: 100%; height: 130px; object-fit: cover; }
 
 /* MAP APP */
-.map-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f0f4f8; padding: 20px; text-align: center; }
-.dotted-line { margin: 20px 0; font-weight: bold; color: #aaa; letter-spacing: 2px; }
+.map-content {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; background: #F2F2F7; padding: 20px; text-align: center;
+}
+.distance-line { margin: 30px 0; font-weight: bold; color: #aaa; display: flex; align-items: center; gap: 10px; }
+.heart-anim { animation: beat 1s infinite alternate; }
+@keyframes beat { from { transform: scale(1); } to { transform: scale(1.3); } }
+.quote { margin-top: 50px; font-style: italic; color: #666; font-size: 14px; max-width: 250px; }
 
 /* MUSIC APP */
-.music-player { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
-.album-art { width: 200px; height: 200px; background: #eee; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-.controls { display: flex; gap: 30px; align-items: center; margin-top: 20px; }
-.controls button { background: none; border: none; font-size: 30px; cursor: pointer; }
+.music-player {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 20px; padding: 30px;
+}
+.album-art {
+    width: 250px; height: 250px; background: #eee; border-radius: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 80px; color: #ccc; box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+}
+.progress-container { width: 100%; display: flex; align-items: center; gap: 10px; font-size: 12px; color: #888; }
+.progress-bar { flex: 1; height: 4px; background: #ddd; border-radius: 2px; }
+.fill { width: 40%; height: 100%; background: #000; border-radius: 2px; }
+.controls { display: flex; gap: 40px; align-items: center; margin-top: 20px; }
+.controls button { background: none; border: none; font-size: 35px; cursor: pointer; color: black; }
+.play-btn { font-size: 50px !important; }
+
+/* PHONE APP */
+.phone-app-content {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: flex-end; padding-bottom: 50px; background: white;
+}
+#phone-display {
+    font-size: 35px; height: 80px; text-align: center;
+    display: flex; align-items: center; justify-content: center;
+    color: #333; font-weight: 500;
+}
+.dialer-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    max-width: 300px; margin: 0 auto; margin-bottom: 25px;
+}
+.dialer-grid button {
+    width: 75px; height: 75px; border-radius: 50%;
+    background: #F2F2F2; border: none; font-size: 28px; color: black;
+}
+.call-action {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; height: 80px;
+}
+.call-btn {
+    width: 75px; height: 75px; border-radius: 50%;
+    background: #34C759; color: white; font-size: 32px;
+    border: none; display: flex; justify-content: center; align-items: center;
+}
+.delete-num {
+    position: absolute; right: 50px; background: none; border: none;
+    font-size: 24px; color: #ccc; cursor: pointer;
+}
