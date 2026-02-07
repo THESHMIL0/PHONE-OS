@@ -9,65 +9,79 @@
 <body>
 
     <div id="lock-screen" class="screen-layer">
-        <div class="lock-header">
-            <div id="lock-clock">12:00</div>
-            <div id="lock-date">Tuesday, February 14</div>
-        </div>
+        <div class="lock-content">
+            <div class="lock-clock-container">
+                <div id="lock-clock">12:00</div>
+                <div id="lock-date">Tuesday, February 14</div>
+            </div>
 
-        <div class="pin-display">
-            <div class="pin-dot" id="dot-1"></div>
-            <div class="pin-dot" id="dot-2"></div>
-            <div class="pin-dot" id="dot-3"></div>
-            <div class="pin-dot" id="dot-4"></div>
-        </div>
-        <p class="instruction">Enter Passcode</p>
+            <div class="pin-wrapper">
+                <p class="instruction">Enter Passcode</p>
+                <div class="pin-display">
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                    <div class="pin-dot"></div>
+                </div>
+            </div>
 
-        <div class="keypad">
-            <button onclick="addPin(1)">1</button>
-            <button onclick="addPin(2)">2</button>
-            <button onclick="addPin(3)">3</button>
-            <button onclick="addPin(4)">4</button>
-            <button onclick="addPin(5)">5</button>
-            <button onclick="addPin(6)">6</button>
-            <button onclick="addPin(7)">7</button>
-            <button onclick="addPin(8)">8</button>
-            <button onclick="addPin(9)">9</button>
-            <div class="empty"></div> <button onclick="addPin(0)">0</button>
-            <button class="delete-btn" onclick="clearPin()">⌫</button>
+            <div class="keypad">
+                <button onclick="addPin(1)">1</button>
+                <button onclick="addPin(2)">2</button>
+                <button onclick="addPin(3)">3</button>
+                <button onclick="addPin(4)">4</button>
+                <button onclick="addPin(5)">5</button>
+                <button onclick="addPin(6)">6</button>
+                <button onclick="addPin(7)">7</button>
+                <button onclick="addPin(8)">8</button>
+                <button onclick="addPin(9)">9</button>
+                <div class="empty"></div>
+                <button onclick="addPin(0)">0</button>
+                <button class="delete-btn" onclick="clearPin()">✖</button>
+            </div>
         </div>
     </div>
 
     <div id="home-screen" class="screen-layer hidden">
+        
         <div class="status-bar">
             <span id="small-clock">12:00</span>
             <span>5G 100%</span>
         </div>
 
         <div class="app-grid">
-            <div class="app-icon" onclick="openApp('Messages')">
-                <div class="icon-box green">💬</div>
+            <div class="app-item" onclick="openApp('Messages')">
+                <div class="app-icon green">💬</div>
                 <p>Chat</p>
             </div>
-            <div class="app-icon" onclick="openApp('Photos')">
-                <div class="icon-box blue">📸</div>
+            <div class="app-item" onclick="openApp('Photos')">
+                <div class="app-icon blue">📸</div>
                 <p>Photos</p>
             </div>
-            <div class="app-icon" onclick="openApp('Music')">
-                <div class="icon-box pink">🎵</div>
+            <div class="app-item" onclick="openApp('Music')">
+                <div class="app-icon pink">🎵</div>
                 <p>Music</p>
             </div>
-            <div class="app-icon" onclick="openApp('Settings')">
-                <div class="icon-box grey">⚙️</div>
+            <div class="app-item" onclick="openApp('Settings')">
+                <div class="app-icon grey">⚙️</div>
                 <p>Settings</p>
             </div>
         </div>
-        
-        <div class="dock">
-            <div class="app-icon">
-                <div class="icon-box green">📞</div>
-            </div>
-            <div class="app-icon">
-                <div class="icon-box white">🌐</div>
+
+        <div class="dock-container">
+            <div class="dock">
+                <div class="app-item">
+                    <div class="app-icon green">📞</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-icon white">🌐</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-icon grey">📧</div>
+                </div>
+                <div class="app-item">
+                    <div class="app-icon blue">👤</div>
+                </div>
             </div>
         </div>
     </div>
