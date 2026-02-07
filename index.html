@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Snake v12 Flawless</title>
+    <title>Snake v12.1 Fixed</title>
     <style>
         /* --- VARIABLES --- */
         :root { --bg: #050505; --case: #111; --primary: #0f0; --accent: #00eaff; --text: #fff; }
@@ -129,12 +129,10 @@
         .modal-box { background: #151515; border: 2px solid #333; padding: 30px; border-radius: 25px; text-align: center; width: 85%; transform: scale(0.8); transition: 0.3s; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
         .modal-visible .modal-box { transform: scale(1); }
         
-        .shaking { animation: shake 0.4s; }
-        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } 100% { transform: translate(0, 0); } }
-        
-        /* FX */
         .float-text { position: absolute; font-weight: bold; pointer-events: none; animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 5px #000; font-size: 24px; z-index: 50; }
         @keyframes floatUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-50px); } }
+        .shaking { animation: shake 0.4s; }
+        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } 100% { transform: translate(0, 0); } }
     </style>
 </head>
 <body class="skin-neon">
@@ -144,7 +142,7 @@
 
             <div id="screen-menu" class="app-screen screen-active">
                 <div class="top-bar">
-                    <div style="font-size:12px; color:#555; font-weight:bold;">SNAKE v12</div>
+                    <div style="font-size:12px; color:#555; font-weight:bold;">SNAKE v12.1</div>
                     <div class="currency">🪙 <span id="menu-bits">0</span></div>
                 </div>
 
@@ -237,7 +235,7 @@
         </div>
     </div>
     <script>
-        // --- CONFIG & RESOLUTION ---
+        // --- CONFIG ---
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
@@ -271,8 +269,8 @@
             'ruby': { name: 'Ruby', price: 800, color: '#ff0055', shape: 'diamond' }
         };
 
-        // Game State
-        let snake=[], food={}, dir={x:0,y:-1}; // Ensure Initial Dir is UP
+        // --- STATE ---
+        let snake=[], food={}, dir={x:0,y:-1};
         let inputQueue = []; 
         let score=0, speed=130, isRunning=false, slowMo=false, canAbility=true;
         let combo=1, comboTimer=0, maxComboTime=3000;
@@ -289,6 +287,7 @@
             document.getElementById('opt-vibro').innerText = user.settings.vibro ? "ON" : "OFF";
         }
 
+        // --- NAV ---
         function nav(screen) {
             document.querySelectorAll('.app-screen').forEach(s => {
                 s.classList.remove('screen-active'); s.classList.add('screen-hidden');
@@ -316,31 +315,36 @@
             sfx('tap');
         }
 
-        // --- GAME ENGINE ---
+        // --- GAME START (FIXED) ---
         function startGame() {
+            // 1. SWITCH SCREEN FIRST
+            nav('game'); 
             hideModal();
-            // Start Position: Middle of Screen
+
+            // 2. RESET STATE
             snake = [{x:8, y:10}, {x:8, y:11}, {x:8, y:12}]; 
-            dir = {x:0, y:-1}; // Moving UP
-            inputQueue = [];   // Clear Queue
+            dir = {x:0, y:-1}; // Ensure moving UP
+            inputQueue = [];   // Clear inputs
             score = 0; combo = 1; comboTimer = 0;
             speed = mode === 'challenge' ? 100 : 130;
             isRunning = true; slowMo = false; canAbility = true;
             
+            // 3. UI RESET
             document.getElementById('game-score').innerText = 0;
             document.getElementById('high-score-display').innerText = "BEST: " + user.highScore;
             document.getElementById('combo-bar').style.width = "0%";
             document.getElementById('ability-btn').classList.remove('cooldown');
             
+            // 4. SPAWN & AUDIO
             spawnFood();
             if(audioCtx.state === 'suspended') audioCtx.resume();
             
+            // 5. START LOOP
             if(animationId) cancelAnimationFrame(animationId);
             lastTime = performance.now();
             animationId = requestAnimationFrame(loop);
             sfx('start');
         }
-
         function loop(timestamp) {
             if(!isRunning) return;
             
@@ -361,14 +365,12 @@
         }
 
         function update() {
-            // Process Input Queue (FIXED)
+            // INPUT QUEUE LOGIC (FIXED)
             if (inputQueue.length > 0) {
                 let next = inputQueue.shift();
-                // Prevent 180 turn AND same direction spam
                 if (!(next.x === -dir.x && next.y === -dir.y) && !(next.x === dir.x && next.y === dir.y)) {
                     dir = next;
                 } else if (inputQueue.length > 0) {
-                    // If first was invalid, try next immediate
                     let next2 = inputQueue.shift();
                     if (!(next2.x === -dir.x && next2.y === -dir.y)) dir = next2;
                 }
@@ -406,6 +408,7 @@
 
             let sc = getComputedStyle(document.body).getPropertyValue('--primary');
             let shape = SKINS[user.skin].shape;
+            
             snake.forEach((p,i)=>{
                 ctx.fillStyle = sc;
                 if(i===0) { ctx.fillStyle="#fff"; ctx.shadowBlur=15; ctx.shadowColor=sc; }
@@ -425,8 +428,7 @@
         }
 
         function gameOver() {
-            isRunning = false;
-            sfx('die');
+            isRunning = false; sfx('die');
             if(user.settings.vibro) navigator.vibrate(300);
             if(score > user.highScore) { user.highScore = score; localStorage.setItem('snake_high', score); }
             user.bits += score; saveData();
@@ -444,7 +446,6 @@
             document.getElementById('ability-btn').classList.add('cooldown');
             document.querySelector('.screen-active').style.filter = "saturation(0)";
             sfx('buy');
-            spawnFloatText(snake[0].x, snake[0].y, "SLOW MO!", "#0ff");
             setTimeout(()=>{
                 slowMo = false;
                 document.querySelector('.screen-active').style.filter = "none";
@@ -455,12 +456,11 @@
         function spawnFloatText(x, y, txt, col) {
             let el = document.createElement('div');
             el.className = 'float-text'; el.innerText = txt; el.style.color = col;
-            el.style.left = (x*20+10)+'px'; el.style.top = (y*20+80)+'px';
+            el.style.left = (x*20+10)+'px'; el.style.top = (y*20+10)+'px';
             document.getElementById('fx-layer').appendChild(el);
             setTimeout(()=>el.remove(), 800);
         }
 
-        // --- INPUT ---
         function input(d, e) {
             if(e) e.preventDefault();
             let move = {x:0, y:0};
@@ -468,8 +468,6 @@
             if(d==='DOWN') move = {x:0, y:1};
             if(d==='LEFT') move = {x:-1, y:0};
             if(d==='RIGHT') move = {x:1, y:0};
-            
-            // Queue Limitation to prevent flooding
             if (inputQueue.length < 2) inputQueue.push(move);
         }
         
@@ -479,7 +477,6 @@
             let dX = e.changedTouches[0].clientX - tX, dY = e.changedTouches[0].clientY - tY;
             if(Math.abs(dX)>Math.abs(dY)) input(dX>0?'RIGHT':'LEFT'); else input(dY>0?'DOWN':'UP');
         }, {passive:false});
-        
         document.addEventListener('keydown', e => {
             if(e.key==='ArrowUp'||e.key==='w') input('UP');
             if(e.key==='ArrowDown'||e.key==='s') input('DOWN');
@@ -502,7 +499,7 @@
             }
         }
         function buySkin(id) {
-            if (user.skins.includes(id)) { user.skin = id; saveData(); loadShop(); updateUI(); sfx('tap'); }
+            if (user.skins.includes(id)) { user.skin = id; saveData(); loadShop(); sfx('tap'); }
             else if (user.bits >= SKINS[id].price) {
                 if(confirm("Buy "+SKINS[id].name+"?")) {
                     user.bits -= SKINS[id].price; user.skins.push(id); user.skin = id;
@@ -531,13 +528,12 @@
             }
         }
 
-        // --- SFX ---
         function sfx(type) {
             if(!user.settings.sound) return;
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
             const t = audioCtx.currentTime;
-            if (type === 'eat') { osc.frequency.setValueAtTime(500+(combo*50), t); osc.frequency.linearRampToValueAtTime(800, t+0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.1); }
+            if (type === 'eat') { osc.frequency.setValueAtTime(600+(combo*50), t); osc.frequency.linearRampToValueAtTime(1000, t+0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.1); }
             else if (type === 'die') { osc.type='sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.linearRampToValueAtTime(50, t+0.5); gain.gain.setValueAtTime(0.2, t); gain.gain.linearRampToValueAtTime(0, t+0.5); }
             else if (type === 'tap') { osc.frequency.setValueAtTime(800, t); gain.gain.setValueAtTime(0.05, t); gain.gain.linearRampToValueAtTime(0, t+0.05); }
             else if (type === 'swish') { osc.type='triangle'; osc.frequency.setValueAtTime(300, t); osc.frequency.linearRampToValueAtTime(100, t+0.2); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.2); }
