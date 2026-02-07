@@ -3,254 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamer Phone OS</title>
+    <title>Gamer OS Pro</title>
     <style>
         /* --- CORE STYLES --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
+        body { margin: 0; background: #000; color: white; font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; }
 
-        /* --- GAMER FRAME --- */
+        /* --- CONSOLE FRAME --- */
         .phone-container {
             width: 100%; height: 100%; display: flex; flex-direction: column;
-            background: radial-gradient(circle at center, #1a1a1a, #000);
-            border: 4px solid #333;
-            animation: rgb-border 5s linear infinite; /* RGB LIGHTING */
+            background: linear-gradient(to bottom, #111, #222);
+            border: 2px solid #0ff; /* Cyan glow */
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
         }
-        @keyframes rgb-border {
-            0% { border-color: red; } 33% { border-color: lime; } 66% { border-color: blue; } 100% { border-color: red; }
+        
+        /* --- STATUS BAR --- */
+        .status-bar { 
+            padding: 10px; display: flex; justify-content: space-between; 
+            background: #111; border-bottom: 1px solid #333; color: #0ff; font-weight: bold;
         }
 
-        /* --- UI ELEMENTS --- */
-        .status-bar { padding: 10px 20px; display: flex; justify-content: space-between; font-weight: bold; color: #0f0; text-shadow: 0 0 5px #0f0; z-index: 100; }
+        /* --- SCREENS --- */
         .screen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 40px; left: 0; width: 100%; height: calc(100% - 40px);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 1; z-index: 10; background: #000; transition: opacity 0.2s; pointer-events: all;
+            background: #111; opacity: 1; z-index: 10; transition: 0.2s;
         }
         .screen.hidden { opacity: 0; pointer-events: none; z-index: 0; }
         
         .back-btn {
-            position: absolute; top: 50px; left: 20px; z-index: 50;
-            background: #333; color: white; border: 1px solid #555;
-            padding: 8px 16px; border-radius: 5px; font-weight: bold;
+            position: absolute; top: 10px; left: 10px; z-index: 50;
+            background: #333; color: #0ff; border: 1px solid #0ff;
+            padding: 5px 15px; font-family: inherit; cursor: pointer;
         }
 
-        /* --- LOCK & HOME --- */
-        input[type="password"] {
-            background: #111; border: 2px solid #0f0; color: #0f0;
-            padding: 15px; border-radius: 5px; font-size: 24px; text-align: center; width: 150px; outline: none;
+        /* --- HOME GRID --- */
+        .app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; padding: 20px; width: 100%; }
+        .game-card {
+            background: #222; border: 1px solid #444; height: 120px; border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 40px; color: #fff; cursor: pointer; transition: 0.1s;
         }
-        .app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 20px; }
-        .app-icon {
-            width: 100px; height: 100px; background: #111; border: 2px solid #333;
-            border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 40px; cursor: pointer; transition: 0.1s;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
-        }
-        .app-icon span { font-size: 14px; margin-top: 5px; color: #aaa; }
-        .app-icon:active { transform: scale(0.95); border-color: #0f0; }
+        .game-card:active { transform: scale(0.95); border-color: #0ff; background: #333; }
+        .game-card span { font-size: 16px; margin-top: 10px; color: #aaa; }
 
-        /* --- GAME CENTER --- */
-        .score-card { width: 80%; background: #111; border: 1px solid #333; padding: 15px; margin: 10px 0; border-radius: 10px; display: flex; justify-content: space-between; }
-        
-        /* --- MEMORY GAME --- */
-        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
-        .mem-card { 
-            width: 60px; height: 60px; background: #333; border-radius: 5px; 
-            display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer;
+        /* --- SPACE SHOOTER --- */
+        #space-canvas { background: #000; border: 1px solid #333; margin-top: 20px; }
+        .controls-row { display: flex; gap: 20px; margin-top: 10px; width: 100%; justify-content: center; }
+        .ctrl-btn {
+            width: 70px; height: 70px; background: rgba(255,255,255,0.1); border: 1px solid #555;
+            border-radius: 50%; color: white; font-size: 24px; display: flex; align-items: center; justify-content: center;
         }
-        .mem-card.flipped { background: #fff; transform: rotateY(180deg); }
+        .ctrl-btn:active { background: #0ff; color: black; }
+        .fire-btn { border-color: #f00; color: #f00; }
+        .fire-btn:active { background: #f00; color: white; }
+
+        /* --- SETTINGS --- */
+        .setting-row {
+            width: 90%; padding: 15px; margin: 10px; background: #222; border: 1px solid #333;
+            display: flex; justify-content: space-between; align-items: center; color: #fff;
+        }
+        .toggle { width: 40px; height: 20px; background: #444; border-radius: 10px; position: relative; }
+        .toggle.on { background: #0ff; }
+        .toggle-knob { width: 18px; height: 18px; background: white; border-radius: 50%; position: absolute; left: 1px; top: 1px; transition: 0.2s; }
+        .toggle.on .toggle-knob { left: 21px; }
     </style>
 </head>
 <body>
     <div class="phone-container">
         <div class="status-bar">
-            <span id="clock">12:00</span>
-            <span>🚀 GAMING MODE</span>
+            <span>GAMER OS v7</span>
+            <span>🔋 100%</span>
         </div>
 
         <div id="lock-screen" class="screen">
-            <h1 style="color: #0f0; text-shadow: 0 0 20px #0f0;">GAME OS</h1>
-            <input type="password" id="pass-input" maxlength="4" placeholder="____">
-            <button onclick="checkPass()" style="margin-top:20px; padding: 10px 30px; background: #0f0; border:none; font-weight:bold;">START</button>
+            <h1 style="color: #0ff; text-shadow: 0 0 10px #0ff; font-size: 40px;">SYSTEM LOCKED</h1>
+            <input type="password" id="pass-input" maxlength="4" placeholder="____" style="background:transparent; border:none; border-bottom:2px solid #0ff; color:white; font-size:30px; text-align:center; width:100px; margin:20px;">
+            <button onclick="unlock()" style="background:#0ff; border:none; padding:10px 30px; font-weight:bold;">LOGIN</button>
         </div>
 
         <div id="home-screen" class="screen hidden">
-            <h2 style="margin-bottom: 20px; color: #fff;">LIBRARY</h2>
             <div class="app-grid">
-                <div class="app-icon" onclick="openApp('snake')">🐍<span>Snake</span></div>
-                <div class="app-icon" onclick="openApp('ttt')">❌<span>TicTacToe</span></div>
-                <div class="app-icon" onclick="openApp('clicker')">💰<span>Tycoon</span></div>
-                <div class="app-icon" onclick="openApp('memory')">🧠<span>Memory</span></div>
-                <div class="app-icon" onclick="openApp('scores')" style="border-color: #0f0;">🏆<span>Scores</span></div>
+                <div class="game-card" onclick="openApp('space')">🚀<span>Galaxy War</span></div>
+                <div class="game-card" onclick="openApp('snake')">🐍<span>Neon Snake</span></div>
+                <div class="game-card" onclick="openApp('clicker')">💰<span>Tycoon</span></div>
+                <div class="game-card" onclick="openApp('settings')">⚙️<span>System</span></div>
             </div>
         </div>
 
-        <div id="scores-screen" class="screen hidden">
+        <div id="space-screen" class="screen hidden">
             <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h2 style="color: #0f0;">HIGH SCORES</h2>
-            <div class="score-card"><span>🐍 Snake Best:</span> <span id="hiscore-snake">0</span></div>
-            <div class="score-card"><span>💰 Net Worth:</span> <span id="hiscore-money">$0</span></div>
-            <div class="score-card"><span>🧠 Memory Best:</span> <span id="hiscore-memory">--</span></div>
-        </div>
-
-        <div id="memory-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h3>Find Pairs!</h3>
-            <div class="memory-grid" id="mem-grid"></div>
-        </div>
-
-        <div id="clicker-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h1 id="money-display" style="color: gold;">$0</h1>
-            <div onclick="clickCoin()" style="font-size:80px; cursor:pointer; padding:20px; border:2px solid gold; border-radius:50%;">🪙</div>
-        </div>
-        
-        <div id="snake-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <canvas id="snake-canvas" width="300" height="300" style="background:#000; border:2px solid #333;"></canvas>
-            <div style="display:grid; grid-template-columns:60px 60px 60px; gap:5px; margin-top:10px;">
-                <div></div><button onclick="setDir('UP')" style="padding:15px;">⬆️</button><div></div>
-                <button onclick="setDir('LEFT')" style="padding:15px;">⬅️</button><button onclick="setDir('DOWN')" style="padding:15px;">⬇️</button><button onclick="setDir('RIGHT')" style="padding:15px;">➡️</button>
+            <div style="width:100%; display:flex; justify-content:space-between; padding:0 20px; margin-top:10px;">
+                <span id="space-score">SCORE: 0</span>
+                <span id="space-lives">❤️❤️❤️</span>
+            </div>
+            <canvas id="space-canvas" width="300" height="400"></canvas>
+            <div class="controls-row">
+                <button class="ctrl-btn" ontouchstart="moveShip(-1)" ontouchend="stopShip()">⬅️</button>
+                <button class="ctrl-btn fire-btn" onclick="fireLaser()">🔥</button>
+                <button class="ctrl-btn" ontouchstart="moveShip(1)" ontouchend="stopShip()">➡️</button>
             </div>
         </div>
 
-        <div id="ttt-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h2 id="ttt-status">VS CPU</h2>
-            <div id="ttt-board" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:20px;"></div>
-            <button onclick="startTTT()" style="margin-top:20px; padding:10px 20px; background:#0f0; border:none;">RESET</button>
+        <div id="settings-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">BACK</button>
+            <h2>SYSTEM CONFIG</h2>
+            <div class="setting-row" onclick="toggleSetting('sound')">
+                <span>🔊 Sound FX</span>
+                <div id="btn-sound" class="toggle on"><div class="toggle-knob"></div></div>
+            </div>
+            <div class="setting-row" onclick="toggleSetting('vibro')">
+                <span>📳 Haptic Feedback</span>
+                <div id="btn-vibro" class="toggle on"><div class="toggle-knob"></div></div>
+            </div>
         </div>
+
+        <div id="snake-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h1>SNAKE (Loading...)</h1></div>
+        <div id="clicker-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h1>TYCOON (Loading...)</h1></div>
     </div>
     <script>
         const PASS = "1234";
-        let money = parseInt(localStorage.getItem('money')) || 0;
-        let snakeHigh = parseInt(localStorage.getItem('snakeHigh')) || 0;
+        let settings = { sound: true, vibro: true };
+        let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // --- SYSTEM ---
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }, 1000);
-        function checkPass() { if(document.getElementById('pass-input').value === PASS) switchScreen('home-screen'); }
-        function switchScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+        // --- SYSTEM FUNCTIONS ---
+        function unlock() {
+            if(document.getElementById('pass-input').value === PASS) {
+                playSound('startup');
+                document.getElementById('lock-screen').classList.add('hidden');
+                document.getElementById('home-screen').classList.remove('hidden');
+            }
         }
-        function goHome() { 
-            clearInterval(gameInterval); 
-            updateScores();
-            switchScreen('home-screen'); 
+        function goHome() {
+            stopGameLoop();
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById('home-screen').classList.remove('hidden');
         }
         function openApp(app) {
-            switchScreen(app + '-screen');
-            if(app === 'snake') startSnake();
-            if(app === 'ttt') startTTT();
-            if(app === 'clicker') updateMoney();
-            if(app === 'memory') startMemory();
-            if(app === 'scores') updateScores();
-        }
-        function updateScores() {
-            document.getElementById('hiscore-money').innerText = "$" + money;
-            document.getElementById('hiscore-snake').innerText = snakeHigh;
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(app + '-screen').classList.remove('hidden');
+            if(app === 'space') startSpaceGame();
         }
 
-        // --- MEMORY GAME ---
-        const emojis = ['🍎','🍎','👻','👻','⚡','⚡','💎','💎','🚀','🚀','🎮','🎮'];
-        let cards = [], flipped = [], matched = [];
-        function startMemory() {
-            const grid = document.getElementById('mem-grid'); grid.innerHTML = "";
-            flipped = []; matched = [];
-            cards = emojis.sort(() => 0.5 - Math.random()); // Shuffle
-            cards.forEach((emoji, i) => {
-                const card = document.createElement('div');
-                card.className = 'mem-card';
-                card.dataset.idx = i;
-                card.onclick = () => flipCard(card, emoji);
-                grid.appendChild(card);
-            });
-        }
-        function flipCard(card, emoji) {
-            if(flipped.length < 2 && !flipped.includes(card) && !matched.includes(card)) {
-                card.innerText = emoji; card.style.background = '#fff';
-                flipped.push(card);
-                if(flipped.length === 2) setTimeout(checkMatch, 800);
-            }
-        }
-        function checkMatch() {
-            const [c1, c2] = flipped;
-            if(c1.innerText === c2.innerText) {
-                matched.push(c1, c2);
-                c1.style.background = '#0f0'; c2.style.background = '#0f0';
-                if(matched.length === cards.length) alert("YOU WON! 🧠");
-            } else {
-                c1.innerText = ""; c1.style.background = "#333";
-                c2.innerText = ""; c2.style.background = "#333";
-            }
-            flipped = [];
-        }
-
-        // --- CLICKER ---
-        function clickCoin() { money++; localStorage.setItem('money', money); updateMoney(); }
-        function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
-
-        // --- SNAKE ---
-        let ctx, snake, food, dir, gameInterval, score;
-        const box = 20;
-        function startSnake() {
-            const c = document.getElementById('snake-canvas'); ctx = c.getContext('2d');
-            snake = [{x:10*box, y:10*box}]; dir = "RIGHT"; score=0; spawnFood();
-            if(gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(drawSnake, 150);
-        }
-        function spawnFood() { food = {x: Math.floor(Math.random()*15)*box, y: Math.floor(Math.random()*15)*box}; }
-        function setDir(d) {
-            if(d === 'LEFT' && dir !== 'RIGHT') dir = 'LEFT';
-            if(d === 'UP' && dir !== 'DOWN') dir = 'UP';
-            if(d === 'RIGHT' && dir !== 'LEFT') dir = 'RIGHT';
-            if(d === 'DOWN' && dir !== 'UP') dir = 'DOWN';
-        }
-        function drawSnake() {
-            let hX = snake[0].x, hY = snake[0].y;
-            if(dir === 'LEFT') hX -= box; if(dir === 'UP') hY -= box;
-            if(dir === 'RIGHT') hX += box; if(dir === 'DOWN') hY += box;
+        // --- AUDIO ENGINE (No files needed!) ---
+        function playSound(type) {
+            if(!settings.sound) return;
+            if(audioCtx.state === 'suspended') audioCtx.resume();
             
-            if(hX < 0 || hX >= 300 || hY < 0 || hY >= 300 || snake.some(s => s.x === hX && s.y === hY)) {
-                clearInterval(gameInterval); 
-                if(score > snakeHigh) { snakeHigh = score; localStorage.setItem('snakeHigh', snakeHigh); }
-                alert("Game Over! Score: " + score); return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if(type === 'shoot') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } 
+            else if(type === 'explosion') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+                if(settings.vibro) navigator.vibrate(200); // Vibrate phone
             }
-            if(hX === food.x && hY === food.y) { score++; spawnFood(); } else snake.pop();
-            snake.unshift({x:hX, y:hY});
-            ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
-            ctx.fillStyle = "red"; ctx.fillRect(food.x, food.y, box, box);
-            ctx.fillStyle = "#0f0"; snake.forEach(s => ctx.fillRect(s.x, s.y, box, box));
+            else if(type === 'startup') {
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(880, audioCtx.currentTime + 0.3);
+                gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+            }
         }
 
-        // --- TIC TAC TOE ---
-        let board = ["","","","","","","","",""], turn = "X", active = true;
-        function startTTT() {
-            board.fill(""); active = true; turn = "X";
-            const el = document.getElementById('ttt-board'); el.innerHTML = "";
-            for(let i=0; i<9; i++) {
-                const cell = document.createElement('div');
-                cell.style.cssText = "width:80px;height:80px;background:#222;display:flex;align-items:center;justify-content:center;font-size:40px;border:1px solid #444;";
-                cell.onclick = () => moveTTT(i, cell);
-                el.appendChild(cell);
+        function toggleSetting(key) {
+            settings[key] = !settings[key];
+            document.getElementById('btn-' + key).classList.toggle('on');
+        }
+        // --- SPACE SHOOTER LOGIC ---
+        let ctx, ship, bullets, enemies, particles, gameLoop, score, frames;
+        
+        function startSpaceGame() {
+            const canvas = document.getElementById('space-canvas');
+            ctx = canvas.getContext('2d');
+            ship = { x: 135, y: 360, w: 30, h: 30, dx: 0 };
+            bullets = []; enemies = []; particles = [];
+            score = 0; frames = 0;
+            
+            if(gameLoop) cancelAnimationFrame(gameLoop);
+            updateSpace();
+        }
+
+        function moveShip(dir) { ship.dx = dir * 5; }
+        function stopShip() { ship.dx = 0; }
+        
+        function fireLaser() {
+            bullets.push({ x: ship.x + 12, y: ship.y, w: 6, h: 15, dy: -7 });
+            playSound('shoot');
+        }
+
+        function updateSpace() {
+            // Clear Screen
+            ctx.fillStyle = "#000"; ctx.fillRect(0, 0, 300, 400);
+            
+            // Move Ship
+            ship.x += ship.dx;
+            if(ship.x < 0) ship.x = 0;
+            if(ship.x > 270) ship.x = 270;
+
+            // Draw Ship
+            ctx.fillStyle = "#0ff";
+            ctx.beginPath(); ctx.moveTo(ship.x + 15, ship.y); ctx.lineTo(ship.x, ship.y + 30); ctx.lineTo(ship.x + 30, ship.y + 30); ctx.fill();
+
+            // Bullets
+            ctx.fillStyle = "#f00";
+            bullets.forEach((b, i) => {
+                b.y += b.dy;
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+                if(b.y < 0) bullets.splice(i, 1);
+            });
+
+            // Enemies
+            if(frames % 60 === 0) {
+                enemies.push({ x: Math.random() * 270, y: -30, w: 30, h: 30, dy: 2 });
+            }
+            
+            enemies.forEach((e, i) => {
+                e.y += e.dy;
+                ctx.fillStyle = "#f0f"; // Pink Enemies
+                ctx.fillRect(e.x, e.y, e.w, e.h);
+
+                // Collision: Bullet hits Enemy
+                bullets.forEach((b, bi) => {
+                    if(b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
+                        enemies.splice(i, 1);
+                        bullets.splice(bi, 1);
+                        score += 100;
+                        document.getElementById('space-score').innerText = "SCORE: " + score;
+                        playSound('explosion');
+                        createExplosion(e.x, e.y);
+                    }
+                });
+
+                // Collision: Enemy hits Ship
+                if(e.x < ship.x + ship.w && e.x + e.w > ship.x && e.y < ship.y + ship.h && e.y + e.h > ship.y) {
+                    alert("GAME OVER! Score: " + score);
+                    startSpaceGame();
+                }
+            });
+
+            // Particles (Explosions)
+            particles.forEach((p, i) => {
+                p.x += p.dx; p.y += p.dy; p.life--;
+                ctx.fillStyle = `rgba(255, 165, 0, ${p.life/20})`;
+                ctx.fillRect(p.x, p.y, 4, 4);
+                if(p.life <= 0) particles.splice(i, 1);
+            });
+
+            frames++;
+            gameLoop = requestAnimationFrame(updateSpace);
+        }
+
+        function createExplosion(x, y) {
+            for(let i=0; i<10; i++) {
+                particles.push({
+                    x: x + 15, y: y + 15,
+                    dx: (Math.random() - 0.5) * 5,
+                    dy: (Math.random() - 0.5) * 5,
+                    life: 20
+                });
             }
         }
-        function moveTTT(i, cell) {
-            if(board[i] || !active) return;
-            board[i] = turn; cell.innerText = turn;
-            if(turn === "X") cell.style.color = "#0f0"; else cell.style.color = "#f00";
-            if(checkWin()) { active = false; document.getElementById('ttt-status').innerText = turn + " WINS!"; return; }
-            turn = turn === "X" ? "O" : "X";
-            if(turn === "O") setTimeout(() => {
-                 let empty = board.map((v, idx) => v === "" ? idx : null).filter(v => v !== null);
-                 if(empty.length > 0) document.getElementById('ttt-board').children[empty[Math.floor(Math.random()*empty.length)]].click();
-            }, 500);
-        }
-        function checkWin() {
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(c => board[c[0]] && board[c[0]] === board[c[1]] && board[c[0]] === board[c[2]]);
-        }
+
+        function stopGameLoop() { cancelAnimationFrame(gameLoop); }
     </script>
 </body>
 </html>
