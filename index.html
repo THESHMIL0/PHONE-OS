@@ -50,8 +50,8 @@
                 <div class="app-icon" style="background: #fad0c4;"><i class="fas fa-music"></i></div>
                 <p>Our Vibe</p>
             </div>
-            <div class="app-item" onclick="openApp('map')">
-                <div class="app-icon" style="background: #84fab0;"><i class="fas fa-map-marked-alt"></i></div>
+            <div class="app-item" onclick="openApp('us')">
+                <div class="app-icon" style="background: #84fab0;"><i class="fas fa-plane"></i></div>
                 <p>Us</p>
             </div>
             <div class="app-item" onclick="openApp('wallet')">
@@ -69,14 +69,14 @@
 
         <div id="app-chat" class="app-window hidden">
             <div class="app-header">
-                <button onclick="closeApp('chat')">❮ Back</button><span>My Baby ❤️</span><div></div>
+                <button onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div>
             </div>
             <div class="chat-body">
                 <div class="date-divider">Today</div>
                 <div class="msg received">Hey Theshuuuu! 😽</div>
                 <div class="msg sent">Hey Ayuuu! Miss you! ❤️</div>
-                <div class="msg received">Send me a selfie right now! 📸</div>
-                <div class="msg sent">Okay wait... check Gallery! 😸</div>
+                <div class="msg received">I miss you more! Come to Goa! 🌴</div>
+                <div class="msg sent">Soon baby! Check the "Us" app! 😸</div>
             </div>
             <div class="chat-input-bar">
                 <input type="text" placeholder="Send love...">
@@ -89,9 +89,9 @@
                 <button onclick="closeApp('photos')">❮ Back</button><span>Our Album</span><div></div>
             </div>
             <div class="polaroid-grid">
-                <div class="polaroid"><img src="https://via.placeholder.com/150" alt="Us"><caption>First Date ❤️</caption></div>
-                <div class="polaroid"><img src="https://via.placeholder.com/150" alt="Us"><caption>So Cute 😸</caption></div>
-                <div class="polaroid"><img src="https://via.placeholder.com/150" alt="Us"><caption>Goa Trip 🌴</caption></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150/FFB6C1/000000?text=Us+1" alt="Us"><caption>First Date ❤️</caption></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150/87CEEB/000000?text=Cute" alt="Us"><caption>So Cute 😸</caption></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150/FF69B4/000000?text=Goa" alt="Us"><caption>Goa Trip 🌴</caption></div>
             </div>
         </div>
 
@@ -129,15 +129,43 @@
             </div>
         </div>
         
-        <div id="app-map" class="app-window hidden">
-            <div class="app-header"><button onclick="closeApp('map')">❮ Back</button><span>Distance</span><div></div></div>
+        <div id="app-us" class="app-window hidden" style="background: #e0f7fa;">
+            <div class="app-header">
+                <button onclick="closeApp('us')">❮ Back</button><span>Us ❤️</span><div></div>
+            </div>
+            
             <div class="map-content">
-                <div class="map-line">
-                    <div class="loc">🏡 Goa<br><span>Ayuuu</span></div>
-                    <div class="line">----------❤️----------</div>
-                    <div class="loc">🌴 Kerala<br><span>Theshu</span></div>
+                <div class="distance-container">
+                    <div class="location">
+                        <div class="avatar" style="background: #ff9a9e;">👸</div>
+                        <span>Goa</span>
+                    </div>
+                    
+                    <div class="flight-path">
+                        <div class="plane-icon">✈️</div>
+                        <div class="path-line"></div>
+                        <p class="km-text">500 km</p>
+                    </div>
+
+                    <div class="location">
+                        <div class="avatar" style="background: #a18cd1;">🤴</div>
+                        <span>Kerala</span>
+                    </div>
                 </div>
-                <p>"Distance is nothing when you mean everything."</p>
+
+                <div class="love-timer-box">
+                    <p>In Love For:</p>
+                    <h2 id="love-counter">000 Days</h2>
+                    <div class="timer-details">
+                        <span id="love-hours">00</span> Hr
+                        <span id="love-minutes">00</span> Min
+                        <span id="love-seconds">00</span> Sec
+                    </div>
+                </div>
+
+                <div class="quote-box">
+                    "Distance is just a test to see how far love can travel." 
+                </div>
             </div>
         </div>
 
