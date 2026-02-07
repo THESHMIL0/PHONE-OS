@@ -9,6 +9,8 @@
 </head>
 <body>
 
+    <div id="notification-area"></div>
+
     <div id="lock-screen" class="screen-layer">
         <div class="lock-content">
             <div class="lock-header">
@@ -62,11 +64,19 @@
             </div>
             <div class="app-item" onclick="openApp('music')">
                 <div class="app-icon pink"><i class="fas fa-music"></i></div>
-                <p>Our Song</p>
+                <p>Music</p>
             </div>
             <div class="app-item" onclick="openApp('map')">
                 <div class="app-icon map-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <p>Distance</p>
+            </div>
+            <div class="app-item" onclick="openApp('wallet')">
+                <div class="app-icon orange"><i class="fas fa-wallet"></i></div>
+                <p>Coupons</p>
+            </div>
+            <div class="app-item" onclick="openApp('camera')">
+                <div class="app-icon grey-dark"><i class="fas fa-camera"></i></div>
+                <p>Camera</p>
             </div>
         </div>
 
@@ -93,9 +103,8 @@
             <div class="chat-body">
                 <div class="msg received">Hey Theshuuuu! 😽</div>
                 <div class="msg sent">Hey Ayuuu! Miss you so much!</div>
-                <div class="msg received">I miss you more! Even though I'm in Goa and you're in Kerala...</div>
-                <div class="msg received">You are always in my heart! ❤️</div>
-                <div class="msg sent">Check the Gallery app, I added our pics! 📸</div>
+                <div class="msg received">I miss you more! Even though I'm in Goa...</div>
+                <div class="msg sent">Distance is just a number! Check your coupons! 🎟️</div>
             </div>
             <div class="chat-input-bar">
                 <input type="text" placeholder="iMessage">
@@ -110,12 +119,9 @@
                 <div style="width: 30px;"></div>
             </div>
             <div class="gallery-grid">
-                <img src="https://via.placeholder.com/150/FFB6C1/000000?text=Us+1" alt="Photo 1">
-                <img src="https://via.placeholder.com/150/87CEEB/000000?text=Us+2" alt="Photo 2">
-                <img src="https://via.placeholder.com/150/FF69B4/000000?text=Date" alt="Photo 3">
-                <img src="https://via.placeholder.com/150/90EE90/000000?text=Cute" alt="Photo 4">
-                <img src="https://via.placeholder.com/150/FFD700/000000?text=Love" alt="Photo 5">
-                <img src="https://via.placeholder.com/150/FFA07A/000000?text=Trip" alt="Photo 6">
+                <img src="https://via.placeholder.com/150/FFB6C1/000000?text=Us+1" alt="Photo">
+                <img src="https://via.placeholder.com/150/87CEEB/000000?text=Us+2" alt="Photo">
+                <img src="https://via.placeholder.com/150/FF69B4/000000?text=Date" alt="Photo">
             </div>
         </div>
 
@@ -152,18 +158,9 @@
                 <div style="width: 30px;"></div>
             </div>
             <div class="music-player">
-                <div class="album-art">
-                    <i class="fas fa-music"></i>
-                </div>
+                <div class="album-art"><i class="fas fa-music"></i></div>
                 <h2 id="song-title">Perfect</h2>
                 <p id="artist-name">Ed Sheeran</p>
-                
-                <div class="progress-container">
-                    <span>1:20</span>
-                    <div class="progress-bar"><div class="fill"></div></div>
-                    <span>4:23</span>
-                </div>
-
                 <div class="controls">
                     <button>⏮</button>
                     <button class="play-btn">▶</button>
@@ -178,7 +175,6 @@
                 <span>Keypad</span>
                 <div style="width: 30px;"></div>
             </div>
-            
             <div class="phone-app-content">
                 <div id="phone-display"></div>
                 <div class="dialer-grid">
@@ -196,12 +192,68 @@
                     <button onclick="addToPhone('#')">#</button>
                 </div>
                 <div class="call-action">
-                    <button class="call-btn" onclick="makeCall()">
-                        <i class="fas fa-phone"></i>
-                    </button>
+                    <button class="call-btn" onclick="makeCall()"><i class="fas fa-phone"></i></button>
                     <button class="delete-num" onclick="clearPhone()">⌫</button>
                 </div>
             </div>
+        </div>
+
+        <div id="app-wallet" class="app-window hidden" style="background-color: #f2f2f7;">
+            <div class="app-header">
+                <button class="back-btn" onclick="closeApp('wallet')">❮ Wallet</button>
+                <span>Love Coupons</span>
+                <div style="width: 30px;"></div>
+            </div>
+            <div class="wallet-content">
+                <div class="coupon-card" onclick="useCoupon(this)">
+                    <div class="coupon-header" style="background: #FF9500;">
+                        <span>UNLIMITED</span>
+                    </div>
+                    <div class="coupon-body">
+                        <h3>Virtual Hugs</h3>
+                        <p>Redeemable anytime you feel sad.</p>
+                    </div>
+                </div>
+
+                <div class="coupon-card" onclick="useCoupon(this)">
+                    <div class="coupon-header" style="background: #FF2D55;">
+                        <span>DATE NIGHT</span>
+                    </div>
+                    <div class="coupon-body">
+                        <h3>Movie Night</h3>
+                        <p>Valid for one online movie date.</p>
+                    </div>
+                </div>
+
+                <div class="coupon-card" onclick="useCoupon(this)">
+                    <div class="coupon-header" style="background: #34C759;">
+                        <span>FORGIVENESS</span>
+                    </div>
+                    <div class="coupon-body">
+                        <h3>Sorry Pass</h3>
+                        <p>End one fight instantly.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="app-camera" class="app-window hidden" style="background-color: black;">
+            <div class="camera-ui">
+                <div class="cam-top">
+                    <i class="fas fa-bolt"></i>
+                    <span>HDR</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="cam-viewport">
+                    <p style="color: white; opacity: 0.5;">Camera Loading...</p>
+                </div>
+                <div class="cam-controls">
+                    <div class="cam-preview"></div>
+                    <div class="shutter-btn" onclick="takePhoto()"></div>
+                    <div class="cam-switch"><i class="fas fa-sync-alt"></i></div>
+                </div>
+            </div>
+             <button class="close-cam" onclick="closeApp('camera')">✖</button>
         </div>
 
     </div>
