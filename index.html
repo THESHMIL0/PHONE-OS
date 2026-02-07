@@ -3,234 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Phone OS v4</title>
+    <title>Gamer Phone OS</title>
     <style>
         /* --- CORE STYLES --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body {
-            margin: 0; padding: 0; background: #000; color: white;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            overflow: hidden; user-select: none; height: 100vh;
-        }
+        body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* --- THEMES & PHONE --- */
+        /* --- GAMER FRAME --- */
         .phone-container {
             width: 100%; height: 100%; display: flex; flex-direction: column;
-            background: linear-gradient(135deg, #1c1c1e, #000); position: relative;
+            background: radial-gradient(circle at center, #1a1a1a, #000);
+            border: 4px solid #333;
+            animation: rgb-border 5s linear infinite; /* RGB LIGHTING */
         }
-        .status-bar { padding: 10px 20px; display: flex; justify-content: space-between; font-weight: 600; z-index: 100; }
-        
-        /* --- SCREENS --- */
+        @keyframes rgb-border {
+            0% { border-color: red; } 33% { border-color: lime; } 66% { border-color: blue; } 100% { border-color: red; }
+        }
+
+        /* --- UI ELEMENTS --- */
+        .status-bar { padding: 10px 20px; display: flex; justify-content: space-between; font-weight: bold; color: #0f0; text-shadow: 0 0 5px #0f0; z-index: 100; }
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 1; z-index: 10; background: inherit; transition: opacity 0.3s; pointer-events: all;
+            opacity: 1; z-index: 10; background: #000; transition: opacity 0.2s; pointer-events: all;
         }
         .screen.hidden { opacity: 0; pointer-events: none; z-index: 0; }
         
         .back-btn {
-            position: absolute; top: 50px; left: 20px; z-index: 20;
-            background: rgba(255,255,255,0.2); color: white; border: none;
-            padding: 8px 16px; border-radius: 20px;
+            position: absolute; top: 50px; left: 20px; z-index: 50;
+            background: #333; color: white; border: 1px solid #555;
+            padding: 8px 16px; border-radius: 5px; font-weight: bold;
         }
 
         /* --- LOCK & HOME --- */
         input[type="password"] {
-            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            padding: 15px; border-radius: 12px; color: white; font-size: 24px;
-            text-align: center; width: 150px; margin: 20px 0; outline: none;
+            background: #111; border: 2px solid #0f0; color: #0f0;
+            padding: 15px; border-radius: 5px; font-size: 24px; text-align: center; width: 150px; outline: none;
         }
-        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; }
+        .app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 20px; }
         .app-icon {
-            width: 70px; height: 70px; background: rgba(255,255,255,0.1);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            font-size: 32px; cursor: pointer; transition: 0.1s;
+            width: 100px; height: 100px; background: #111; border: 2px solid #333;
+            border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 40px; cursor: pointer; transition: 0.1s;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
         }
-        .app-icon:active { transform: scale(0.9); }
+        .app-icon span { font-size: 14px; margin-top: 5px; color: #aaa; }
+        .app-icon:active { transform: scale(0.95); border-color: #0f0; }
 
-        /* --- MESSAGES APP --- */
-        .msg-list { width: 90%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-        .msg-bubble {
-            max-width: 80%; padding: 10px 15px; border-radius: 20px; font-size: 16px;
+        /* --- GAME CENTER --- */
+        .score-card { width: 80%; background: #111; border: 1px solid #333; padding: 15px; margin: 10px 0; border-radius: 10px; display: flex; justify-content: space-between; }
+        
+        /* --- MEMORY GAME --- */
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 20px; }
+        .mem-card { 
+            width: 60px; height: 60px; background: #333; border-radius: 5px; 
+            display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer;
         }
-        .msg-left { align-self: flex-start; background: #333; color: white; border-bottom-left-radius: 5px; }
-        .msg-right { align-self: flex-end; background: #0A84FF; color: white; border-bottom-right-radius: 5px; }
-
-        /* --- GAME STYLES --- */
-        .coin-btn { width: 120px; height: 120px; background: #FFD700; border-radius: 50%; font-size: 50px; display: flex; align-items: center; justify-content: center; margin: 20px; border: 5px solid orange; }
-        .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 40px; }
-        .controls { display: grid; grid-template-columns: 60px 60px 60px; gap: 10px; margin-top: 10px; }
-        .d-pad { width: 60px; height: 60px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #555; }
-        .up { grid-column: 2; grid-row: 1; } .left { grid-column: 1; grid-row: 2; }
-        .down { grid-column: 2; grid-row: 2; } .right { grid-column: 3; grid-row: 2; }
+        .mem-card.flipped { background: #fff; transform: rotateY(180deg); }
     </style>
 </head>
 <body>
     <div class="phone-container">
         <div class="status-bar">
             <span id="clock">12:00</span>
-            <span>5G 🔋</span>
+            <span>🚀 GAMING MODE</span>
         </div>
 
         <div id="lock-screen" class="screen">
-            <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
-            <input type="password" id="pass-input" maxlength="4" placeholder="••••">
-            <button onclick="checkPass()" style="padding: 10px 30px; background: #0A84FF; border:none; color:white; border-radius: 20px;">Unlock</button>
+            <h1 style="color: #0f0; text-shadow: 0 0 20px #0f0;">GAME OS</h1>
+            <input type="password" id="pass-input" maxlength="4" placeholder="____">
+            <button onclick="checkPass()" style="margin-top:20px; padding: 10px 30px; background: #0f0; border:none; font-weight:bold;">START</button>
         </div>
 
         <div id="home-screen" class="screen hidden">
+            <h2 style="margin-bottom: 20px; color: #fff;">LIBRARY</h2>
             <div class="app-grid">
-                <div class="app-icon" onclick="openApp('snake')">🐍</div>
-                <div class="app-icon" onclick="openApp('ttt')">❌</div>
-                <div class="app-icon" onclick="openApp('clicker')">💰</div>
-                <div class="app-icon" onclick="openApp('msg')">💬</div>
-                <div class="app-icon" onclick="alert('Settings coming soon!')">⚙️</div>
+                <div class="app-icon" onclick="openApp('snake')">🐍<span>Snake</span></div>
+                <div class="app-icon" onclick="openApp('ttt')">❌<span>TicTacToe</span></div>
+                <div class="app-icon" onclick="openApp('clicker')">💰<span>Tycoon</span></div>
+                <div class="app-icon" onclick="openApp('memory')">🧠<span>Memory</span></div>
+                <div class="app-icon" onclick="openApp('scores')" style="border-color: #0f0;">🏆<span>Scores</span></div>
             </div>
         </div>
 
-        <div id="msg-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">← Back</button>
-            <div style="margin-top: 80px; width: 100%; padding: 0 20px;">
-                <h2 style="margin: 0;">Ayuuu ❤️</h2>
-                <small style="opacity: 0.7;">Online</small>
-            </div>
-            <div class="msg-list" id="chat-box">
-                </div>
-            <div style="display: flex; gap: 10px; padding: 10px; width: 100%;">
-                <input type="text" id="msg-input" placeholder="Message..." style="flex:1; padding: 10px; border-radius: 20px; border: none; background: #333; color: white;">
-                <button onclick="sendMsg()" style="background: #0A84FF; color: white; border: none; padding: 10px 15px; border-radius: 50%;">➤</button>
-            </div>
+        <div id="scores-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h2 style="color: #0f0;">HIGH SCORES</h2>
+            <div class="score-card"><span>🐍 Snake Best:</span> <span id="hiscore-snake">0</span></div>
+            <div class="score-card"><span>💰 Net Worth:</span> <span id="hiscore-money">$0</span></div>
+            <div class="score-card"><span>🧠 Memory Best:</span> <span id="hiscore-memory">--</span></div>
+        </div>
+
+        <div id="memory-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h3>Find Pairs!</h3>
+            <div class="memory-grid" id="mem-grid"></div>
         </div>
 
         <div id="clicker-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">← Back</button>
-            <h1 id="money-display" style="color: #FFD700;">$0</h1>
-            <div class="coin-btn" onclick="clickCoin()">🪙</div>
-            <button onclick="buyAuto()" style="background: #333; color: white; padding: 10px 20px; border-radius: 10px;">🤖 Buy Auto-Miner ($50)</button>
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h1 id="money-display" style="color: gold;">$0</h1>
+            <div onclick="clickCoin()" style="font-size:80px; cursor:pointer; padding:20px; border:2px solid gold; border-radius:50%;">🪙</div>
+        </div>
+        
+        <div id="snake-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <canvas id="snake-canvas" width="300" height="300" style="background:#000; border:2px solid #333;"></canvas>
+            <div style="display:grid; grid-template-columns:60px 60px 60px; gap:5px; margin-top:10px;">
+                <div></div><button onclick="setDir('UP')" style="padding:15px;">⬆️</button><div></div>
+                <button onclick="setDir('LEFT')" style="padding:15px;">⬅️</button><button onclick="setDir('DOWN')" style="padding:15px;">⬇️</button><button onclick="setDir('RIGHT')" style="padding:15px;">➡️</button>
+            </div>
         </div>
 
         <div id="ttt-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">← Back</button>
-            <h2 id="ttt-status" style="margin-top: 80px;">Your Turn</h2>
-            <div class="ttt-board" id="ttt-board"></div>
-            <button onclick="startTTT()" style="margin-top: 20px; padding: 10px; background: #32D74B; border:none; border-radius: 10px; color:white;">Restart</button>
-        </div>
-
-        <div id="snake-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">← Back</button>
-            <canvas id="snake-canvas" width="300" height="300" style="background:#000; border:2px solid #333; margin-top: 60px;"></canvas>
-            <div class="controls">
-                <div class="d-pad up" onclick="setDir('UP')">⬆️</div>
-                <div class="d-pad left" onclick="setDir('LEFT')">⬅️</div>
-                <div class="d-pad down" onclick="setDir('DOWN')">⬇️</div>
-                <div class="d-pad right" onclick="setDir('RIGHT')">➡️</div>
-            </div>
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h2 id="ttt-status">VS CPU</h2>
+            <div id="ttt-board" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:20px;"></div>
+            <button onclick="startTTT()" style="margin-top:20px; padding:10px 20px; background:#0f0; border:none;">RESET</button>
         </div>
     </div>
     <script>
         const PASS = "1234";
-        let money = 0, autoMiners = 0;
+        let money = parseInt(localStorage.getItem('money')) || 0;
+        let snakeHigh = parseInt(localStorage.getItem('snakeHigh')) || 0;
 
         // --- SYSTEM ---
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            if(autoMiners > 0) { money += autoMiners; updateMoney(); }
-        }, 1000);
-
-        function checkPass() {
-            if(document.getElementById('pass-input').value === PASS) switchScreen('home-screen');
-            else alert("Wrong Pass!");
-        }
-
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }, 1000);
+        function checkPass() { if(document.getElementById('pass-input').value === PASS) switchScreen('home-screen'); }
         function switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
-
-        function goHome() {
-            clearInterval(gameInterval); // Stop Snake
-            switchScreen('home-screen');
+        function goHome() { 
+            clearInterval(gameInterval); 
+            updateScores();
+            switchScreen('home-screen'); 
         }
-
         function openApp(app) {
             switchScreen(app + '-screen');
             if(app === 'snake') startSnake();
             if(app === 'ttt') startTTT();
-            if(app === 'msg') loadMessages();
+            if(app === 'clicker') updateMoney();
+            if(app === 'memory') startMemory();
+            if(app === 'scores') updateScores();
+        }
+        function updateScores() {
+            document.getElementById('hiscore-money').innerText = "$" + money;
+            document.getElementById('hiscore-snake').innerText = snakeHigh;
         }
 
-        // --- MESSAGES APP ---
-        function loadMessages() {
-            const chat = document.getElementById('chat-box');
-            if(chat.innerHTML.trim() === "") {
-                addMsg("left", "Hey Theshu! ❤️");
-                setTimeout(() => addMsg("left", "Did you finish the website?"), 1000);
-            }
-        }
-        function addMsg(side, text) {
-            const div = document.createElement('div');
-            div.className = `msg-bubble msg-${side}`;
-            div.innerText = text;
-            document.getElementById('chat-box').appendChild(div);
-        }
-        function sendMsg() {
-            const input = document.getElementById('msg-input');
-            if(input.value) {
-                addMsg("right", input.value);
-                input.value = "";
-                setTimeout(() => addMsg("left", "Aww that's cute 😸"), 2000);
-            }
-        }
-
-        // --- CLICKER APP ---
-        function clickCoin() { money++; updateMoney(); }
-        function buyAuto() {
-            if(money >= 50) { money -= 50; autoMiners++; updateMoney(); }
-        }
-        function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
-        // --- TIC TAC TOE ---
-        let board = ["","","","","","","","",""], turn = "X", active = true;
-        function startTTT() {
-            board.fill(""); active = true; turn = "X";
-            document.getElementById('ttt-status').innerText = "Your Turn (X)";
-            renderTTT();
-        }
-        function renderTTT() {
-            const el = document.getElementById('ttt-board'); el.innerHTML = "";
-            board.forEach((val, i) => {
-                const cell = document.createElement('div');
-                cell.className = 'ttt-cell'; cell.innerText = val;
-                cell.onclick = () => moveTTT(i);
-                if(val === "X") cell.style.color = "#32D74B";
-                if(val === "O") cell.style.color = "#FF3B30";
-                el.appendChild(cell);
+        // --- MEMORY GAME ---
+        const emojis = ['🍎','🍎','👻','👻','⚡','⚡','💎','💎','🚀','🚀','🎮','🎮'];
+        let cards = [], flipped = [], matched = [];
+        function startMemory() {
+            const grid = document.getElementById('mem-grid'); grid.innerHTML = "";
+            flipped = []; matched = [];
+            cards = emojis.sort(() => 0.5 - Math.random()); // Shuffle
+            cards.forEach((emoji, i) => {
+                const card = document.createElement('div');
+                card.className = 'mem-card';
+                card.dataset.idx = i;
+                card.onclick = () => flipCard(card, emoji);
+                grid.appendChild(card);
             });
         }
-        function moveTTT(i) {
-            if(board[i] || !active) return;
-            board[i] = turn; renderTTT();
-            if(checkWin()) { active = false; document.getElementById('ttt-status').innerText = turn + " Wins!"; return; }
-            if(!board.includes("")) { active = false; document.getElementById('ttt-status').innerText = "Draw!"; return; }
-            turn = turn === "X" ? "O" : "X";
-            if(turn === "O") setTimeout(cpuMove, 500);
+        function flipCard(card, emoji) {
+            if(flipped.length < 2 && !flipped.includes(card) && !matched.includes(card)) {
+                card.innerText = emoji; card.style.background = '#fff';
+                flipped.push(card);
+                if(flipped.length === 2) setTimeout(checkMatch, 800);
+            }
         }
-        function cpuMove() {
-            let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-            moveTTT(empty[Math.floor(Math.random() * empty.length)]);
-        }
-        function checkWin() {
-            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return wins.some(c => board[c[0]] && board[c[0]] === board[c[1]] && board[c[0]] === board[c[2]]);
+        function checkMatch() {
+            const [c1, c2] = flipped;
+            if(c1.innerText === c2.innerText) {
+                matched.push(c1, c2);
+                c1.style.background = '#0f0'; c2.style.background = '#0f0';
+                if(matched.length === cards.length) alert("YOU WON! 🧠");
+            } else {
+                c1.innerText = ""; c1.style.background = "#333";
+                c2.innerText = ""; c2.style.background = "#333";
+            }
+            flipped = [];
         }
 
-        // --- SNAKE GAME ---
-        let ctx, snake, food, dir, gameInterval;
+        // --- CLICKER ---
+        function clickCoin() { money++; localStorage.setItem('money', money); updateMoney(); }
+        function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
+
+        // --- SNAKE ---
+        let ctx, snake, food, dir, gameInterval, score;
         const box = 20;
         function startSnake() {
-            const c = document.getElementById('snake-canvas');
-            ctx = c.getContext('2d');
-            snake = [{x:10*box, y:10*box}]; dir = "RIGHT"; spawnFood();
+            const c = document.getElementById('snake-canvas'); ctx = c.getContext('2d');
+            snake = [{x:10*box, y:10*box}]; dir = "RIGHT"; score=0; spawnFood();
             if(gameInterval) clearInterval(gameInterval);
             gameInterval = setInterval(drawSnake, 150);
         }
@@ -247,15 +213,43 @@
             if(dir === 'RIGHT') hX += box; if(dir === 'DOWN') hY += box;
             
             if(hX < 0 || hX >= 300 || hY < 0 || hY >= 300 || snake.some(s => s.x === hX && s.y === hY)) {
-                clearInterval(gameInterval); alert("Game Over!"); return;
+                clearInterval(gameInterval); 
+                if(score > snakeHigh) { snakeHigh = score; localStorage.setItem('snakeHigh', snakeHigh); }
+                alert("Game Over! Score: " + score); return;
             }
-            if(hX === food.x && hY === food.y) spawnFood(); else snake.pop();
-            
+            if(hX === food.x && hY === food.y) { score++; spawnFood(); } else snake.pop();
             snake.unshift({x:hX, y:hY});
             ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
             ctx.fillStyle = "red"; ctx.fillRect(food.x, food.y, box, box);
-            ctx.fillStyle = "#0F0";
-            snake.forEach(s => ctx.fillRect(s.x, s.y, box, box));
+            ctx.fillStyle = "#0f0"; snake.forEach(s => ctx.fillRect(s.x, s.y, box, box));
+        }
+
+        // --- TIC TAC TOE ---
+        let board = ["","","","","","","","",""], turn = "X", active = true;
+        function startTTT() {
+            board.fill(""); active = true; turn = "X";
+            const el = document.getElementById('ttt-board'); el.innerHTML = "";
+            for(let i=0; i<9; i++) {
+                const cell = document.createElement('div');
+                cell.style.cssText = "width:80px;height:80px;background:#222;display:flex;align-items:center;justify-content:center;font-size:40px;border:1px solid #444;";
+                cell.onclick = () => moveTTT(i, cell);
+                el.appendChild(cell);
+            }
+        }
+        function moveTTT(i, cell) {
+            if(board[i] || !active) return;
+            board[i] = turn; cell.innerText = turn;
+            if(turn === "X") cell.style.color = "#0f0"; else cell.style.color = "#f00";
+            if(checkWin()) { active = false; document.getElementById('ttt-status').innerText = turn + " WINS!"; return; }
+            turn = turn === "X" ? "O" : "X";
+            if(turn === "O") setTimeout(() => {
+                 let empty = board.map((v, idx) => v === "" ? idx : null).filter(v => v !== null);
+                 if(empty.length > 0) document.getElementById('ttt-board').children[empty[Math.floor(Math.random()*empty.length)]].click();
+            }, 500);
+        }
+        function checkWin() {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(c => board[c[0]] && board[c[0]] === board[c[1]] && board[c[0]] === board[c[2]]);
         }
     </script>
 </body>
