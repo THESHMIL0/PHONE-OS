@@ -3,304 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Snake v13 Legends</title>
+    <title>Snake v14 Stable</title>
     <style>
         /* --- VARIABLES --- */
-        :root { --bg: #050505; --case: #111; --primary: #0f0; --accent: #00eaff; --text: #fff; }
+        :root { --bg: #050505; --panel: #111; --primary: #0f0; --accent: #00eaff; --text: #fff; }
         
-        /* SKINS */
-        body.skin-neon { --primary: #0f0; --glow: 0 0 15px rgba(0,255,0,0.6); }
-        body.skin-gold { --primary: #ffd700; --glow: 0 0 15px rgba(255,215,0,0.6); }
-        body.skin-ice { --primary: #00eaff; --glow: 0 0 15px rgba(0,234,255,0.6); }
-        body.skin-matrix { --primary: #0f0; --bg: #001100; --text: #0f0; --glow: 0 0 5px #0f0; font-family: 'Courier New', monospace; }
-        body.skin-magma { --primary: #ff4500; --glow: 0 0 20px #ff4500; --bg: #1a0500; }
+        body.skin-neon { --primary: #0f0; --glow: 0 0 15px rgba(0,255,0,0.5); }
+        body.skin-gold { --primary: #ffd700; --glow: 0 0 15px rgba(255,215,0,0.5); }
+        body.skin-ice { --primary: #00eaff; --glow: 0 0 15px rgba(0,234,255,0.5); }
+        body.skin-void { --primary: #ff0000; --glow: 0 0 15px rgba(255,0,0,0.5); }
 
         /* --- CORE --- */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; font-family: 'Segoe UI', sans-serif; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; font-family: 'Courier New', monospace; }
         body { 
             margin: 0; background: #000; color: var(--text); 
-            overflow: hidden; height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center;
+            overflow: hidden; height: 100vh; width: 100vw; 
+            display: flex; align-items: center; justify-content: center;
         }
 
         /* --- DEVICE FRAME --- */
-        .device-bezel {
-            width: 100%; height: 100%; max-width: 500px; background: var(--case);
+        .device-frame {
+            width: 100%; height: 100%; max-width: 500px; background: var(--bg);
             display: flex; flex-direction: column; position: relative; overflow: hidden;
-            box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
         }
-        @media (min-width: 500px) {
-            .device-bezel { height: 95vh; border-radius: 40px; border: 6px solid #333; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
-        }
-
-        .screen-container {
-            flex-grow: 1; position: relative; overflow: hidden; background: var(--bg);
-            transition: background 0.3s; z-index: 10;
-        }
-        .scanlines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 8;
-            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 4px;
-        }
-
+        
         /* --- SCREENS --- */
-        .app-screen {
+        .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; 
-            background: var(--bg); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
-            z-index: 10; padding: 20px; opacity: 0; pointer-events: none;
+            background: var(--bg); transition: transform 0.3s ease;
+            z-index: 10; padding: 10px;
         }
-        .screen-active { transform: scale(1); opacity: 1; pointer-events: all; z-index: 20; }
-        .screen-hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
+        .screen-active { transform: translateX(0); z-index: 20; }
+        .screen-hidden { transform: translateX(100%); z-index: 0; }
+        .screen-left { transform: translateX(-100%); z-index: 0; }
 
         /* --- UI ELEMENTS --- */
-        .top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 40px; margin-bottom: 20px; z-index: 50; }
-        .currency { background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 15px; color: #ffd700; font-weight: bold; border: 1px solid rgba(255,255,255,0.1); font-size: 14px; }
+        .top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 50px; padding: 0 10px; }
+        .currency { background: #222; padding: 5px 15px; border-radius: 20px; color: #ffd700; font-weight: bold; border: 1px solid #444; }
         
-        .logo-main { 
-            font-size: 70px; font-weight: 900; font-style: italic; color: var(--primary); 
-            text-shadow: 0 0 20px var(--primary); letter-spacing: -4px; margin-top: 30px; margin-bottom: 5px;
-            animation: floatLogo 3s ease-in-out infinite;
+        .logo { font-size: 50px; font-weight: 900; color: var(--primary); text-shadow: var(--glow); margin-top: 40px; margin-bottom: 10px; }
+        
+        .btn-main {
+            width: 80%; padding: 15px; border-radius: 30px; border: 2px solid var(--primary);
+            background: rgba(0,255,0,0.1); color: #fff; font-size: 20px; font-weight: bold;
+            box-shadow: var(--glow); cursor: pointer; text-transform: uppercase; margin: 10px 0;
         }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .btn-main:active { background: var(--primary); color: #000; }
 
-        .btn-play {
-            width: 80%; padding: 20px; border-radius: 25px; border: none;
-            background: var(--primary); color: #000; font-size: 24px; font-weight: 900;
-            box-shadow: var(--glow); cursor: pointer; text-transform: uppercase; margin: 15px 0;
-            transition: transform 0.1s; letter-spacing: 1px; position: relative; overflow: hidden;
+        .nav-grid { display: flex; gap: 20px; margin-top: 20px; }
+        .nav-icon { width: 60px; height: 60px; background: #222; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #444; }
+        .nav-icon:active { border-color: var(--primary); color: var(--primary); }
+
+        /* --- GAME CANVAS --- */
+        #game-area {
+            position: relative; width: 100%; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .btn-play:active { transform: scale(0.96); }
-
-        .icon-grid { display: flex; gap: 20px; margin-bottom: 40px; }
-        .icon-btn { 
-            width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 18px; 
-            display: flex; align-items: center; justify-content: center; font-size: 26px; 
-            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.1s; 
-        }
-        .icon-btn:active { border-color: var(--primary); color: var(--primary); transform: scale(0.9); }
-
-        /* --- MODE SELECTOR --- */
-        .mode-scroll { display: flex; gap: 10px; overflow-x: auto; width: 100%; padding: 10px 0; justify-content: center; }
-        .mode-card {
-            min-width: 100px; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 12px;
-            text-align: center; cursor: pointer; transition: 0.2s;
-        }
-        .mode-card.active { border-color: var(--primary); background: rgba(0,255,0,0.1); box-shadow: 0 0 10px var(--primary); }
-        .mode-title { font-weight: bold; font-size: 12px; color: #fff; }
-        .mode-desc { font-size: 10px; color: #888; margin-top: 2px; }
-
-        /* --- LEVELS & ACHIEVEMENTS --- */
-        .level-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
-        .level-node {
-            aspect-ratio: 1; background: #111; border: 2px solid #333; border-radius: 15px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
-        }
-        .level-node.unlocked { border-color: var(--primary); color: #fff; cursor: pointer; }
-        .level-node.locked { opacity: 0.5; }
-        .level-stars { display: flex; gap: 2px; font-size: 10px; color: #444; margin-top: 2px; }
-        .level-node.completed .level-stars { color: #ffd700; }
-
-        /* --- GAME UI --- */
-        .game-hud { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: 5px; }
-        .score-big { font-size: 36px; font-weight: 900; color: var(--primary); text-shadow: var(--glow); line-height: 1; }
-        .timer-bar { width: 100%; height: 6px; background: #222; border-radius: 3px; margin-bottom: 10px; overflow: hidden; display: none; }
-        .timer-fill { height: 100%; width: 100%; background: #f05; transition: width 1s linear; }
-
         canvas { 
-            background: rgba(0,0,0,0.3); border: 2px solid #333; border-radius: 12px; 
-            box-shadow: 0 0 40px rgba(0,0,0,0.5); width: 100%; max-width: 400px; aspect-ratio: 1;
+            background: #111; border: 2px solid #333; border-radius: 10px; 
+            width: 95vw; height: 95vw; max-width: 350px; max-height: 350px; /* RESPONSIVE FIX */
             image-rendering: pixelated; 
         }
 
-        /* --- CONTROLS --- */
-        .controls-area { 
-            background: #111; padding: 20px; border-top: 4px solid #222; 
-            display: flex; justify-content: center; position: relative; z-index: 100;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .controls-hidden { transform: translateY(150%); pointer-events: none; }
+        /* --- HUD --- */
+        .hud { width: 100%; max-width: 350px; display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .score-display { font-size: 30px; font-weight: bold; color: var(--primary); text-shadow: var(--glow); }
+        .combo-bar { width: 100%; max-width: 350px; height: 5px; background: #222; margin-bottom: 10px; border-radius: 5px; overflow: hidden; }
+        .combo-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #ff0, #f00); transition: width 0.1s; }
 
-        .d-pad { 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; 
-            background: #0a0a0a; padding: 12px; border-radius: 50%; border: 1px solid #333;
-            box-shadow: inset 0 0 20px #000;
+        /* --- CONTROLS --- */
+        .controls { 
+            width: 100%; padding: 20px; background: #111; border-top: 2px solid #222; 
+            display: flex; justify-content: center; position: relative; z-index: 50;
+            transition: transform 0.3s ease;
         }
-        .d-btn { 
-            width: 55px; height: 55px; background: #1f1f1f; border-radius: 12px; 
-            display: flex; align-items: center; justify-content: center; font-size: 24px; 
-            border: 2px solid #333; color: var(--primary); cursor: pointer;
-            box-shadow: 0 4px 0 #000; transition: transform 0.05s;
-        }
-        .d-btn:active { transform: translateY(4px); box-shadow: 0 0 0 #000; border-color: var(--primary); background: #252525; }
+        .controls-hidden { transform: translateY(100%); }
+
+        .d-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: #000; padding: 10px; border-radius: 50%; border: 1px solid #333; }
+        .d-btn { width: 50px; height: 50px; background: #222; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid #444; color: var(--primary); }
+        .d-btn:active { background: #333; transform: scale(0.9); border-color: var(--primary); }
         
         .ability-btn { 
-            position: absolute; right: 25px; top: 50%; transform: translateY(-50%);
-            width: 70px; height: 70px; border-radius: 50%; background: var(--accent); color:#000; 
-            font-size: 28px; display: flex; align-items: center; justify-content: center; 
-            border: 4px solid #fff; box-shadow: 0 0 20px var(--accent); cursor: pointer; transition: 0.2s;
+            position: absolute; right: 20px; top: -30px; width: 60px; height: 60px; 
+            border-radius: 50%; background: var(--accent); color: #000; font-size: 24px; 
+            display: flex; align-items: center; justify-content: center; border: 3px solid #fff; 
+            box-shadow: 0 0 15px var(--accent);
         }
-        .ability-btn.cooldown { filter: grayscale(1); opacity: 0.5; transform: translateY(-50%) scale(0.9); cursor: not-allowed; }
-
-        /* --- SHOP --- */
-        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; overflow-y: auto; padding-bottom: 20px; }
-        .shop-item { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .shop-item.active { border-color: var(--primary); background: rgba(0,255,0,0.05); box-shadow: inset 0 0 20px rgba(0,255,0,0.1); }
+        .ability-btn.cooldown { filter: grayscale(1); opacity: 0.5; }
 
         /* --- MODAL --- */
-        .modal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s; backdrop-filter: blur(5px); }
-        .modal-visible { opacity: 1; pointer-events: all; }
-        .modal-box { background: #151515; border: 2px solid #333; padding: 30px; border-radius: 25px; text-align: center; width: 85%; transform: scale(0.8); transition: 0.3s; box-shadow: 0 0 60px rgba(0,0,0,0.8); }
-        .modal-visible .modal-box { transform: scale(1); }
-        
+        .modal { 
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); z-index: 100; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.2s;
+        }
+        .modal.visible { opacity: 1; pointer-events: all; }
+        .modal-content { background: #1a1a1a; padding: 30px; border-radius: 20px; border: 2px solid #333; text-align: center; width: 80%; }
+
+        /* --- SHOP --- */
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; overflow-y: auto; padding-bottom: 20px; }
+        .shop-card { background: #111; padding: 15px; border-radius: 10px; border: 1px solid #333; text-align: center; }
+        .shop-card.active { border-color: var(--primary); background: #0a2a0a; }
+
         /* FX */
-        .float-text { position: absolute; font-weight: bold; pointer-events: none; animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 5px #000; font-size: 24px; z-index: 50; }
-        @keyframes floatUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-50px); } }
-        .shaking { animation: shake 0.4s; }
-        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } 100% { transform: translate(0, 0); } }
+        .float-text { position: absolute; font-weight: bold; pointer-events: none; animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 5px #000; font-size: 20px; z-index: 60; }
+        @keyframes floatUp { 0% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-40px); } }
     </style>
 </head>
 <body class="skin-neon">
-    <div class="device-bezel">
-        <div class="screen-container">
-            <div class="scanlines"></div>
-
-            <div id="screen-menu" class="app-screen screen-active">
-                <div class="top-bar">
-                    <div style="font-size:12px; color:#555; font-weight:bold;">v13.0 LEGENDS</div>
-                    <div class="currency">🪙 <span id="menu-bits">0</span></div>
-                </div>
-
-                <div class="logo-main">SNAKE</div>
-                <div style="color:#666; letter-spacing:4px; font-size:12px; margin-bottom:30px;">ARCADE COLLECTION</div>
-
-                <div style="margin-top:auto; margin-bottom:40px; width:100%; display:flex; flex-direction:column; align-items:center; gap:15px;">
-                    
-                    <div style="width:100%;">
-                        <div style="font-size:10px; color:#666; margin-bottom:5px; text-align:center;">SELECT MODE</div>
-                        <div class="mode-scroll">
-                            <div class="mode-card active" onclick="setMode('endless', this)">
-                                <div class="mode-title">∞ ENDLESS</div>
-                                <div class="mode-desc">Survive Forever</div>
-                            </div>
-                            <div class="mode-card" onclick="setMode('campaign', this)">
-                                <div class="mode-title">🗺️ CAMPAIGN</div>
-                                <div class="mode-desc">5 Unique Levels</div>
-                            </div>
-                            <div class="mode-card" onclick="setMode('time', this)">
-                                <div class="mode-title">⏱️ TIME ATTACK</div>
-                                <div class="mode-desc">60s Rush</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="btn-play" onclick="startGame()">▶ START</button>
-                    
-                    <div class="icon-grid">
-                        <div class="icon-btn" onclick="nav('shop')">🛒</div>
-                        <div class="icon-btn" onclick="nav('achievements')">🏆</div>
-                        <div class="icon-btn" onclick="nav('settings')">⚙️</div>
-                    </div>
-                </div>
+    <div class="device-frame">
+        
+        <div id="screen-menu" class="screen screen-active">
+            <div class="top-bar">
+                <div style="font-size:12px; color:#666;">v14.0 STABLE</div>
+                <div class="currency">🪙 <span id="menu-bits">0</span></div>
             </div>
 
-            <div id="screen-campaign" class="app-screen screen-hidden">
-                <div class="top-bar">
-                    <div class="icon-btn" style="width:40px; height:40px; font-size:20px;" onclick="nav('menu')">←</div>
-                    <div style="font-weight:bold;">LEVEL SELECT</div>
-                    <div style="width:40px;"></div>
-                </div>
-                <div id="level-grid" class="level-grid"></div>
-            </div>
+            <div class="logo">SNAKE</div>
+            <div style="color:#aaa; margin-bottom: 40px; letter-spacing: 2px;">ARCADE</div>
 
-            <div id="screen-shop" class="app-screen screen-hidden">
-                <div class="top-bar">
-                    <div class="icon-btn" style="width:40px; height:40px; font-size:20px;" onclick="nav('menu')">←</div>
-                    <div style="font-weight:bold;">SKIN SHOP</div>
-                    <div class="currency">🪙 <span id="shop-bits">0</span></div>
-                </div>
-                <div id="shop-grid" class="shop-grid"></div>
-            </div>
-
-            <div id="screen-achievements" class="app-screen screen-hidden">
-                <div class="top-bar">
-                    <div class="icon-btn" style="width:40px; height:40px; font-size:20px;" onclick="nav('menu')">←</div>
-                    <div style="font-weight:bold;">TROPHIES</div>
-                    <div style="width:40px;"></div>
-                </div>
-                <div id="achieve-list" style="width:100%; display:flex; flex-direction:column; gap:10px; overflow-y:auto;"></div>
-            </div>
-
-            <div id="screen-settings" class="app-screen screen-hidden">
-                <div class="top-bar">
-                    <div class="icon-btn" style="width:40px; height:40px; font-size:20px;" onclick="nav('menu')">←</div>
-                    <div style="font-weight:bold;">SETTINGS</div>
-                    <div style="width:40px;"></div>
-                </div>
-                <div style="display:flex; flex-direction:column; gap:15px; width:100%;">
-                    <div class="shop-item" onclick="toggleSetting('sound')">
-                        <div style="font-weight:bold;">🔊 SOUND</div>
-                        <div style="color:var(--primary);" id="opt-sound">ON</div>
-                    </div>
-                    <div class="shop-item" onclick="toggleSetting('vibro')">
-                        <div style="font-weight:bold;">📳 HAPTICS</div>
-                        <div style="color:var(--primary);" id="opt-vibro">ON</div>
-                    </div>
-                    <div class="shop-item" style="border-color:#f00;" onclick="resetData()">
-                        <div style="font-weight:bold; color:#f00;">⚠️ RESET DATA</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="screen-game" class="app-screen screen-hidden" style="padding:10px;">
-                <div class="game-hud">
-                    <div class="icon-btn" style="width:40px; height:40px; font-size:16px;" onclick="pauseGame()">ll</div>
-                    <div style="text-align:right;">
-                        <div class="score-big" id="game-score">0</div>
-                        <div style="font-size:10px; color:#888;" id="game-subtext">BEST: 0</div>
-                    </div>
-                </div>
+            <div style="width:100%; display:flex; flex-direction:column; align-items:center;">
+                <button class="btn-main" onclick="startGame('endless')">∞ ENDLESS</button>
+                <button class="btn-main" style="border-color:#00eaff; color:#00eaff;" onclick="nav('levels')">🗺️ CAMPAIGN</button>
                 
-                <div class="timer-bar" id="timer-bar-con"><div class="timer-fill" id="timer-bar"></div></div>
-                
-                <div style="position:relative; width:100%; display:flex; justify-content:center;">
-                    <canvas id="game-canvas"></canvas>
-                    <div id="fx-layer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></div>
-                </div>
-            </div>
-
-            <div id="modal-gameover" class="modal-overlay">
-                <div class="modal-box">
-                    <h1 id="go-title" style="color:#f00; margin:0; font-size:35px;">CRASHED!</h1>
-                    <div style="font-size:18px; color:#fff; margin:10px 0;">SCORE: <span id="final-score">0</span></div>
-                    <div style="background:#222; padding:10px; border-radius:10px; margin-bottom:20px; color:#ffd700; font-weight:bold;">
-                        +<span id="final-bits">0</span> 🪙 EARNED
-                    </div>
-                    <div class="btn-play" style="width:100%; font-size:18px; padding:15px; margin:0;" onclick="restartGame()">RETRY</div>
-                    <div class="icon-btn" style="width:100%; border-radius:30px; font-size:14px; margin-top:15px;" onclick="nav('menu'); hideModal()">EXIT TO MENU</div>
+                <div class="nav-grid">
+                    <div class="nav-icon" onclick="nav('shop')">🛒</div>
+                    <div class="nav-icon" onclick="nav('settings')">⚙️</div>
+                    <div class="nav-icon" style="color:#ffd700;" onclick="claimDaily()" id="daily-btn">🎁</div>
                 </div>
             </div>
         </div>
 
-        <div class="controls-area controls-hidden" id="controls">
+        <div id="screen-game" class="screen screen-hidden">
+            <div class="top-bar">
+                <div class="nav-icon" style="width:35px; height:35px;" onclick="pauseGame()">ll</div>
+                <div style="font-size:12px; color:#888;" id="game-mode-text">ENDLESS</div>
+                <div class="currency">🪙 <span id="game-bits">0</span></div>
+            </div>
+
+            <div id="game-area">
+                <div class="hud">
+                    <div>SCORE</div>
+                    <div class="score-display" id="score">0</div>
+                </div>
+                <div class="combo-bar"><div class="combo-fill" id="combo-bar"></div></div>
+                
+                <canvas id="game-canvas" width="400" height="400"></canvas>
+                <div id="fx-layer" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></div>
+            </div>
+        </div>
+
+        <div id="screen-shop" class="screen screen-hidden">
+            <div class="top-bar">
+                <div class="nav-icon" style="width:40px; height:40px;" onclick="nav('menu')">←</div>
+                <div>SKIN SHOP</div>
+                <div class="currency">🪙 <span id="shop-bits">0</span></div>
+            </div>
+            <div id="shop-grid" class="shop-grid"></div>
+        </div>
+
+        <div id="screen-levels" class="screen screen-hidden">
+            <div class="top-bar">
+                <div class="nav-icon" style="width:40px; height:40px;" onclick="nav('menu')">←</div>
+                <div>CAMPAIGN</div>
+                <div></div>
+            </div>
+            <div id="level-grid" class="shop-grid"></div>
+        </div>
+
+        <div id="controls" class="controls controls-hidden">
             <div class="d-pad">
                 <div></div><div class="d-btn" ontouchstart="input('UP', event)" onmousedown="input('UP', event)">▲</div><div></div>
                 <div class="d-btn" ontouchstart="input('LEFT', event)" onmousedown="input('LEFT', event)">◀</div>
-                <div class="d-btn" ontouchstart="input('DOWN', event)" onmousedown="input('DOWN', event)">▼</div>
+                <div class="d-btn" ontouchstart="input('DOWN', event)" onmousedown="input('DOWN')">▼</div>
                 <div class="d-btn" ontouchstart="input('RIGHT', event)" onmousedown="input('RIGHT', event)">▶</div>
             </div>
-            <div id="ability-btn" class="ability-btn" onclick="activateAbility()">⚡</div>
+            <div id="ability-btn" class="ability-btn" onclick="activateAbility()">⏳</div>
         </div>
+
+        <div id="modal-gameover" class="modal">
+            <div class="modal-content">
+                <h1 style="color:#f00; margin:0;">GAME OVER</h1>
+                <p>SCORE: <span id="final-score" style="color:#fff; font-weight:bold;">0</span></p>
+                <button class="btn-main" onclick="restartGame()">RETRY</button>
+                <button class="nav-icon" style="width:100%; margin-top:10px;" onclick="nav('menu'); hideModal()">MENU</button>
+            </div>
+        </div>
+
     </div>
     <script>
-        // --- CONFIG & RESOLUTION ---
+        // --- SETUP ---
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        const cssWidth = 340; const cssHeight = 340;
-        canvas.style.width = cssWidth + "px"; canvas.style.height = cssHeight + "px";
-        canvas.width = cssWidth * dpr; canvas.height = cssHeight * dpr;
-        ctx.scale(dpr, dpr);
+        // Fixed grid size logic
+        const GRID_SIZE = 20; 
+        const TILE_COUNT = 20; // 20x20 grid = 400x400 logical size
         
-        const BOX = 20; const GRID_W = cssWidth / BOX; const GRID_H = cssHeight / BOX;
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
         // --- DATA ---
@@ -308,372 +206,301 @@
             bits: parseInt(localStorage.getItem('snake_bits')) || 0,
             skins: JSON.parse(localStorage.getItem('snake_skins')) || ['neon'],
             skin: localStorage.getItem('snake_skin') || 'neon',
-            settings: JSON.parse(localStorage.getItem('snake_settings')) || { sound: true, vibro: true },
             level: parseInt(localStorage.getItem('snake_level')) || 1,
-            highScore: parseInt(localStorage.getItem('snake_high')) || 0,
-            achievements: JSON.parse(localStorage.getItem('snake_achievements')) || []
+            lastDaily: parseInt(localStorage.getItem('snake_daily')) || 0
         };
 
         const SKINS = {
-            'neon': { name: 'Neon', price: 0, color: '#0f0', shape: 'square' },
-            'gold': { name: 'Gold', price: 300, color: '#ffd700', shape: 'circle' },
-            'ice':  { name: 'Ice',  price: 500, color: '#00eaff', shape: 'square' },
-            'matrix':{ name: 'Matrix', price: 800, color: '#0f0', shape: 'square' },
-            'magma': { name: 'Magma', price: 1200, color: '#ff4500', shape: 'circle' }
+            'neon': { name: 'Neon', price: 0, color: '#0f0' },
+            'gold': { name: 'Gold', price: 200, color: '#ffd700' },
+            'ice':  { name: 'Ice',  price: 500, color: '#00eaff' },
+            'void': { name: 'Void', price: 1000, color: '#f00' }
         };
 
         const LEVELS = [
-            { id: 1, target: 5, walls: [] }, 
-            { id: 2, target: 10, walls: [{x:4,y:4}, {x:4,y:5}, {x:12,y:4}, {x:12,y:5}] },
-            { id: 3, target: 15, walls: [{x:8,y:3}, {x:8,y:4}, {x:8,y:5}, {x:8,y:11}, {x:8,y:12}, {x:8,y:13}] },
-            { id: 4, target: 20, walls: [{x:3,y:3}, {x:13,y:3}, {x:3,y:13}, {x:13,y:13}, {x:8,y:8}] },
-            { id: 5, target: 30, walls: [{x:0,y:8}, {x:1,y:8}, {x:2,y:8}, {x:14,y:8}, {x:15,y:8}, {x:16,y:8}] }
+            { id: 1, target: 5, walls: [] },
+            { id: 2, target: 10, walls: [{x:5,y:5}, {x:6,y:5}, {x:14,y:14}, {x:13,y:14}] },
+            { id: 3, target: 20, walls: [{x:9,y:9}, {x:9,y:10}, {x:10,y:9}, {x:10,y:10}] }, // Center Box
+            { id: 4, target: 30, walls: [{x:0,y:5}, {x:1,y:5}, {x:2,y:5}, {x:19,y:15}, {x:18,y:15}] }
         ];
 
-        const TROPHIES = [
-            { id: 'first', name: 'First Bite', desc: 'Score 1 point', reward: 50 },
-            { id: 'pro', name: 'Snake Pro', desc: 'Score 50 points', reward: 200 },
-            { id: 'rich', name: 'Big Spender', desc: 'Buy a skin', reward: 100 },
-            { id: 'master', name: 'Campaign Master', desc: 'Beat Level 5', reward: 1000 }
-        ];
-
-        // --- STATE ---
-        let snake=[], food={}, walls=[], dir={x:0,y:-1};
+        // --- GAME VARIABLES ---
+        let snake = [], food = {}, walls = [];
+        let vel = {x:0, y:0};
         let inputQueue = [];
-        let score=0, speed=130, isRunning=false, slowMo=false, canAbility=true;
-        let lastTime=0, animationId=null;
-        let mode = 'endless'; // endless, campaign, time
-        let currentLevel = 1;
-        let timeLeft = 60; // For Time Attack
+        let score = 0, speed = 150, isRunning = false;
+        let gameLoopId, mode = 'endless', target = 0;
+        let combo = 1, comboTimer = 0;
+        let safeTime = 0; // Invincibility frames
 
         // --- INIT ---
-        window.onload = () => { updateUI(); };
+        window.onload = () => { updateUI(); checkDaily(); };
 
         function updateUI() {
             document.getElementById('menu-bits').innerText = user.bits;
             document.body.className = `skin-${user.skin}`;
-            document.getElementById('opt-sound').innerText = user.settings.sound ? "ON" : "OFF";
-            document.getElementById('opt-vibro').innerText = user.settings.vibro ? "ON" : "OFF";
         }
 
-        // --- NAV ---
         function nav(screen) {
-            document.querySelectorAll('.app-screen').forEach(s => {
-                s.classList.remove('screen-active'); s.classList.add('screen-hidden');
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('screen-active');
+                s.classList.add('screen-hidden');
             });
-            let target = document.getElementById('screen-'+screen);
-            target.classList.remove('screen-hidden');
-            target.classList.add('screen-active');
-            
-            const controls = document.getElementById('controls');
-            if(screen === 'game') controls.classList.remove('controls-hidden');
+            // Show target
+            let targetScreen = document.getElementById('screen-'+screen);
+            targetScreen.classList.remove('screen-hidden');
+            targetScreen.classList.add('screen-active');
+
+            // Handle Controls Visibility
+            let controls = document.getElementById('controls');
+            if (screen === 'game') controls.classList.remove('controls-hidden');
             else controls.classList.add('controls-hidden');
 
-            if(screen === 'shop') loadShop();
-            if(screen === 'achievements') loadAchievements();
-            if(screen === 'menu') updateUI();
-            sfx('swish');
-        }
-
-        function setMode(m, btn) {
-            // Logic handled in startGame or Nav
-            if (m === 'campaign') { nav('campaign'); loadLevels(); return; }
-            
-            mode = m;
-            document.querySelectorAll('.mode-card').forEach(b => b.classList.remove('active'));
-            if(btn) btn.classList.add('active');
-            sfx('tap');
+            if (screen === 'shop') loadShop();
+            if (screen === 'levels') loadLevels();
+            if (screen === 'menu') updateUI();
         }
 
         // --- GAME START ---
-        function startLevel(lvlId) {
-            mode = 'campaign';
-            currentLevel = lvlId;
-            startGame();
-        }
-
-        function startGame() {
-            nav('game'); hideModal();
-            snake = [{x:8, y:10}, {x:8, y:11}, {x:8, y:12}]; 
-            dir = {x:0, y:-1}; inputQueue = [];
-            score = 0; speed = 130; timeLeft = 60;
-            isRunning = true; slowMo = false; canAbility = true;
+        function startGame(selectedMode, levelId) {
+            nav('game');
+            hideModal();
             
-            // Mode Setup
+            // Reset State
+            snake = [{x:10, y:10}, {x:10, y:11}, {x:10, y:12}];
+            vel = {x:0, y:-1}; // Moving UP
+            inputQueue = [];
+            score = 0; combo = 1; speed = 130;
+            safeTime = 5; // 5 frames of safety
+            isRunning = true;
+            mode = selectedMode;
+
+            // Mode Config
             walls = [];
+            target = 0;
             if (mode === 'campaign') {
-                let lvl = LEVELS.find(l => l.id === currentLevel);
-                walls = lvl.walls || [];
-                document.getElementById('game-subtext').innerText = "GOAL: " + lvl.target;
-            } else if (mode === 'time') {
-                document.getElementById('game-subtext').innerText = "TIME: 60s";
-                document.getElementById('timer-bar-con').style.display = "block";
+                let lvl = LEVELS.find(l => l.id === levelId);
+                walls = lvl.walls;
+                target = lvl.target;
+                document.getElementById('game-mode-text').innerText = "LEVEL " + levelId;
             } else {
-                document.getElementById('game-subtext').innerText = "BEST: " + user.highScore;
-                document.getElementById('timer-bar-con').style.display = "none";
+                document.getElementById('game-mode-text').innerText = "ENDLESS";
             }
 
-            document.getElementById('game-score').innerText = 0;
-            document.getElementById('ability-btn').classList.remove('cooldown');
+            document.getElementById('score').innerText = 0;
+            document.getElementById('game-bits').innerText = user.bits;
             
             spawnFood();
             if(audioCtx.state === 'suspended') audioCtx.resume();
             
-            if(animationId) cancelAnimationFrame(animationId);
-            lastTime = performance.now();
-            animationId = requestAnimationFrame(loop);
-            sfx('start');
+            if(gameLoopId) clearInterval(gameLoopId);
+            gameLoopId = setInterval(loop, speed);
         }
-        function loop(timestamp) {
+
+        function loop() {
             if(!isRunning) return;
-            
-            let interval = slowMo ? 300 : speed;
-            if (timestamp - lastTime > interval) {
-                update();
-                lastTime = timestamp;
-            }
-            
-            // Time Attack Timer
-            if (mode === 'time') {
-                timeLeft -= 1/60; // Approx per frame
-                document.getElementById('game-subtext').innerText = "TIME: " + Math.ceil(timeLeft) + "s";
-                document.getElementById('timer-bar').style.width = (timeLeft/60)*100 + "%";
-                if (timeLeft <= 0) gameOver(false);
-            }
 
-            draw();
-            animationId = requestAnimationFrame(loop);
-        }
-
-        function update() {
+            // Input Handling
             if (inputQueue.length > 0) {
                 let next = inputQueue.shift();
-                if (!(next.x === -dir.x && next.y === -dir.y) && !(next.x === dir.x && next.y === dir.y)) {
-                    dir = next;
-                } else if (inputQueue.length > 0) {
-                    let next2 = inputQueue.shift();
-                    if (!(next2.x === -dir.x && next2.y === -dir.y)) dir = next2;
-                }
+                if (next.x !== -vel.x && next.y !== -vel.y) vel = next;
             }
 
-            let head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+            // Movement
+            let head = { x: snake[0].x + vel.x, y: snake[0].y + vel.y };
 
-            // Collisions
-            if (head.x < 0 || head.x >= GRID_W || head.y < 0 || head.y >= GRID_H || checkSelf(head) || checkWalls(head)) {
-                return gameOver(false);
+            // Collision
+            if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT || checkCollision(head)) {
+                if (safeTime > 0) {
+                    // Wall Bounce logic for safety (Keep snake inside)
+                    head.x = Math.max(0, Math.min(TILE_COUNT-1, head.x));
+                    head.y = Math.max(0, Math.min(TILE_COUNT-1, head.y));
+                } else {
+                    return gameOver(false);
+                }
             }
 
             snake.unshift(head);
 
+            // Eat
             if (head.x === food.x && head.y === food.y) {
                 score++;
-                document.getElementById('game-score').innerText = score;
-                spawnFloatText(head.x, head.y, "+1", '#fff');
+                document.getElementById('score').innerText = score;
                 sfx('eat');
-                
-                // Mode Specifics
-                if (mode === 'time') { timeLeft += 3; spawnFloatText(head.x, head.y-1, "+3s", '#0f0'); }
-                if (mode === 'campaign') {
-                    let lvl = LEVELS.find(l => l.id === currentLevel);
-                    if (score >= lvl.target) return gameOver(true);
-                }
-                
-                if (speed > 60) speed -= 1;
+                comboTimer = 20; // Reset combo bar
                 spawnFood();
+                if(target > 0 && score >= target) return gameOver(true);
             } else {
                 snake.pop();
             }
+
+            // Timers
+            if (safeTime > 0) safeTime--;
+            if (comboTimer > 0) {
+                comboTimer--;
+                document.getElementById('combo-bar').style.width = (comboTimer * 5) + "%";
+            }
+
+            draw();
+        }
+
+        function checkCollision(head) {
+            // Self
+            for (let i = 0; i < snake.length; i++) {
+                if (head.x === snake[i].x && head.y === snake[i].y) return true;
+            }
+            // Walls
+            for (let w of walls) {
+                if (head.x === w.x && head.y === w.y) return true;
+            }
+            return false;
         }
 
         function draw() {
-            ctx.clearRect(0,0,cssWidth, cssHeight);
-            
+            // Clear
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             // Walls
             ctx.fillStyle = "#333";
-            walls.forEach(w => {
-                ctx.fillRect(w.x*BOX, w.y*BOX, BOX, BOX);
-                ctx.strokeStyle="#555"; ctx.lineWidth=2; ctx.strokeRect(w.x*BOX, w.y*BOX, BOX, BOX);
-            });
+            for(let w of walls) {
+                ctx.fillRect(w.x * 20, w.y * 20, 18, 18);
+            }
 
             // Food
-            let fc = "#f05";
-            ctx.fillStyle = fc; ctx.shadowBlur = 15; ctx.shadowColor = fc;
-            ctx.beginPath(); ctx.arc(food.x*BOX+10, food.y*BOX+10, 7, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "#ff0055";
+            ctx.shadowBlur = 15; ctx.shadowColor = "#f05";
+            ctx.beginPath(); 
+            ctx.arc(food.x * 20 + 10, food.y * 20 + 10, 8, 0, Math.PI*2); 
+            ctx.fill();
             ctx.shadowBlur = 0;
 
             // Snake
-            let sc = getComputedStyle(document.body).getPropertyValue('--primary');
-            let shape = SKINS[user.skin].shape;
-            
-            snake.forEach((p,i)=>{
-                ctx.fillStyle = sc;
-                if(i===0) { ctx.fillStyle="#fff"; ctx.shadowBlur=15; ctx.shadowColor=sc; }
-                else ctx.shadowBlur=0;
-                if(shape === 'circle') { ctx.beginPath(); ctx.arc(p.x*BOX+10, p.y*BOX+10, 9, 0, Math.PI*2); ctx.fill(); } 
-                else { ctx.fillRect(p.x*BOX+1, p.y*BOX+1, 18, 18); }
+            let color = getComputedStyle(document.body).getPropertyValue('--primary');
+            ctx.fillStyle = color;
+            snake.forEach((p, i) => {
+                if (i===0) { ctx.fillStyle = "#fff"; ctx.shadowBlur = 10; ctx.shadowColor = color; }
+                else { ctx.fillStyle = color; ctx.shadowBlur = 0; }
+                ctx.fillRect(p.x * 20 + 1, p.y * 20 + 1, 18, 18);
             });
         }
 
         function spawnFood() {
-            let valid=false;
+            let valid = false;
             while(!valid) {
-                food = {x:Math.floor(Math.random()*GRID_W), y:Math.floor(Math.random()*GRID_H)};
-                valid=true;
-                for(let p of snake) if(p.x===food.x && p.y===food.y) valid=false;
-                for(let w of walls) if(w.x===food.x && w.y===food.y) valid=false;
+                food = { x: Math.floor(Math.random() * TILE_COUNT), y: Math.floor(Math.random() * TILE_COUNT) };
+                valid = true;
+                for(let p of snake) if(p.x === food.x && p.y === food.y) valid = false;
+                for(let w of walls) if(w.x === food.x && w.y === food.y) valid = false;
             }
         }
 
-        function checkSelf(h) { for(let p of snake) if(p.x === h.x && p.y === h.y) return true; return false; }
-        function checkWalls(h) { for(let w of walls) if(w.x === h.x && w.y === h.y) return true; return false; }
-
         function gameOver(win) {
-            isRunning = false; sfx(win?'powerup':'die');
-            if(user.settings.vibro) navigator.vibrate(300);
+            isRunning = false;
+            clearInterval(gameLoopId);
+            sfx(win ? 'powerup' : 'die');
             
-            // Awards
-            let earn = score + (win ? 50 : 0);
-            user.bits += earn;
-            if(score > user.highScore && mode === 'endless') user.highScore = score;
-            
-            // Progress
-            if(win && mode === 'campaign' && currentLevel === user.level) {
-                user.level++;
-                if(user.level > 5) unlockAchievement('master');
+            if (win && mode === 'campaign') {
+                if (user.level < LEVELS.length) user.level++;
             }
-            if(score >= 1) unlockAchievement('first');
-            if(score >= 50) unlockAchievement('pro');
-            
+            user.bits += score;
             saveData();
-            
-            document.getElementById('go-title').innerText = win ? "LEVEL CLEARED!" : "GAME OVER";
-            document.getElementById('go-title').style.color = win ? "#0f0" : "#f00";
+
             document.getElementById('final-score').innerText = score;
-            document.getElementById('final-bits').innerText = "+"+earn;
             document.getElementById('modal-gameover').classList.add('modal-visible');
         }
 
-        function unlockAchievement(id) {
-            if(!user.achievements.includes(id)) {
-                user.achievements.push(id);
-                let t = TROPHIES.find(x=>x.id===id);
-                user.bits += t.reward;
-                alert("🏆 Unlocked: " + t.name + "\n+" + t.reward + " Bits");
-                saveData();
-            }
+        function restartGame() {
+            if (mode === 'campaign') startGame('campaign', user.level); // Retry current level? Or last played? Actually retry implies same settings.
+            else startGame('endless');
         }
 
-        // --- SHOP & UI HELPERS ---
+        function pauseGame() {
+            isRunning = !isRunning;
+            if(!isRunning) alert("PAUSED");
+        }
+
+        // --- SHOP & LEVELS ---
         function loadLevels() {
+            nav('levels');
             const grid = document.getElementById('level-grid'); grid.innerHTML = "";
             LEVELS.forEach(lvl => {
                 let locked = lvl.id > user.level;
-                let completed = lvl.id < user.level;
                 let el = document.createElement('div');
-                el.className = `level-node ${locked?'locked':(completed?'completed':'unlocked')}`;
-                el.innerHTML = `<div style="font-size:20px; font-weight:bold; color:#fff;">${lvl.id}</div><div class="level-stars">${completed?'★★★':(locked?'🔒':'GOAL: '+lvl.target)}</div>`;
-                if(!locked) el.onclick = () => startLevel(lvl.id);
+                el.className = 'shop-card';
+                el.style.opacity = locked ? 0.5 : 1;
+                el.innerHTML = `<div>LEVEL ${lvl.id}</div><div style="font-size:10px;">${locked?'🔒':'GOAL: '+lvl.target}</div>`;
+                if(!locked) el.onclick = () => startGame('campaign', lvl.id);
                 grid.appendChild(el);
-            });
-            nav('levels');
-        }
-
-        function loadAchievements() {
-            const list = document.getElementById('achieve-list'); list.innerHTML = "";
-            TROPHIES.forEach(t => {
-                let unlocked = user.achievements.includes(t.id);
-                let el = document.createElement('div');
-                el.style.cssText = `background:#111; border:1px solid #333; padding:15px; border-radius:12px; display:flex; align-items:center; gap:15px; opacity:${unlocked?1:0.5}`;
-                el.innerHTML = `
-                    <div style="font-size:24px;">${unlocked?'🏆':'❓'}</div>
-                    <div>
-                        <div style="font-weight:bold; color:#fff;">${t.name}</div>
-                        <div style="font-size:12px; color:#888;">${t.desc}</div>
-                    </div>
-                    ${unlocked ? '<div style="margin-left:auto; color:#0f0; font-size:12px;">UNLOCKED</div>' : ''}
-                `;
-                list.appendChild(el);
             });
         }
 
         function loadShop() {
+            nav('shop');
             document.getElementById('shop-bits').innerText = user.bits;
             const grid = document.getElementById('shop-grid'); grid.innerHTML = "";
-            for (let id in SKINS) {
-                let s = SKINS[id], owned = user.skins.includes(id), active = user.skin === id;
+            for (let k in SKINS) {
+                let s = SKINS[k], owned = user.skins.includes(k);
                 let el = document.createElement('div');
-                el.className = `shop-item ${active?'active':''}`;
-                el.onclick = () => buySkin(id);
-                el.innerHTML = `<div style="width:20px;height:20px;background:${s.color};border-radius:${s.shape==='circle'?'50%':'4px'};box-shadow:0 0 10px ${s.color};margin-bottom:5px;"></div><div style="font-size:12px;font-weight:bold;color:#fff;">${s.name}</div>${owned ? (active?'<span style="font-size:10px;color:#0f0">EQUIPPED</span>':'') : `<div class="price-tag">${s.price} 🪙</div>`}`;
+                el.className = 'shop-card';
+                if(user.skin===k) el.classList.add('active');
+                el.onclick = () => {
+                    if(owned) { user.skin = k; saveData(); loadShop(); sfx('tap'); }
+                    else if(user.bits >= s.price) {
+                        if(confirm("Buy "+s.name+"?")) {
+                            user.bits -= s.price; user.skins.push(k); user.skin = k; saveData(); loadShop(); sfx('buy');
+                        }
+                    }
+                };
+                el.innerHTML = `<div style="color:${s.color};font-weight:bold;">${s.name}</div><div>${owned ? 'OWNED' : s.price+' 🪙'}</div>`;
                 grid.appendChild(el);
             }
         }
 
-        function buySkin(id) {
-            if (user.skins.includes(id)) { user.skin = id; saveData(); loadShop(); updateUI(); sfx('tap'); }
-            else if (user.bits >= SKINS[id].price) {
-                if(confirm("Buy "+SKINS[id].name+"?")) {
-                    user.bits -= SKINS[id].price; user.skins.push(id); user.skin = id;
-                    unlockAchievement('rich');
-                    saveData(); loadShop(); sfx('buy');
-                }
-            }
-        }
-
-        function restartGame() { hideModal(); if(mode==='campaign') startLevel(currentLevel); else startGame(); }
-        function hideModal() { document.getElementById('modal-gameover').classList.remove('modal-visible'); }
-        function pauseGame() { isRunning = !isRunning; if(isRunning) { lastTime=performance.now(); loop(); } else alert("PAUSED"); }
-        function saveData() { localStorage.setItem('snake_bits', user.bits); localStorage.setItem('snake_skins', JSON.stringify(user.skins)); localStorage.setItem('snake_skin', user.skin); localStorage.setItem('snake_level', user.level); localStorage.setItem('snake_high', user.highScore); localStorage.setItem('snake_achievements', JSON.stringify(user.achievements)); }
-        function toggleSetting(k) { user.settings[k]=!user.settings[k]; updateUI(); saveData(); sfx('tap'); }
-        function resetData() { if(confirm("Reset all data?")) { localStorage.clear(); location.reload(); } }
-        
-        function activateAbility() {
-            if(!isRunning || slowMo || !canAbility) return;
-            slowMo = true; canAbility = false;
-            document.getElementById('ability-btn').classList.add('cooldown');
-            document.querySelector('.screen-active').style.filter = "saturation(0)";
-            sfx('buy');
-            setTimeout(()=>{ slowMo = false; document.querySelector('.screen-active').style.filter = "none"; setTimeout(()=>{canAbility=true;document.getElementById('ability-btn').classList.remove('cooldown');}, 5000); }, 3000);
-        }
-
-        function spawnFloatText(x, y, txt, col) {
-            let el = document.createElement('div');
-            el.className = 'float-text'; el.innerText = txt; el.style.color = col;
-            el.style.left = (x*20+10)+'px'; el.style.top = (y*20+10)+'px';
-            document.getElementById('fx-layer').appendChild(el);
-            setTimeout(()=>el.remove(), 800);
-        }
-
+        // --- UTILS ---
         function input(d, e) {
             if(e) e.preventDefault();
-            let move = {x:0, y:0};
-            if(d==='UP') move = {x:0, y:-1};
-            if(d==='DOWN') move = {x:0, y:1};
-            if(d==='LEFT') move = {x:-1, y:0};
-            if(d==='RIGHT') move = {x:1, y:0};
-            if (inputQueue.length < 2) inputQueue.push(move);
+            let newVel = {x:0, y:0};
+            if(d==='UP') newVel = {x:0, y:-1};
+            if(d==='DOWN') newVel = {x:0, y:1};
+            if(d==='LEFT') newVel = {x:-1, y:0};
+            if(d==='RIGHT') newVel = {x:1, y:0};
+            
+            // Prevent 180 (Simple check + queue safety)
+            if (newVel.x !== -vel.x && newVel.y !== -vel.y) {
+                inputQueue.push(newVel);
+                // Apply immediately if queue is empty to reduce lag
+                if(inputQueue.length === 1) vel = newVel; 
+            }
         }
         
-        document.body.addEventListener('touchstart', e=>{tX=e.touches[0].clientX; tY=e.touches[0].clientY;}, {passive:false});
-        document.body.addEventListener('touchend', e=>{
-            let dX = e.changedTouches[0].clientX - tX, dY = e.changedTouches[0].clientY - tY;
-            if(Math.abs(dX)>Math.abs(dY)) input(dX>0?'RIGHT':'LEFT'); else input(dY>0?'DOWN':'UP');
-        }, {passive:false});
-        let tX=0, tY=0;
+        function saveData() {
+            localStorage.setItem('snake_bits', user.bits);
+            localStorage.setItem('snake_skins', JSON.stringify(user.skins));
+            localStorage.setItem('snake_skin', user.skin);
+            localStorage.setItem('snake_level', user.level);
+            localStorage.setItem('snake_daily', user.lastDaily);
+        }
 
-        function sfx(type) {
-            if(!user.settings.sound) return;
-            const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            const t = audioCtx.currentTime;
-            if (type === 'eat') { osc.frequency.setValueAtTime(500, t); osc.frequency.linearRampToValueAtTime(1000, t+0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.1); }
-            else if (type === 'die') { osc.type='sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.linearRampToValueAtTime(50, t+0.5); gain.gain.setValueAtTime(0.2, t); gain.gain.linearRampToValueAtTime(0, t+0.5); }
-            else if (type === 'tap') { osc.frequency.setValueAtTime(800, t); gain.gain.setValueAtTime(0.05, t); gain.gain.linearRampToValueAtTime(0, t+0.05); }
-            else if (type === 'swish') { osc.type='triangle'; osc.frequency.setValueAtTime(300, t); osc.frequency.linearRampToValueAtTime(100, t+0.2); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.2); }
-            else if (type === 'buy') { osc.type='square'; osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t+0.3); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.3); }
-            else if (type === 'start') { osc.type='square'; osc.frequency.setValueAtTime(300, t); osc.frequency.linearRampToValueAtTime(600, t+0.2); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.2); }
-            else if (type === 'powerup') { osc.type='sine'; osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t+0.4); gain.gain.setValueAtTime(0.2, t); gain.gain.linearRampToValueAtTime(0, t+0.4); }
-            osc.start(t); osc.stop(t+0.5);
+        function hideModal() { document.getElementById('modal-gameover').classList.remove('modal-visible'); }
+        function claimDaily() {
+            if(Date.now() - user.lastDaily > 86400000) {
+                user.bits += 100; user.lastDaily = Date.now(); saveData(); checkDaily(); alert("+100 Bits!"); updateUI();
+            }
+        }
+        function checkDaily() {
+            let btn = document.getElementById('daily-btn');
+            btn.style.opacity = (Date.now() - user.lastDaily > 86400000) ? 1 : 0.3;
+        }
+
+        function sfx(t) {
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            if(t==='eat') o.frequency.value=600; 
+            else if(t==='die') { o.type='sawtooth'; o.frequency.value=100; }
+            else if(t==='start') { o.type='square'; o.frequency.value=400; }
+            o.start(); setTimeout(()=>o.stop(), 100);
         }
     </script>
 </body>
