@@ -38,7 +38,7 @@ body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
 .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: white; border-bottom: 1px solid #eee; font-weight: bold; }
 .app-header button { border: none; background: none; color: #ff9a9e; font-size: 16px; }
 
-/* CHAT */
+/* CHAT APP */
 .chat-body { flex: 1; padding: 15px; background: #fff0f5; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
 .msg { padding: 10px 15px; border-radius: 20px; max-width: 75%; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 .sent { align-self: flex-end; background: #ff9a9e; color: white; border-bottom-right-radius: 2px; }
@@ -62,8 +62,26 @@ body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
 .coupon.blue .left { background: #a18cd1; }
 .coupon.purple .left { background: #fbc2eb; }
 
-/* MAP & MUSIC */
-.map-content, .music-player { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+/* MUSIC PLAYER */
+.music-player { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 .vinyl-record { width: 200px; height: 200px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; animation: spin 5s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
-.map-line { font-size: 20px; margin-bottom: 30px; }
+
+/* US APP (RELATIONSHIP DASHBOARD) */
+.map-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+
+.distance-container { width: 100%; display: flex; justify-content: space-around; align-items: center; margin-top: 20px; padding: 0 10px; }
+.location { display: flex; flex-direction: column; align-items: center; gap: 5px; font-weight: bold; color: #555; }
+.avatar { width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; font-size: 25px; }
+
+.flight-path { flex: 1; position: relative; height: 2px; background: #bbb; margin: 0 10px; margin-bottom: 20px; }
+.plane-icon { position: absolute; top: -14px; font-size: 20px; animation: fly 3s linear infinite alternate; }
+@keyframes fly { 0% { left: 0%; transform: rotate(90deg); } 100% { left: 100%; transform: rotate(90deg); } }
+.km-text { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 10px; color: #888; letter-spacing: 1px; }
+
+.love-timer-box { background: white; margin-top: 30px; padding: 20px; border-radius: 20px; width: 85%; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; }
+.love-timer-box p { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+.love-timer-box h2 { font-size: 30px; color: #ff9a9e; margin: 10px 0; }
+.timer-details { display: flex; justify-content: center; gap: 10px; font-size: 13px; color: #555; font-weight: bold; }
+
+.quote-box { margin-top: auto; margin-bottom: 30px; font-style: italic; color: #666; font-size: 13px; opacity: 0.8; padding: 0 20px; }
