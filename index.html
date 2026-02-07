@@ -42,13 +42,17 @@
                 <div class="app-icon" style="background: #ff9a9e;"><i class="fas fa-heart"></i></div>
                 <p>Love Chat</p>
             </div>
+            <div class="app-item" onclick="openApp('events')">
+                <div class="app-icon" style="background: #ffcc00;"><i class="fas fa-calendar-alt"></i></div>
+                <p>Events</p>
+            </div>
             <div class="app-item" onclick="openApp('photos')">
                 <div class="app-icon" style="background: #a18cd1;"><i class="fas fa-camera-retro"></i></div>
                 <p>Memories</p>
             </div>
             <div class="app-item" onclick="openApp('music')">
                 <div class="app-icon" style="background: #fad0c4;"><i class="fas fa-music"></i></div>
-                <p>Our Vibe</p>
+                <p>Vibe</p>
             </div>
             <div class="app-item" onclick="openApp('us')">
                 <div class="app-icon" style="background: #84fab0;"><i class="fas fa-plane"></i></div>
@@ -67,6 +71,48 @@
             </div>
         </div>
 
+        <div id="app-events" class="app-window hidden" style="background: #fffdf0;">
+            <div class="app-header">
+                <button onclick="closeApp('events')">❮ Back</button><span>Big Days</span><div></div>
+            </div>
+            <div class="event-list">
+                
+                <div class="event-card">
+                    <div class="event-date">
+                        <span class="month">JAN</span>
+                        <span class="day">18</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>We Met ❤️</h3>
+                        <p>The best day ever!</p>
+                    </div>
+                </div>
+
+                <div class="event-card">
+                    <div class="event-date">
+                        <span class="month">MAR</span>
+                        <span class="day">14</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>Theshu's Bday 🎂</h3>
+                        <p>Party Time!</p>
+                    </div>
+                </div>
+
+                <div class="event-card">
+                    <div class="event-date">
+                        <span class="month">SEP</span>
+                        <span class="day">22</span>
+                    </div>
+                    <div class="event-details">
+                        <h3>Ayuuu's Bday 👸</h3>
+                        <p>My Queen's Day</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
         <div id="app-chat" class="app-window hidden">
             <div class="app-header">
                 <button onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div>
@@ -74,9 +120,9 @@
             <div class="chat-body">
                 <div class="date-divider">Today</div>
                 <div class="msg received">Hey Theshuuuu! 😽</div>
-                <div class="msg sent">Hey Ayuuu! Miss you! ❤️</div>
-                <div class="msg received">I miss you more! Come to Goa! 🌴</div>
-                <div class="msg sent">Soon baby! Check the "Us" app! 😸</div>
+                <div class="msg sent">Hey Ayuuu! Happy 20 days! ❤️</div>
+                <div class="msg received">Yesss! I miss you more! 🌴</div>
+                <div class="msg sent">Check the Events app! 😸</div>
             </div>
             <div class="chat-input-bar">
                 <input type="text" placeholder="Send love...">
@@ -89,7 +135,7 @@
                 <button onclick="closeApp('photos')">❮ Back</button><span>Our Album</span><div></div>
             </div>
             <div class="polaroid-grid">
-                <div class="polaroid"><img src="https://via.placeholder.com/150/FFB6C1/000000?text=Us+1" alt="Us"><caption>First Date ❤️</caption></div>
+                <div class="polaroid"><img src="https://via.placeholder.com/150/FFB6C1/000000?text=Jan+18" alt="Us"><caption>The Day We Met ❤️</caption></div>
                 <div class="polaroid"><img src="https://via.placeholder.com/150/87CEEB/000000?text=Cute" alt="Us"><caption>So Cute 😸</caption></div>
                 <div class="polaroid"><img src="https://via.placeholder.com/150/FF69B4/000000?text=Goa" alt="Us"><caption>Goa Trip 🌴</caption></div>
             </div>
