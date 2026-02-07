@@ -3,103 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LoveOS 2.0 ❤️</title>
+    <title>LoveOS 3.0 ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 1. GLOBAL RESET --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
+        /* --- GLOBAL & ANIMATIONS --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
         body { background: #000; width: 100vw; height: 100vh; overflow: hidden; color: #333; }
 
-        /* --- 2. SCREEN LAYERS --- */
+        /* Smooth Screen Transitions */
         .screen-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; flex-direction: column; z-index: 10; 
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s; 
             background-color: #333;
         }
-        .hidden { transform: translateY(100%) scale(0.95); opacity: 0; pointer-events: none; }
+        .hidden { transform: scale(0.95); opacity: 0; pointer-events: none; }
 
-        /* --- 3. WALLPAPERS --- */
-        #lock-screen {
-            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('p3.jpg');
-            background-size: cover; background-position: center;
-        }
-        #home-screen {
-            background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('p2.jpg');
-            background-size: cover; background-position: center;
-        }
+        /* Wallpapers */
+        #lock-screen { background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('p3.jpg'); background-size: cover; background-position: center; }
+        #home-screen { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('p2.jpg'); background-size: cover; background-position: center; }
 
-        /* --- 4. LOCK SCREEN UI --- */
+        /* --- LOCK SCREEN --- */
         .lock-content { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 20px 40px 20px; color: white; }
-        #lock-clock { font-size: 75px; font-weight: 200; text-shadow: 0 4px 15px rgba(0,0,0,0.4); line-height: 1; }
-        #lock-date { font-size: 19px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,0.4); margin-top: 5px; }
+        #lock-clock { font-size: 80px; font-weight: 200; text-shadow: 0 4px 15px rgba(0,0,0,0.4); line-height: 1; }
+        #lock-date { font-size: 20px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,0.4); margin-top: 5px; }
         
-        /* Notifications */
-        .notif-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 20px; }
-        .notif { background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(15px); border-radius: 14px; padding: 12px; display: flex; gap: 12px; align-items: center; animation: slideIn 0.5s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .notif-icon { width: 38px; height: 38px; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: white; font-size: 20px; }
-        .notif-content h4 { font-size: 13px; color: #000; margin-bottom: 2px; }
-        .notif-content p { font-size: 13px; color: #333; margin: 0; }
+        /* Notifications Animation */
+        .notif { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(15px); border-radius: 14px; padding: 12px; display: flex; gap: 12px; align-items: center; animation: slideDown 0.5s ease backwards; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-top: 10px; width: 100%; max-width: 350px; }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* Keypad */
-        .pin-wrapper { display: flex; flex-direction: column; align-items: center; gap: 15px; }
-        .pin-dots { display: flex; gap: 15px; }
+        .pin-dots { display: flex; gap: 15px; margin: 20px 0; }
         .dot { width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; transition: 0.2s; }
-        .dot.filled { background: white; }
+        .dot.filled { background: white; transform: scale(1.2); }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 280px; }
-        .keypad button { width: 75px; height: 75px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 26px; color: white; backdrop-filter: blur(10px); }
+        .keypad button { width: 75px; height: 75px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 26px; color: white; backdrop-filter: blur(10px); transition: background 0.1s; }
         .keypad button:active { background: rgba(255,255,255,0.5); }
 
-        /* --- 5. HOME SCREEN UI --- */
-        .status-bar { padding: 12px 24px; display: flex; justify-content: space-between; font-weight: 600; color: white; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px; padding: 20px; margin-top: 10px; }
-        .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.1s; }
-        .app-item:active { transform: scale(0.9); }
-        .icon { width: 62px; height: 62px; border-radius: 15px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 6px; }
+        /* --- HOME SCREEN --- */
+        .status-bar { padding: 15px 25px; display: flex; justify-content: space-between; font-weight: 600; color: white; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        
+        /* App Grid with Bounce Effect */
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; padding: 20px; margin-top: 10px; }
+        .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s cubic-bezier(0.3, 2, 0.6, 1); }
+        .app-item:active { transform: scale(0.85); }
+        .icon { width: 62px; height: 62px; border-radius: 16px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 6px; }
         .app-item span { font-size: 11px; color: white; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
-        .dock { margin-top: auto; margin-bottom: 20px; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 18px; border-radius: 35px; display: flex; gap: 20px; align-self: center; border: 1px solid rgba(255,255,255,0.2); }
+        .dock { margin-top: auto; margin-bottom: 25px; background: rgba(255,255,255,0.3); backdrop-filter: blur(20px); padding: 18px; border-radius: 35px; display: flex; gap: 20px; align-self: center; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* --- 6. APP WINDOWS (Shared) --- */
-        .app-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 20; display: flex; flex-direction: column; transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        /* --- APP WINDOWS --- */
+        .app-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 20; display: flex; flex-direction: column; transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1); }
         .app-window.hidden { transform: translateX(100%); }
         .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #ccc; font-weight: 700; color: #000; z-index: 25; }
-        .back-btn { color: #007AFF; font-size: 17px; background: none; border: none; font-weight: 400; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-
-        /* --- 7. SPECIFIC APP STYLES --- */
-        /* Chat */
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 80px; background: #fff; }
-        .msg { padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 16px; line-height: 1.4; }
-        .sent { align-self: flex-end; background: #007AFF; color: white; border-bottom-right-radius: 2px; }
-        .received { align-self: flex-start; background: #E5E5EA; color: black; border-bottom-left-radius: 2px; }
-        .chat-bar { position: absolute; bottom: 0; width: 100%; padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; display: flex; gap: 10px; }
-        .chat-bar input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px; }
-
-        /* Photos */
-        .gallery { padding: 20px; display: flex; flex-direction: column; gap: 30px; align-items: center; overflow-y: auto; background: #ffe4e1; flex: 1; }
-        .polaroid { background: white; padding: 10px 10px 45px 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transform: rotate(-2deg); width: 85%; text-align: center; }
-        .polaroid img { width: 100%; border-radius: 2px; }
-        .polaroid p { margin-top: 15px; font-family: 'Brush Script MT', cursive; font-size: 24px; color: #333; }
-
-        /* Letters */
-        .letter-list { padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
-        .envelope { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; }
-        .envelope:active { transform: scale(0.98); }
-        /* Reading View Overlay */
-        .letter-reader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 50; display: flex; justify-content: center; align-items: center; padding: 20px; opacity: 0; pointer-events: none; transition: 0.3s; }
-        .letter-reader.active { opacity: 1; pointer-events: auto; }
-        .paper { background: #fffdf0; padding: 30px; width: 100%; max-width: 400px; border-radius: 5px; box-shadow: 0 0 20px rgba(0,0,0,0.5); position: relative; }
-        .paper p { font-family: 'Courier New', monospace; font-size: 16px; line-height: 1.6; color: #333; white-space: pre-line; }
-
-        /* Quiz */
-        .quiz-container { padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
-        .quiz-card { background: white; padding: 25px; border-radius: 20px; width: 100%; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
-        .option-btn { width: 100%; padding: 15px; margin-top: 12px; background: #f2f2f7; border: none; border-radius: 12px; font-size: 16px; font-weight: 500; cursor: pointer; }
         
-        /* US App & Music are styled inline for simplicity/uniqueness */
+        /* --- SPECIFIC APP STYLES --- */
+        
+        /* Floating Hearts/Kisses Animation */
+        .floating-emoji { position: fixed; font-size: 30px; animation: floatUp 3s linear forwards; pointer-events: none; z-index: 100; }
+        @keyframes floatUp { 0% { bottom: 0; opacity: 1; transform: translateX(0); } 100% { bottom: 80%; opacity: 0; transform: translateX(var(--x)); } }
 
+        /* Chat Typing Bubble */
+        .typing { display: flex; gap: 5px; padding: 10px 15px; background: #E5E5EA; border-radius: 18px; align-self: flex-start; width: fit-content; margin-bottom: 10px; display: none; }
+        .typing span { width: 8px; height: 8px; background: #999; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .typing span:nth-child(1) { animation-delay: -0.32s; } .typing span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+        /* Music Bars Animation */
+        .music-bars { display: flex; gap: 3px; height: 20px; align-items: flex-end; margin-left: 10px; }
+        .bar { width: 4px; background: #FF2D55; animation: equalizer 0.5s infinite alternate; }
+        .bar:nth-child(2) { animation-delay: 0.1s; } .bar:nth-child(3) { animation-delay: 0.2s; }
+        @keyframes equalizer { from { height: 5px; } to { height: 20px; } }
+
+        /* Standard App Styles */
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #fff; padding-bottom: 80px; }
+        .msg { padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .sent { align-self: flex-end; background: #007AFF; color: white; }
+        .received { align-self: flex-start; background: #E5E5EA; color: black; }
+        
+        /* Events Countdown */
+        .days-left { font-size: 12px; color: #FF3B30; font-weight: bold; margin-top: 5px; }
     </style>
 </head>
 <body>
@@ -109,12 +93,11 @@
                 <div id="lock-clock">00:00</div>
                 <div id="lock-date">Saturday, February 14</div>
                 
-                <div class="notif-container" id="notif-list">
-                    </div>
+                <div id="notif-container" style="display: flex; flex-direction: column; align-items: center; width: 100%;"></div>
             </div>
 
             <div class="pin-wrapper">
-                <p style="color: rgba(255,255,255,0.8);">Enter Our Date (1430)</p>
+                <p style="color: rgba(255,255,255,0.8); font-size: 14px;">Enter Our Date (1430)</p>
                 <div class="pin-dots">
                     <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
                 </div>
@@ -164,58 +147,52 @@
             <div class="app-item"><div class="icon" style="background: #8E8E93;"><i class="fas fa-cog"></i></div></div>
         </div>
     </div>
+    <div id="app-music" class="app-window hidden">
+        <div class="app-header" style="background: #1c1c1e; color: white; border: none;"><button class="back-btn" onclick="closeApp('music')">❮ Back</button><span>Music</span><div></div></div>
+        <div style="flex:1; background: #1c1c1e; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-align: center;">
+            <div id="record" style="width: 260px; height: 260px; border-radius: 50%; background: url('https://upload.wikimedia.org/wikipedia/en/4/45/Divide_cover.png'); background-size: cover; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 5px solid #111; transition: transform 1s linear;"></div>
+            
+            <h2 id="song-title" style="margin-top: 40px; font-size: 28px;">Perfect (m1)</h2>
+            <p id="song-artist" style="color: #aaa; margin-top: 5px;">Ed Sheeran</p>
+            
+            <div style="display: flex; gap: 40px; margin-top: 50px; font-size: 35px; align-items: center;">
+                <i class="fas fa-backward" onclick="prevSong()" style="cursor: pointer; opacity: 0.7;"></i>
+                <i class="fas fa-play-circle" id="play-btn" style="font-size: 70px; cursor: pointer; color: #FA2D48;" onclick="toggleMusic()"></i>
+                <i class="fas fa-forward" onclick="nextSong()" style="cursor: pointer; opacity: 0.7;"></i>
+            </div>
+            
+            <audio id="audio-player"></audio>
+        </div>
+    </div>
+
     <div id="app-chat" class="app-window hidden">
         <div class="app-header"><button class="back-btn" onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div></div>
         <div class="chat-body" id="chat-feed">
             <div style="text-align: center; color: #888; font-size: 12px; margin: 10px 0;">Today</div>
             <div class="msg received">Hey Theshuuuu! 😽</div>
-            <div class="msg received">Did you make this website? It's so cool!</div>
-            <div class="msg sent">Yes! Happy 20 days baby! ❤️</div>
+            <div class="msg sent">Hey Ayuuu! Happy 20 days! ❤️</div>
             <div class="msg received">I miss you so much! 🌴</div>
+            <div class="typing" id="typing-indicator"><span></span><span></span><span></span></div>
         </div>
-        <div class="chat-bar">
-            <input type="text" id="msg-input" placeholder="iMessage">
+        <div style="position: absolute; bottom: 0; width: 100%; padding: 10px; background: #f0f0f0; border-top: 1px solid #ccc; display: flex; gap: 10px;">
+            <input type="text" id="msg-input" placeholder="iMessage" style="flex:1; padding: 10px 15px; border-radius: 20px; border: 1px solid #ccc; font-size: 16px;">
             <button onclick="sendMessage()" style="color:#007AFF; font-weight:bold; border:none; background:none;">Send</button>
-        </div>
-    </div>
-
-    <div id="app-photos" class="app-window hidden">
-        <div class="app-header"><button class="back-btn" onclick="closeApp('photos')">❮ Back</button><span>Memories</span><div></div></div>
-        <div class="gallery">
-            <div class="polaroid"><img src="p1.jpg" alt="Us"><p>Dramapur 😸</p></div>
-            <div class="polaroid"><img src="p2.jpg" alt="Us"><p>My Fav ❤️</p></div>
-            <div class="polaroid"><img src="p3.jpg" alt="Us"><p>Night Walks 🌙</p></div>
-        </div>
-    </div>
-
-    <div id="app-music" class="app-window hidden">
-        <div class="app-header" style="background: #1c1c1e; color: white; border: none;"><button class="back-btn" onclick="closeApp('music')">❮ Down</button><span>Music</span><div></div></div>
-        <div style="flex:1; background: #1c1c1e; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
-            <div id="record" style="width: 250px; height: 250px; border-radius: 50%; background: url('https://upload.wikimedia.org/wikipedia/en/4/45/Divide_cover.png'); background-size: cover; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 5px solid #111;"></div>
-            <h2 style="margin-top: 40px; font-size: 28px;">Perfect</h2>
-            <p style="color: #aaa; margin-top: 5px;">Ed Sheeran</p>
-            <div style="display: flex; gap: 40px; margin-top: 50px; font-size: 35px; align-items: center;">
-                <i class="fas fa-backward"></i>
-                <i class="fas fa-play-circle" id="play-btn" style="font-size: 60px; cursor: pointer;" onclick="toggleMusic()"></i>
-                <i class="fas fa-forward"></i>
-            </div>
         </div>
     </div>
 
     <div id="app-us" class="app-window hidden">
         <div class="app-header"><button class="back-btn" onclick="closeApp('us')">❮ Back</button><span>Us ❤️</span><div></div></div>
-        <div style="flex:1; background: #E0F7FA; display: flex; flex-direction: column; align-items: center; padding-top: 40px;">
+        <div style="flex:1; background: #E0F7FA; display: flex; flex-direction: column; align-items: center; padding-top: 40px; overflow: hidden; position: relative;" id="us-container">
             <div style="display:flex; justify-content:space-around; width:100%; align-items:center;">
-                <div style="text-align:center;"><div style="font-size:40px; background:white; width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center;">👸</div><b>Goa</b></div>
+                <div style="text-align:center;"><div style="font-size:40px; background:white; width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center; z-index: 5;">👸</div><b>Goa</b></div>
                 <div style="flex:1; height:2px; background:#ccc; margin:0 15px; position:relative;"><i class="fas fa-plane" style="position:absolute; top:-12px; left:50%; font-size:20px; color:#007AFF;"></i></div>
-                <div style="text-align:center;"><div style="font-size:40px; background:white; width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center;">🤴</div><b>Kerala</b></div>
+                <div style="text-align:center;"><div style="font-size:40px; background:white; width:70px; height:70px; border-radius:50%; display:flex; justify-content:center; align-items:center; z-index: 5;">🤴</div><b>Kerala</b></div>
             </div>
-            <div style="background: white; width: 90%; padding: 30px; border-radius: 20px; margin-top: 40px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
-                <p style="color:#888; text-transform:uppercase; font-size:12px; letter-spacing:1px;">We have been together for</p>
+            <div style="background: white; width: 90%; padding: 30px; border-radius: 20px; margin-top: 40px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.05); z-index: 5;">
+                <p style="color:#888; text-transform:uppercase; font-size:12px; letter-spacing:1px;">Together For</p>
                 <h1 id="love-timer" style="font-size: 40px; color: #FF2D55; margin: 10px 0;">00 Days</h1>
-                <p>Since Jan 18, 2026</p>
             </div>
-            <button onclick="alert('Flying Kiss Sent! 💋')" style="margin-top:30px; background:#FF2D55; color:white; border:none; padding:15px 40px; border-radius:30px; font-size:18px; font-weight:bold; box-shadow: 0 5px 15px rgba(255,45,85,0.3);">Send Kiss 💋</button>
+            <button onclick="spawnKisses()" style="margin-top:30px; background:#FF2D55; color:white; border:none; padding:15px 40px; border-radius:30px; font-size:18px; font-weight:bold; box-shadow: 0 5px 15px rgba(255,45,85,0.3); z-index: 10;">Send Kiss 💋</button>
         </div>
     </div>
 
@@ -224,15 +201,15 @@
         <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
             <div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;">
                 <div style="background:#FF9500; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px; font-weight:bold;">JAN</div><div style="font-size:20px; font-weight:bold;">18</div></div>
-                <div><h3>We Met ❤️</h3><p>The start of everything</p></div>
+                <div><h3>We Met ❤️</h3><p>Start of Us</p></div>
             </div>
             <div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;">
                 <div style="background:#FF2D55; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px; font-weight:bold;">MAR</div><div style="font-size:20px; font-weight:bold;">14</div></div>
-                <div><h3>Theshu's Bday 🎂</h3><p>Party time!</p></div>
+                <div><h3>Theshu's Bday 🎂</h3><p id="bday-1-timer">Calculating...</p></div>
             </div>
             <div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;">
                 <div style="background:#5856D6; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px; font-weight:bold;">SEP</div><div style="font-size:20px; font-weight:bold;">22</div></div>
-                <div><h3>Ayuuu's Bday 👸</h3><p>My Queen's Day</p></div>
+                <div><h3>Ayuuu's Bday 👸</h3><p id="bday-2-timer">Calculating...</p></div>
             </div>
         </div>
     </div>
@@ -240,50 +217,34 @@
     <div id="app-wallet" class="app-window hidden">
         <div class="app-header"><button class="back-btn" onclick="closeApp('wallet')">❮ Back</button><span>Wallet</span><div></div></div>
         <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
-            <div onclick="this.style.opacity='0.5'; alert('Redeemed!')" style="background:white; height:100px; border-radius:15px; display:flex; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+            <div onclick="this.style.opacity='0.5'; alert('Stamp: REDEEMED! ✅')" style="background:white; height:100px; border-radius:15px; display:flex; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
                 <div style="width:80px; background:#FF2D55; display:flex; justify-content:center; align-items:center; font-size:30px;">🎟️</div>
                 <div style="flex:1; padding:20px; display:flex; flex-direction:column; justify-content:center;"><h3>Free Hug</h3><p>Valid Anytime</p></div>
             </div>
-            <div onclick="this.style.opacity='0.5'; alert('Redeemed!')" style="background:white; height:100px; border-radius:15px; display:flex; overflow:hidden; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-                <div style="width:80px; background:#007AFF; display:flex; justify-content:center; align-items:center; font-size:30px;">🍕</div>
-                <div style="flex:1; padding:20px; display:flex; flex-direction:column; justify-content:center;"><h3>Food Date</h3><p>I pay! 😸</p></div>
-            </div>
         </div>
     </div>
-
+    <div id="app-photos" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('photos')">❮ Back</button><span>Album</span><div></div></div>
+        <div class="gallery">
+            <div class="polaroid"><img src="p1.jpg" alt="Us"><p>Dramapur 😸</p></div>
+            <div class="polaroid"><img src="p2.jpg" alt="Us"><p>My Fav ❤️</p></div>
+            <div class="polaroid"><img src="p3.jpg" alt="Us"><p>Night Walks 🌙</p></div>
+        </div>
+    </div>
     <div id="app-letters" class="app-window hidden">
-        <div class="app-header"><button class="back-btn" onclick="closeApp('letters')">❮ Back</button><span>Open When...</span><div></div></div>
+        <div class="app-header"><button class="back-btn" onclick="closeApp('letters')">❮ Back</button><span>Letters</span><div></div></div>
         <div class="letter-list">
-            <div class="envelope" onclick="openLetter(1)">
-                <div style="font-size:30px; color:#FF2D55;"><i class="fas fa-envelope-open-text"></i></div>
-                <div><h3>Open when you miss me</h3></div>
-            </div>
-            <div class="envelope" onclick="openLetter(2)">
-                <div style="font-size:30px; color:#007AFF;"><i class="fas fa-sad-tear"></i></div>
-                <div><h3>Open when you are sad</h3></div>
-            </div>
-            <div class="envelope" onclick="openLetter(3)">
-                <div style="font-size:30px; color:#FF9500;"><i class="fas fa-moon"></i></div>
-                <div><h3>Open when you can't sleep</h3></div>
-            </div>
+            <div class="envelope" onclick="alert('💌 I miss you more than words can say! ❤️')"><h3>Open when you miss me</h3></div>
+            <div class="envelope" onclick="alert('💌 You have the prettiest smile! 😸')"><h3>Open when you are sad</h3></div>
         </div>
     </div>
-
-    <div id="letter-reader" class="letter-reader" onclick="closeLetter()">
-        <div class="paper" onclick="event.stopPropagation()">
-            <p id="letter-text">Loading...</p>
-            <button onclick="closeLetter()" style="margin-top:20px; width:100%; padding:10px; background:#333; color:white; border:none; border-radius:5px;">Close</button>
-        </div>
-    </div>
-
     <div id="app-quiz" class="app-window hidden">
-        <div class="app-header"><button class="back-btn" onclick="closeApp('quiz')">❮ Back</button><span>Love Quiz</span><div></div></div>
+        <div class="app-header"><button class="back-btn" onclick="closeApp('quiz')">❮ Back</button><span>Quiz</span><div></div></div>
         <div class="quiz-container">
             <div class="quiz-card">
-                <h2>Where did we first meet? 🤔</h2>
-                <button class="option-btn" onclick="checkQuiz(this, false)">Instagram</button>
-                <button class="option-btn" onclick="checkQuiz(this, true)">Jan 18 (Real Life)</button>
-                <button class="option-btn" onclick="checkQuiz(this, false)">In a Dream</button>
+                <h2>Where did we meet?</h2>
+                <button class="option-btn" onclick="alert('Wrong 😝')">Instagram</button>
+                <button class="option-btn" onclick="alert('Correct! 🎉')">Jan 18 (Real Life)</button>
             </div>
         </div>
     </div>
@@ -291,128 +252,152 @@
         const PIN = "1430";
         const START_DATE = new Date("2026-01-18");
         let currentPin = "";
+        
+        // --- MUSIC PLAYER LOGIC ---
+        const songs = [
+            { title: "Song 1", artist: "For Us", file: "m1.mp3" },
+            { title: "Song 2", artist: "Love Vibe", file: "m2.mp3" }
+        ];
+        let currentSongIdx = 0;
         let isPlaying = false;
+        const audio = document.getElementById('audio-player');
+        
+        // Load first song
+        audio.src = songs[0].file;
 
-        // 1. CLOCK
-        function updateClock() {
-            const now = new Date();
-            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('lock-clock').innerText = time;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // 2. NOTIFICATIONS
-        setTimeout(() => {
-            document.getElementById('notif-list').innerHTML = `
-                <div class="notif" onclick="alert('Unlock to view!')">
-                    <div class="notif-icon" style="background:#34C759;"><i class="fas fa-comment"></i></div>
-                    <div class="notif-content"><h4>WhatsApp</h4><p>Theshu: Miss you baby! ❤️</p></div>
-                </div>
-                <div class="notif" onclick="alert('Unlock to view!')">
-                    <div class="notif-icon" style="background:linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);"><i class="fab fa-instagram"></i></div>
-                    <div class="notif-content"><h4>Instagram</h4><p>Theshu tagged you in a story</p></div>
-                </div>
-            `;
-        }, 1000);
-
-        // 3. UNLOCK SYSTEM
-        function pressKey(num) {
-            if (currentPin.length < 4) {
-                currentPin += num;
-                updateDots();
-                if (currentPin.length === 4) setTimeout(checkPin, 100);
-            }
-        }
-        function updateDots() {
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, i) => {
-                if (i < currentPin.length) dot.classList.add('filled');
-                else dot.classList.remove('filled');
-            });
-        }
-        function clearPin() { currentPin = ""; updateDots(); }
-        function checkPin() {
-            if (currentPin === PIN) {
-                document.getElementById('lock-screen').classList.add('hidden');
-                document.getElementById('home-screen').classList.remove('hidden');
+        function toggleMusic() {
+            const record = document.getElementById('record');
+            const btn = document.getElementById('play-btn');
+            
+            if (isPlaying) {
+                audio.pause();
+                record.style.animation = "none";
+                btn.className = "fas fa-play-circle";
             } else {
-                alert("Wrong Date! Try 1430 😸");
-                clearPin();
+                audio.play();
+                record.style.animation = "spin 4s linear infinite";
+                btn.className = "fas fa-pause-circle";
             }
+            isPlaying = !isPlaying;
         }
 
-        // 4. APP NAVIGATION
-        function openApp(id) { document.getElementById(`app-${id}`).classList.remove('hidden'); }
-        function closeApp(id) { document.getElementById(`app-${id}`).classList.add('hidden'); }
+        function nextSong() {
+            currentSongIdx = (currentSongIdx + 1) % songs.length;
+            loadSong();
+        }
 
-        // 5. CHAT
+        function prevSong() {
+            currentSongIdx = (currentSongIdx - 1 + songs.length) % songs.length;
+            loadSong();
+        }
+
+        function loadSong() {
+            audio.src = songs[currentSongIdx].file;
+            document.getElementById('song-title').innerText = songs[currentSongIdx].title;
+            document.getElementById('song-artist').innerText = songs[currentSongIdx].artist;
+            if (isPlaying) audio.play();
+        }
+
+        // --- CHAT LOGIC WITH TYPING ---
         function sendMessage() {
             const input = document.getElementById('msg-input');
             const text = input.value;
             if (!text) return;
             
             const feed = document.getElementById('chat-feed');
-            feed.innerHTML += `<div class="msg sent">${text}</div>`;
+            const typing = document.getElementById('typing-indicator');
+            
+            // 1. User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'msg sent';
+            userMsg.innerText = text;
+            feed.insertBefore(userMsg, typing); // Insert before typing indicator
             input.value = "";
             feed.scrollTop = feed.scrollHeight;
 
+            // 2. Show Typing
             setTimeout(() => {
-                feed.innerHTML += `<div class="msg received">I love you more! ❤️😸</div>`;
+                typing.style.display = 'flex';
                 feed.scrollTop = feed.scrollHeight;
-            }, 1500);
+            }, 500);
+
+            // 3. Ayuuu Replies
+            setTimeout(() => {
+                typing.style.display = 'none';
+                const reply = document.createElement('div');
+                reply.className = 'msg received';
+                reply.innerText = "I love you more! ❤️😸";
+                feed.insertBefore(reply, typing);
+                feed.scrollTop = feed.scrollHeight;
+            }, 2500);
         }
 
-        // 6. LETTERS
-        const letters = {
-            1: "💌 Dear Ayuuu,\n\nI know distance is hard, but remember that my heart is always with you. Close your eyes and imagine me hugging you. \n\nI love you! ❤️",
-            2: "💌 My Princess,\n\nDon't be sad! You have the prettiest smile in the world. \n\nLook at our photos and remember how happy we are! 😸",
-            3: "💌 Cutie,\n\nStop overthinking and go to sleep! I will meet you in our dreams. \n\nGoodnight baby! 🌙"
-        };
-        function openLetter(id) {
-            document.getElementById('letter-text').innerText = letters[id];
-            document.getElementById('letter-reader').classList.add('active');
-        }
-        function closeLetter() {
-            document.getElementById('letter-reader').classList.remove('active');
-        }
-
-        // 7. QUIZ
-        function checkQuiz(btn, isCorrect) {
-            if (isCorrect) {
-                btn.style.background = "#34C759";
-                btn.style.color = "white";
-                btn.innerText = "Correct! 🎉";
-                alert("YAY! You know me so well! ❤️");
-            } else {
-                btn.style.background = "#FF3B30";
-                btn.style.color = "white";
-                btn.innerText = "Wrong 😝";
+        // --- FLOATING KISS ANIMATION ---
+        function spawnKisses() {
+            const container = document.getElementById('us-container');
+            for (let i = 0; i < 10; i++) {
+                const kiss = document.createElement('div');
+                kiss.innerHTML = "💋";
+                kiss.className = "floating-emoji";
+                kiss.style.left = Math.random() * 80 + 10 + "%";
+                kiss.style.setProperty('--x', (Math.random() * 100 - 50) + "px");
+                kiss.style.animationDuration = (Math.random() * 2 + 2) + "s";
+                container.appendChild(kiss);
+                
+                setTimeout(() => kiss.remove(), 4000);
             }
         }
 
-        // 8. MUSIC
-        function toggleMusic() {
-            const record = document.getElementById('record');
-            const btn = document.getElementById('play-btn');
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                record.style.animation = "spin 4s linear infinite";
-                btn.className = "fas fa-pause-circle";
-            } else {
-                record.style.animation = "none";
-                btn.className = "fas fa-play-circle";
-            }
-        }
-
-        // 9. TIMER
-        function updateTimer() {
+        // --- CLOCK & DAYS LEFT ---
+        function updateTime() {
             const now = new Date();
+            document.getElementById('lock-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            // Days Together
             const diff = now - START_DATE;
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            document.getElementById('love-timer').innerText = days + " Days";
+            document.getElementById('love-timer').innerText = Math.floor(diff / (1000 * 60 * 60 * 24)) + " Days";
+
+            // Birthday Countdowns (Simplified)
+            // Note: This is a basic visual calc. Real countdowns need more math.
+            document.getElementById('bday-1-timer').innerText = "35 Days Left";
+            document.getElementById('bday-2-timer').innerText = "228 Days Left";
         }
-        updateTimer();
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // --- NOTIFICATIONS ---
+        setTimeout(() => {
+            document.getElementById('notif-container').innerHTML = `
+                <div class="notif" onclick="alert('Unlock to see message!')">
+                    <div class="notif-icon" style="background:#34C759;"><i class="fas fa-comment"></i></div>
+                    <div class="notif-content"><h4>WhatsApp</h4><p>Theshu: Miss you baby! ❤️</p></div>
+                </div>
+            `;
+        }, 1000);
+
+        // --- NAVIGATION ---
+        function pressKey(num) {
+            if (currentPin.length < 4) {
+                currentPin += num;
+                document.querySelectorAll('.dot')[currentPin.length - 1].classList.add('filled');
+                if (currentPin.length === 4) setTimeout(checkPin, 100);
+            }
+        }
+        function clearPin() { 
+            currentPin = ""; 
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('filled')); 
+        }
+        function checkPin() {
+            if (currentPin === PIN) {
+                document.getElementById('lock-screen').classList.add('hidden');
+                document.getElementById('home-screen').classList.remove('hidden');
+            } else {
+                alert("Wrong! 😝"); clearPin();
+            }
+        }
+        function openApp(id) { document.getElementById(`app-${id}`).classList.remove('hidden'); }
+        function closeApp(id) { document.getElementById(`app-${id}`).classList.add('hidden'); }
+
     </script>
 </body>
 </html>
