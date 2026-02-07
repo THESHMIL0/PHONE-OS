@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Clean Game OS</title>
+    <title>Fixed Game OS</title>
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
         
+        /* --- GLOBAL HIDDEN UTILITY (THE FIX) --- */
+        .hidden { display: none !important; }
+
         /* --- TURBO FX --- */
         body.turbo .phone-container { border-color: #f00; animation: shake 0.5s infinite; }
         body.turbo { color: #f00; text-shadow: 2px 0 yellow; }
@@ -28,7 +31,6 @@
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             background: #000; z-index: 10; transition: 0.2s;
         }
-        .screen.hidden { opacity: 0; pointer-events: none; z-index: 0; }
 
         /* --- MENU GRID --- */
         .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; width: 100%; overflow-y: auto; }
@@ -47,22 +49,22 @@
         .btn { width: 60px; height: 60px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #444; }
         .btn:active { background: #444; }
 
-        /* --- NEW GAME OVER OVERLAY (CLEAN!) --- */
+        /* --- OVERLAY STYLES --- */
         .game-over-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 50;
+            align-items: center; justify-content: center; z-index: 100;
             backdrop-filter: blur(5px);
         }
         .game-over-box {
             background: #222; border: 1px solid #444; padding: 30px; border-radius: 20px;
-            text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5); width: 80%;
         }
         .game-over-title { font-size: 30px; margin-bottom: 10px; color: #ff4444; font-weight: bold; }
         .restart-btn {
             background: #0f0; color: black; border: none; padding: 10px 25px;
             border-radius: 20px; font-weight: bold; font-size: 16px; margin-top: 15px;
-            cursor: pointer;
+            cursor: pointer; width: 100%;
         }
 
         /* --- SPECIFIC GAMES --- */
@@ -76,7 +78,7 @@
 <body>
     <div class="phone-container">
         <div class="status-bar">
-            <span>GAME OS v10</span>
+            <span>GAME OS v10.1</span>
             <span id="turbo-text" style="display:none; color:red;">TURBO</span>
             <span>🔋 100%</span>
         </div>
@@ -86,7 +88,7 @@
                 <div id="overlay-title" class="game-over-title">GAME OVER</div>
                 <div id="overlay-msg">Score: 0</div>
                 <button class="restart-btn" onclick="restartCurrentGame()">TRY AGAIN</button>
-                <button class="restart-btn" style="background:#333; color:white; margin-top:10px;" onclick="closeOverlay()">EXIT</button>
+                <button class="restart-btn" style="background:#333; color:white; margin-top:10px;" onclick="closeOverlay(); goHome();">EXIT</button>
             </div>
         </div>
 
@@ -147,11 +149,12 @@
         <div id="memory-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><div id="mem-grid" class="mem-grid"></div></div>
         <div id="clicker-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h1 id="money-display" style="color:gold">$0</h1><div class="coin-btn" onclick="clickCoin()">$</div></div>
     </div>
+
     <script>
         const PASS = "1234";
         let turbo = false;
         let money = parseInt(localStorage.getItem('money')) || 0;
-        let currentGame = ''; // To know what to restart
+        let currentGame = '';
 
         // --- SYSTEM ---
         function unlock() { if(document.getElementById('pass-input').value === PASS) switchScreen('home-screen'); }
@@ -162,7 +165,7 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // --- NEW: CLEAN GAME OVER FUNCTION ---
+        // --- OVERLAY LOGIC ---
         function showGameOver(title, msg, gameName) {
             document.getElementById('overlay-title').innerText = title;
             document.getElementById('overlay-msg').innerText = msg;
@@ -203,7 +206,7 @@
             cancelAnimationFrame(runLoop);
         }
 
-        // --- CLICKER & TTT & MEMORY (No Alerts Here) ---
+        // --- CLICKER & TTT & MEMORY ---
         function clickCoin() { money += (turbo?2:1); localStorage.setItem('money', money); updateMoney(); }
         function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
 
@@ -254,7 +257,9 @@
             else { c1.el.innerText=""; c1.el.style.background="#222"; c2.el.innerText=""; c2.el.style.background="#222"; }
             flipped=[];
         }
-        // --- SNAKE (UPDATED: No Alerts) ---
+
+        // --- ACTION GAMES (With Clean Overlay) ---
+        // SNAKE
         let snake, food, sDir, snakeInt;
         function startSnake() {
             const ctx = document.getElementById('snake-canvas').getContext('2d');
@@ -273,14 +278,11 @@
             let h={x:snake[0].x, y:snake[0].y};
             if(sDir==='LEFT') h.x-=20; if(sDir==='UP') h.y-=20;
             if(sDir==='RIGHT') h.x+=20; if(sDir==='DOWN') h.y+=20;
-            
-            // Check Collision
             if(h.x<0||h.x>=300||h.y<0||h.y>=300||snake.some(s=>s.x===h.x&&s.y===h.y)) { 
                 clearInterval(snakeInt); 
                 showGameOver("GAME OVER", "Snake Length: " + snake.length, 'snake'); 
                 return; 
             }
-            
             if(h.x===food.x && h.y===food.y) { spawnFood(); document.getElementById('snake-score').innerText=snake.length; } else snake.pop();
             snake.unshift(h);
             ctx.fillStyle="#000"; ctx.fillRect(0,0,300,300);
@@ -288,7 +290,7 @@
             ctx.fillStyle="#0f0"; snake.forEach(s=>ctx.fillRect(s.x,s.y,18,18));
         }
 
-        // --- SPACE SHOOTER (UPDATED: Clean) ---
+        // SPACE SHOOTER
         let ship, bullets=[], aliens=[], spaceLoop, spaceScore=0;
         function startSpace() {
             ship={x:135,dx:0}; bullets=[]; aliens=[]; spaceScore=0;
@@ -303,18 +305,10 @@
             ctx.fillStyle="#0ff"; ctx.fillRect(ship.x,370,30,30);
             bullets.forEach((b,i)=>{ b.y-=10; ctx.fillStyle="yellow"; ctx.fillRect(b.x,b.y,5,10); if(b.y<0) bullets.splice(i,1); });
             if(Math.random()<0.03) aliens.push({x:Math.random()*270,y:0});
-            
-            // Check Aliens
             for(let i=0; i<aliens.length; i++) {
                 let a = aliens[i];
                 a.y+=(turbo?4:2); ctx.fillStyle="red"; ctx.fillRect(a.x,a.y,20,20);
-                
-                // Hit by bullet
-                bullets.forEach((b,j)=>{ 
-                    if(b.x>a.x&&b.x<a.x+20&&b.y<a.y+20) { aliens.splice(i,1); bullets.splice(j,1); spaceScore+=10; } 
-                });
-
-                // Hit Bottom (Game Over)
+                bullets.forEach((b,j)=>{ if(b.x>a.x&&b.x<a.x+20&&b.y<a.y+20) { aliens.splice(i,1); bullets.splice(j,1); spaceScore+=10; } });
                 if(a.y>370) { 
                     cancelAnimationFrame(spaceLoop); 
                     showGameOver("INVASION!", "Score: " + spaceScore, 'space'); 
@@ -324,7 +318,7 @@
             spaceLoop = requestAnimationFrame(()=>loopSpace(ctx));
         }
 
-        // --- RUNNER (UPDATED: Clean) ---
+        // RUNNER
         let dino, obstacles=[], runLoop, rScore=0;
         function startRunner() {
             dino={y:160,dy:0,jump:false}; obstacles=[]; rScore=0;
@@ -337,12 +331,9 @@
             if(Math.random()<0.02) obstacles.push({x:300});
             ctx.fillStyle="#000"; ctx.fillRect(0,0,300,200);
             ctx.fillStyle="#0ff"; ctx.fillRect(30,dino.y,20,20);
-            
             for(let i=0; i<obstacles.length; i++) {
                 let o = obstacles[i];
                 o.x-=(turbo?8:5); ctx.fillStyle="red"; ctx.fillRect(o.x,160,20,40);
-                
-                // Collision
                 if(o.x<50 && o.x>10 && dino.y>140) { 
                     cancelAnimationFrame(runLoop); 
                     showGameOver("CRASHED!", "Score: " + rScore, 'runner'); 
