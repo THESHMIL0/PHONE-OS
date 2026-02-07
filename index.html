@@ -3,210 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamer OS Ultima</title>
+    <title>Ultimate Game OS</title>
     <style>
-        /* --- CORE STYLES --- */
+        /* --- CORE --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background: #000; color: #0ff; font-family: 'Courier New', monospace; overflow: hidden; height: 100vh; }
-
-        /* --- CRT EFFECT --- */
-        body::after {
-            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 999; background-size: 100% 2px, 3px 100%; pointer-events: none;
-        }
-
-        /* --- TURBO MODE (Red Shift) --- */
-        body.turbo-mode { color: #ff0055; text-shadow: 2px 0 #0ff; }
-        body.turbo-mode .phone-container { border-color: #ff0055; animation: shake 0.5s infinite; }
-        body.turbo-mode .app-icon, body.turbo-mode .game-card { border-color: #ff0055; }
+        body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
+        
+        /* --- TURBO FX --- */
+        body.turbo .phone-container { border-color: #f00; animation: shake 0.5s infinite; }
+        body.turbo { color: #f00; text-shadow: 2px 0 yellow; }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
 
-        /* --- PHONE FRAME --- */
+        /* --- PHONE --- */
         .phone-container {
             width: 100%; height: 100%; display: flex; flex-direction: column;
-            background: #111; border: 3px solid #0ff; box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-            transition: 0.3s;
+            background: linear-gradient(to bottom, #111, #000);
+            border: 2px solid #333; transition: 0.3s;
         }
-
+        .status-bar { padding: 10px; display: flex; justify-content: space-between; background: #111; border-bottom: 1px solid #333; font-weight: bold; color: #0f0; }
+        
         /* --- SCREENS --- */
         .screen {
             position: absolute; top: 40px; left: 0; width: 100%; height: calc(100% - 40px);
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #050505; opacity: 1; z-index: 10; transition: 0.2s;
+            background: #000; z-index: 10; transition: 0.2s;
         }
         .screen.hidden { opacity: 0; pointer-events: none; z-index: 0; }
-        
-        .back-btn {
-            position: absolute; top: 10px; left: 10px; z-index: 50;
-            background: #000; color: inherit; border: 1px solid currentColor;
-            padding: 5px 15px; font-weight: bold; cursor: pointer;
-        }
 
-        /* --- UI ELEMENTS --- */
-        .status-bar { padding: 10px; display: flex; justify-content: space-between; border-bottom: 1px solid currentColor; font-weight: bold; }
-        .app-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; width: 100%; }
-        .game-card {
-            background: #1a1a1a; border: 1px solid #333; height: 110px; border-radius: 5px;
+        /* --- MENU GRID --- */
+        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; width: 100%; overflow-y: auto; }
+        .app-icon {
+            aspect-ratio: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 15px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 35px; cursor: pointer; transition: 0.1s;
+            font-size: 30px; cursor: pointer; transition: 0.1s;
         }
-        .game-card:active { background: #333; transform: scale(0.95); }
-        .game-card span { font-size: 14px; margin-top: 10px; opacity: 0.7; }
+        .app-icon:active { transform: scale(0.9); background: #333; border-color: #0f0; }
+        .app-icon span { font-size: 10px; margin-top: 5px; opacity: 0.7; }
 
-        /* --- RUNNER GAME --- */
-        #runner-canvas { border-bottom: 2px solid currentColor; background: #000; }
-        .tap-zone { width: 100%; height: 100px; margin-top: 20px; border: 1px dashed currentColor; display: flex; align-items: center; justify-content: center; opacity: 0.5; }
+        /* --- GAME UI COMMON --- */
+        .back-btn { position: absolute; top: 10px; left: 10px; background: #222; color: white; border: 1px solid #444; padding: 5px 15px; border-radius: 5px; }
+        canvas { background: #000; border: 2px solid #333; max-width: 100%; }
+        .controls { display: flex; gap: 10px; margin-top: 10px; }
+        .btn { width: 60px; height: 60px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #444; }
+        .btn:active { background: #444; }
+
+        /* --- SPECIFIC GAMES --- */
+        .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .ttt-cell { width: 80px; height: 80px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 1px solid #333; }
+        .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .mem-card { width: 60px; height: 60px; background: #222; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .coin-btn { width: 120px; height: 120px; border-radius: 50%; background: gold; color: black; font-size: 50px; display: flex; align-items: center; justify-content: center; border: 5px solid orange; box-shadow: 0 0 20px gold; }
     </style>
 </head>
 <body>
-    <div id="phone" class="phone-container">
+    <div class="phone-container">
         <div class="status-bar">
-            <span>🚀 SYSTEM READY</span>
-            <span id="turbo-badge" style="display:none; color:red;">TURBO ON</span>
+            <span>GAME BOX v9</span>
+            <span id="turbo-text" style="display:none; color:red;">TURBO</span>
             <span>🔋 100%</span>
         </div>
 
         <div id="lock-screen" class="screen">
-            <h1 style="font-size: 50px; text-shadow: 0 0 10px currentColor;">LOCKED</h1>
-            <input type="password" id="pass-input" maxlength="4" placeholder="____" style="background:transparent; border:none; border-bottom:2px solid currentColor; color:inherit; font-size:30px; text-align:center; width:100px; margin:20px;">
-            <button onclick="unlock()" style="background:currentColor; color:black; border:none; padding:10px 30px; font-weight:bold;">LOGIN</button>
+            <h1>WELCOME</h1>
+            <input type="password" id="pass-input" maxlength="4" placeholder="••••" style="background:transparent; border:none; border-bottom:2px solid #0f0; color:white; font-size:30px; text-align:center; width:100px; margin:20px;">
+            <button onclick="unlock()" style="padding:10px 30px; background:#0f0; border:none; font-weight:bold;">PLAY</button>
         </div>
 
         <div id="home-screen" class="screen hidden">
             <div class="app-grid">
-                <div class="game-card" onclick="openApp('runner')">🏃<span>Neon Dash</span></div>
-                <div class="game-card" onclick="openApp('space')">🚀<span>Galaxy War</span></div>
-                <div class="game-card" onclick="toggleTurbo()">⚡<span>Overclock</span></div>
-                <div class="game-card" onclick="alert('System Optimal')">⚙️<span>System</span></div>
+                <div class="app-icon" onclick="openApp('snake')">🐍<span>Snake</span></div>
+                <div class="app-icon" onclick="openApp('ttt')">❌<span>TicTac</span></div>
+                <div class="app-icon" onclick="openApp('space')">🚀<span>Space</span></div>
+                <div class="app-icon" onclick="openApp('runner')">🏃<span>Dash</span></div>
+                <div class="app-icon" onclick="openApp('memory')">🧠<span>Memory</span></div>
+                <div class="app-icon" onclick="openApp('clicker')">💰<span>Tycoon</span></div>
+                <div class="app-icon" onclick="toggleTurbo()" style="border-color:red; color:red;">⚡<span>TURBO</span></div>
             </div>
         </div>
 
-        <div id="runner-screen" class="screen hidden">
+        <div id="snake-screen" class="screen hidden">
             <button class="back-btn" onclick="goHome()">EXIT</button>
-            <div style="width:100%; padding: 0 20px; display:flex; justify-content:space-between;">
-                <h2>SCORE: <span id="run-score">0</span></h2>
-            </div>
-            <canvas id="runner-canvas" width="300" height="200"></canvas>
-            <div class="tap-zone" onmousedown="jump()" ontouchstart="jump()">
-                TAP TO JUMP
+            <h3>Score: <span id="snake-score">0</span></h3>
+            <canvas id="snake-canvas" width="300" height="300"></canvas>
+            <div class="controls">
+                <div class="btn" onclick="setDir('LEFT')">⬅️</div>
+                <div class="btn" onclick="setDir('UP')">⬆️</div>
+                <div class="btn" onclick="setDir('DOWN')">⬇️</div>
+                <div class="btn" onclick="setDir('RIGHT')">➡️</div>
             </div>
         </div>
 
         <div id="space-screen" class="screen hidden">
             <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h3 id="space-score">SCORE: 0</h3>
-            <canvas id="space-canvas" width="300" height="350" style="border:1px solid #333; background:#000;"></canvas>
-            <div style="display:flex; gap:20px; margin-top:10px;">
-                <button ontouchstart="moveShip(-1)" ontouchend="stopShip()" style="padding:15px; font-size:20px;">⬅️</button>
-                <button onclick="fireLaser()" style="padding:15px; font-size:20px; color:red; border-color:red;">🔥</button>
-                <button ontouchstart="moveShip(1)" ontouchend="stopShip()" style="padding:15px; font-size:20px;">➡️</button>
+            <canvas id="space-canvas" width="300" height="400"></canvas>
+            <div class="controls">
+                <div class="btn" ontouchstart="moveShip(-1)" ontouchend="stopShip()">⬅️</div>
+                <div class="btn" style="border-color:red; color:red;" onclick="fireLaser()">🔥</div>
+                <div class="btn" ontouchstart="moveShip(1)" ontouchend="stopShip()">➡️</div>
             </div>
+        </div>
+
+        <div id="runner-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h2 id="run-score">0</h2>
+            <canvas id="run-canvas" width="300" height="200"></canvas>
+            <div style="width:300px; height:100px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; margin-top:10px;" onmousedown="jump()" ontouchstart="jump()">TAP TO JUMP</div>
+        </div>
+
+        <div id="ttt-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h2 id="ttt-msg">VS CPU</h2>
+            <div id="ttt-board" class="ttt-board"></div>
+            <button onclick="startTTT()" style="margin-top:20px; padding:10px;">RESTART</button>
+        </div>
+
+        <div id="memory-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <div id="mem-grid" class="mem-grid"></div>
+        </div>
+
+        <div id="clicker-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">EXIT</button>
+            <h1 id="money-display" style="color:gold">$0</h1>
+            <div class="coin-btn" onclick="clickCoin()">$</div>
         </div>
     </div>
     <script>
         const PASS = "1234";
         let turbo = false;
-        
-        function unlock() {
-            if(document.getElementById('pass-input').value === PASS) {
-                document.getElementById('lock-screen').classList.add('hidden');
-                document.getElementById('home-screen').classList.remove('hidden');
-            }
-        }
-        function goHome() {
-            stopGames();
+        let money = parseInt(localStorage.getItem('money')) || 0;
+
+        // --- SYSTEM ---
+        function unlock() { if(document.getElementById('pass-input').value === PASS) switchScreen('home-screen'); }
+        function goHome() { stopAllGames(); switchScreen('home-screen'); }
+        function switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById('home-screen').classList.remove('hidden');
+            document.getElementById(id).classList.remove('hidden');
         }
         function openApp(app) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
-            document.getElementById(app + '-screen').classList.remove('hidden');
-            if(app === 'runner') startRunner();
-            if(app === 'space') startSpace();
+            switchScreen(app+'-screen');
+            if(app==='snake') startSnake();
+            if(app==='space') startSpace();
+            if(app==='runner') startRunner();
+            if(app==='ttt') startTTT();
+            if(app==='memory') startMemory();
+            if(app==='clicker') updateMoney();
         }
         function toggleTurbo() {
             turbo = !turbo;
-            document.body.classList.toggle('turbo-mode');
-            document.getElementById('turbo-badge').style.display = turbo ? 'inline' : 'none';
-            if(turbo) navigator.vibrate(200);
+            document.body.classList.toggle('turbo');
+            document.getElementById('turbo-text').style.display = turbo ? 'block' : 'none';
         }
-        function stopGames() {
-            cancelAnimationFrame(runLoop);
+        function stopAllGames() {
+            clearInterval(snakeInt);
             cancelAnimationFrame(spaceLoop);
+            cancelAnimationFrame(runLoop);
         }
-        // --- NEON DASH RUNNER ---
-        let runCtx, dino, obstacles, runLoop, runScore, runSpeed;
-        function startRunner() {
-            const cvs = document.getElementById('runner-canvas'); runCtx = cvs.getContext('2d');
-            dino = { x: 30, y: 160, w: 20, h: 20, dy: 0, jump: false };
-            obstacles = []; runScore = 0; runSpeed = turbo ? 8 : 5;
-            loopRunner();
-        }
-        function jump() {
-            if(!dino.jump) { dino.dy = -10; dino.jump = true; }
-        }
-        function loopRunner() {
-            // Physics
-            dino.dy += 0.6; // Gravity
-            dino.y += dino.dy;
-            if(dino.y > 160) { dino.y = 160; dino.dy = 0; dino.jump = false; }
 
-            // Obstacles
-            if(Math.random() < 0.02) obstacles.push({x: 300, w: 20, h: 30});
-            
-            // Draw
-            runCtx.fillStyle = "#000"; runCtx.fillRect(0,0,300,200);
-            runCtx.fillStyle = turbo ? "#ff0055" : "#0ff"; // Player color
-            runCtx.fillRect(dino.x, dino.y, dino.w, dino.h); // Player
-            
-            runCtx.fillStyle = "red";
-            obstacles.forEach((obs, i) => {
-                obs.x -= runSpeed;
-                runCtx.fillRect(obs.x, 170, obs.w, obs.h); // Spikes
-                // Collision
-                if(dino.x < obs.x + obs.w && dino.x + dino.w > obs.x && dino.y + dino.h > 170) {
-                    alert("CRASH! Score: " + runScore); startRunner();
-                }
+        // --- CLICKER ---
+        function clickCoin() { money += (turbo?2:1); localStorage.setItem('money', money); updateMoney(); }
+        function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
+
+        // --- TIC TAC TOE ---
+        let board=[], turn='X', active=true;
+        function startTTT() {
+            board=Array(9).fill(""); active=true; turn='X';
+            const el=document.getElementById('ttt-board'); el.innerHTML="";
+            board.forEach((_,i)=>{
+                let c=document.createElement('div'); c.className='ttt-cell';
+                c.onclick=()=>moveTTT(i,c); el.appendChild(c);
             });
-
-            runScore++;
-            document.getElementById('run-score').innerText = runScore;
-            runLoop = requestAnimationFrame(loopRunner);
+            document.getElementById('ttt-msg').innerText = "YOUR TURN";
+        }
+        function moveTTT(i,c) {
+            if(board[i] || !active) return;
+            board[i]=turn; c.innerText=turn; c.style.color = turn==='X'?'#0f0':'#f00';
+            if(checkWin(turn)) { active=false; document.getElementById('ttt-msg').innerText=turn+" WINS!"; return; }
+            turn = turn==='X'?'O':'X';
+            if(turn==='O') setTimeout(()=>{
+                let empty = board.map((v,k)=>v===""?k:null).filter(v=>v!==null);
+                if(empty.length) document.getElementById('ttt-board').children[empty[Math.floor(Math.random()*empty.length)]].click();
+            }, turbo?100:500);
+        }
+        function checkWin(p) {
+            const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(w=>board[w[0]]===p && board[w[1]]===p && board[w[2]]===p);
         }
 
-        // --- SPACE SHOOTER (Mini Version) ---
-        let spaceCtx, ship, bullets, aliens, spaceLoop;
+        // --- MEMORY ---
+        let cards=[], flipped=[], matched=[];
+        const emojis = ['🍎','🍎','👻','👻','⚡','⚡','💎','💎','🚀','🚀','🎮','🎮'];
+        function startMemory() {
+            const g=document.getElementById('mem-grid'); g.innerHTML=""; flipped=[]; matched=[];
+            cards = emojis.sort(()=>Math.random()-0.5);
+            cards.forEach((e,i)=>{
+                let c=document.createElement('div'); c.className='mem-card';
+                c.onclick=()=>flipCard(c,e); g.appendChild(c);
+            });
+        }
+        function flipCard(c,e) {
+            if(flipped.length<2 && !flipped.includes(c) && !matched.includes(c)) {
+                c.innerText=e; c.style.background='#fff'; flipped.push({el:c,val:e});
+                if(flipped.length===2) setTimeout(checkMatch, turbo?200:800);
+            }
+        }
+        function checkMatch() {
+            const [c1,c2] = flipped;
+            if(c1.val===c2.val) { matched.push(c1.el,c2.el); c1.el.style.background='#0f0'; c2.el.style.background='#0f0'; }
+            else { c1.el.innerText=""; c1.el.style.background="#222"; c2.el.innerText=""; c2.el.style.background="#222"; }
+            flipped=[];
+        }
+        // --- SNAKE ---
+        let snake, food, sDir, snakeInt;
+        function startSnake() {
+            const ctx = document.getElementById('snake-canvas').getContext('2d');
+            snake=[{x:100,y:100}]; sDir='RIGHT'; spawnFood();
+            if(snakeInt) clearInterval(snakeInt);
+            snakeInt = setInterval(()=>updateSnake(ctx), turbo?50:150);
+        }
+        function spawnFood() { food={x:Math.floor(Math.random()*15)*20, y:Math.floor(Math.random()*15)*20}; }
+        function setDir(d) {
+            if(d==='LEFT' && sDir!=='RIGHT') sDir='LEFT';
+            if(d==='UP' && sDir!=='DOWN') sDir='UP';
+            if(d==='RIGHT' && sDir!=='LEFT') sDir='RIGHT';
+            if(d==='DOWN' && sDir!=='UP') sDir='DOWN';
+        }
+        function updateSnake(ctx) {
+            let h={x:snake[0].x, y:snake[0].y};
+            if(sDir==='LEFT') h.x-=20; if(sDir==='UP') h.y-=20;
+            if(sDir==='RIGHT') h.x+=20; if(sDir==='DOWN') h.y+=20;
+            if(h.x<0||h.x>=300||h.y<0||h.y>=300||snake.some(s=>s.x===h.x&&s.y===h.y)) { clearInterval(snakeInt); alert("OVER"); return; }
+            if(h.x===food.x && h.y===food.y) { spawnFood(); document.getElementById('snake-score').innerText=snake.length; } else snake.pop();
+            snake.unshift(h);
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,300);
+            ctx.fillStyle="red"; ctx.fillRect(food.x,food.y,18,18);
+            ctx.fillStyle="#0f0"; snake.forEach(s=>ctx.fillRect(s.x,s.y,18,18));
+        }
+
+        // --- SPACE SHOOTER ---
+        let ship, bullets=[], aliens=[], spaceLoop;
         function startSpace() {
-            const cvs = document.getElementById('space-canvas'); spaceCtx = cvs.getContext('2d');
-            ship = {x: 135, dx: 0}; bullets = []; aliens = [];
-            loopSpace();
+            ship={x:135,dx:0}; bullets=[]; aliens=[];
+            loopSpace(document.getElementById('space-canvas').getContext('2d'));
         }
-        function moveShip(d) { ship.dx = d * 5; }
-        function stopShip() { ship.dx = 0; }
-        function fireLaser() { bullets.push({x: ship.x+12, y: 320}); }
-        function loopSpace() {
-            spaceCtx.fillStyle = "#000"; spaceCtx.fillRect(0,0,300,350);
-            
-            ship.x += ship.dx;
-            spaceCtx.fillStyle = turbo ? "#ff0055" : "#0ff";
-            spaceCtx.beginPath(); spaceCtx.moveTo(ship.x+15, 320); spaceCtx.lineTo(ship.x, 350); spaceCtx.lineTo(ship.x+30, 350); spaceCtx.fill();
-
-            spaceCtx.fillStyle = "yellow";
-            bullets.forEach((b,i) => {
-                b.y -= 10; spaceCtx.fillRect(b.x, b.y, 6, 10);
+        function moveShip(d) { ship.dx=d*5; }
+        function stopShip() { ship.dx=0; }
+        function fireLaser() { bullets.push({x:ship.x+12,y:360}); }
+        function loopSpace(ctx) {
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,400);
+            ship.x+=ship.dx;
+            ctx.fillStyle="#0ff"; ctx.fillRect(ship.x,370,30,30);
+            bullets.forEach((b,i)=>{ b.y-=10; ctx.fillStyle="yellow"; ctx.fillRect(b.x,b.y,5,10); if(b.y<0) bullets.splice(i,1); });
+            if(Math.random()<0.03) aliens.push({x:Math.random()*270,y:0});
+            aliens.forEach((a,i)=>{
+                a.y+=(turbo?4:2); ctx.fillStyle="red"; ctx.fillRect(a.x,a.y,20,20);
+                bullets.forEach((b,j)=>{ if(b.x>a.x&&b.x<a.x+20&&b.y<a.y+20) { aliens.splice(i,1); bullets.splice(j,1); } });
+                if(a.y>400) aliens.splice(i,1);
             });
+            spaceLoop = requestAnimationFrame(()=>loopSpace(ctx));
+        }
 
-            if(Math.random() < 0.05) aliens.push({x: Math.random()*270, y: 0});
-            spaceCtx.fillStyle = "green";
-            aliens.forEach((a,i) => {
-                a.y += (turbo ? 5 : 2); spaceCtx.fillRect(a.x, a.y, 20, 20);
-                // Hit check
-                bullets.forEach((b,j) => {
-                    if(b.x > a.x && b.x < a.x+20 && b.y < a.y+20) { aliens.splice(i,1); bullets.splice(j,1); }
-                });
+        // --- RUNNER ---
+        let dino, obstacles=[], runLoop, rScore=0;
+        function startRunner() {
+            dino={y:160,dy:0,jump:false}; obstacles=[]; rScore=0;
+            loopRunner(document.getElementById('run-canvas').getContext('2d'));
+        }
+        function jump() { if(!dino.jump) { dino.dy=-10; dino.jump=true; } }
+        function loopRunner(ctx) {
+            dino.dy+=0.6; dino.y+=dino.dy;
+            if(dino.y>160) { dino.y=160; dino.dy=0; dino.jump=false; }
+            if(Math.random()<0.02) obstacles.push({x:300});
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,200);
+            ctx.fillStyle="#0ff"; ctx.fillRect(30,dino.y,20,20);
+            obstacles.forEach((o,i)=>{
+                o.x-=(turbo?8:5); ctx.fillStyle="red"; ctx.fillRect(o.x,160,20,40);
+                if(o.x<50 && o.x>10 && dino.y>140) { cancelAnimationFrame(runLoop); alert("CRASH"); }
             });
-            spaceLoop = requestAnimationFrame(loopSpace);
+            rScore++; document.getElementById('run-score').innerText=rScore;
+            runLoop = requestAnimationFrame(()=>loopRunner(ctx));
         }
     </script>
 </body>
