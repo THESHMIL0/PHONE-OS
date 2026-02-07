@@ -1,39 +1,63 @@
-// 1. Live Clock Function
-function updateClock() {
+let currentPin = "";
+const correctPin = "1430"; // <--- CHANGE PASSWORD HERE
+
+// Update Clocks
+function updateClocks() {
     const now = new Date();
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    document.getElementById('clock').innerText = `${hours}:${minutes}`;
+    
+    // Update both Lock Screen and Home Screen clocks
+    document.getElementById('lock-clock').innerText = `${hours}:${minutes}`;
+    document.getElementById('small-clock').innerText = `${hours}:${minutes}`;
 }
+setInterval(updateClocks, 1000);
+updateClocks();
 
-// Update clock every second
-setInterval(updateClock, 1000);
-updateClock(); // Run immediately on load
-
-// 2. Open App Function
-function openApp(appName) {
-    const appWindow = document.getElementById('app-window');
-    const appTitle = document.getElementById('app-title');
-    const appContent = document.getElementById('app-content');
-
-    // Set the title
-    appTitle.innerText = appName;
-
-    // Set content based on which app was clicked
-    if (appName === 'Messages') {
-        appContent.innerHTML = '<p>No new messages yet...</p>';
-    } else if (appName === 'Photos') {
-        appContent.innerHTML = '<p>📸 Photo Gallery coming soon!</p>';
-    } else if (appName === 'Settings') {
-        appContent.innerHTML = '<p>Brightness: 100%</p><p>WiFi: Connected</p>';
+// Keypad Logic
+function addPin(num) {
+    if (currentPin.length < 4) {
+        currentPin += num;
+        updateDots();
+        
+        // Check if full
+        if (currentPin.length === 4) {
+            checkPin();
+        }
     }
-
-    // Show the window (slide up)
-    appWindow.classList.remove('hidden');
 }
 
-// 3. Close App Function (Home Button)
-function closeApp() {
-    const appWindow = document.getElementById('app-window');
-    appWindow.classList.add('hidden');
+function clearPin() {
+    currentPin = "";
+    updateDots();
+}
+
+function updateDots() {
+    const dots = document.querySelectorAll('.pin-dot');
+    dots.forEach((dot, index) => {
+        if (index < currentPin.length) {
+            dot.classList.add('filled');
+        } else {
+            dot.classList.remove('filled');
+        }
+    });
+}
+
+function checkPin() {
+    if (currentPin === correctPin) {
+        // Unlock Success
+        setTimeout(() => {
+            document.getElementById('lock-screen').classList.add('hidden');
+            document.getElementById('home-screen').classList.remove('hidden');
+        }, 300); // Small delay for effect
+    } else {
+        // Wrong PIN - shake animation or reset
+        alert("Wrong Passcode! Try 1430"); // Simple alert for now
+        clearPin();
+    }
+}
+
+// App Open Logic (Placeholder)
+function openApp(appName) {
+    alert("Opening " + appName + "...");
 }
