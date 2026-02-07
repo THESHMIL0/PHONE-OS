@@ -1,4 +1,7 @@
+// CONFIG
 const correctPasscode = "1430"; 
+// SET YOUR DATE HERE (YYYY-MM-DD)
+const startDate = new Date("2025-08-18"); 
 let currentInput = "";
 
 // CLOCK
@@ -43,4 +46,26 @@ function useCoupon(el) {
     }
 }
 
+// PHONE CALL
 function makeCall() { alert("Calling Ayuuu... ❤️"); }
+
+// LOVE TIMER
+function updateLoveTimer() {
+    const now = new Date();
+    const diff = now - startDate;
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    const counter = document.getElementById("love-counter");
+    if(counter) {
+        counter.innerText = days + " Days";
+        document.getElementById("love-hours").innerText = hours;
+        document.getElementById("love-minutes").innerText = minutes;
+        document.getElementById("love-seconds").innerText = seconds;
+    }
+}
+setInterval(updateLoveTimer, 1000);
+updateLoveTimer();
