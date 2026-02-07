@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LoveOS Ultra ❤️</title>
+    <title>LoveOS Ultra Max ❤️</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* --- 1. RESET & BASICS --- */
+        /* --- 1. GLOBAL --- */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; user-select: none; -webkit-tap-highlight-color: transparent; }
         body { background: #000; width: 100vw; height: 100vh; overflow: hidden; color: #333; }
 
@@ -15,112 +15,84 @@
         .screen-layer { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             display: flex; flex-direction: column; z-index: 10; 
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); 
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); 
             background-color: #222;
         }
-        .hidden { transform: scale(0.90); opacity: 0; pointer-events: none; }
+        .hidden { transform: scale(0.92); opacity: 0; pointer-events: none; }
 
         /* --- 3. WALLPAPERS --- */
-        #lock-screen {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.4)), url('p3.jpg');
-            background-size: cover; background-position: center;
-        }
-        #home-screen {
-            background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(0,0,0,0.2)), url('p2.jpg');
-            background-size: cover; background-position: center;
-        }
+        #lock-screen { background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.4)), url('p3.jpg'); background-size: cover; background-position: center; }
+        #home-screen { background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.2)), url('p2.jpg'); background-size: cover; background-position: center; }
 
-        /* --- 4. LOCK SCREEN (FIXED LAYOUT) --- */
-        .lock-content { 
-            height: 100%; width: 100%;
-            display: flex; flex-direction: column; 
-            justify-content: space-between; /* Pushes content to top and bottom */
-            align-items: center; 
-            padding: 40px 20px 20px 20px; 
-            color: white; 
-        }
+        /* --- 4. LOCK SCREEN --- */
+        .lock-content { height: 100%; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 50px 20px 30px 20px; color: white; }
+        .lock-header { text-align: center; width: 100%; }
+        #lock-clock { font-size: 70px; font-weight: 200; text-shadow: 0 4px 15px rgba(0,0,0,0.4); line-height: 1; }
+        #lock-date { font-size: 18px; font-weight: 600; text-shadow: 0 2px 8px rgba(0,0,0,0.4); margin-top: 5px; }
         
-        .top-section { text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; }
-        #lock-clock { font-size: 70px; font-weight: 200; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        #lock-date { font-size: 18px; font-weight: 500; margin-top: 5px; text-shadow: 0 1px 5px rgba(0,0,0,0.3); }
+        .notif-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 20px; align-items: center; }
+        .notif { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(20px); border-radius: 14px; padding: 12px; display: flex; gap: 12px; align-items: center; width: 95%; max-width: 340px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .notif-icon { width: 35px; height: 35px; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: white; font-size: 18px; }
+        .notif-content h4 { font-size: 13px; margin: 0; color: #000; font-weight: 600; }
+        .notif-content p { font-size: 12px; margin: 0; color: #333; }
 
-        /* Compact Notifications */
-        .notif-container { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 15px; align-items: center; }
-        .notif { 
-            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); 
-            border-radius: 12px; padding: 10px 15px; 
-            display: flex; gap: 10px; align-items: center; 
-            width: 95%; max-width: 340px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
-        }
-        .notif img { width: 30px; height: 30px; border-radius: 6px; }
-        .notif-content h4 { font-size: 13px; margin: 0; color: #000; }
-        .notif-content p { font-size: 12px; margin: 0; color: #444; }
-
-        /* Keypad Area */
-        .bottom-section { width: 100%; display: flex; flex-direction: column; align-items: center; padding-bottom: 10px; }
+        /* Keypad */
+        .bottom-section { width: 100%; display: flex; flex-direction: column; align-items: center; }
         .pin-dots { display: flex; gap: 15px; margin-bottom: 15px; height: 15px; }
         .dot { width: 12px; height: 12px; border: 2px solid white; border-radius: 50%; transition: 0.2s; }
-        .dot.filled { background: white; box-shadow: 0 0 10px white; }
-        
+        .dot.filled { background: white; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 260px; }
-        .keypad button { 
-            width: 65px; height: 65px; border-radius: 50%; 
-            background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); 
-            font-size: 24px; color: white; backdrop-filter: blur(5px); 
-            cursor: pointer; transition: background 0.1s; 
-        }
+        .keypad button { width: 65px; height: 65px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); font-size: 24px; color: white; backdrop-filter: blur(10px); cursor: pointer; transition: background 0.1s; }
         .keypad button:active { background: rgba(255,255,255,0.4); }
 
         /* --- 5. HOME SCREEN --- */
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px; padding: 20px; margin-top: 30px; }
+        .status-bar { padding: 10px 25px; display: flex; justify-content: space-between; font-weight: 600; color: white; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.8); z-index: 20; }
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px; padding: 15px; margin-top: 10px; }
         .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.1s; }
         .app-item:active { transform: scale(0.9); }
-        .icon { width: 58px; height: 58px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 28px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 6px; }
+        .icon { width: 60px; height: 60px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 28px; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.3); margin-bottom: 5px; border: 1px solid rgba(255,255,255,0.1); }
         .app-item span { font-size: 11px; color: white; font-weight: 500; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
-        
-        .dock { margin-top: auto; margin-bottom: 25px; background: rgba(255,255,255,0.2); backdrop-filter: blur(15px); padding: 18px; border-radius: 35px; display: flex; gap: 20px; align-self: center; border: 1px solid rgba(255,255,255,0.1); }
+        .dock { margin-top: auto; margin-bottom: 25px; background: rgba(255,255,255,0.25); backdrop-filter: blur(20px); padding: 15px 20px; border-radius: 35px; display: flex; gap: 20px; align-self: center; border: 1px solid rgba(255,255,255,0.2); }
 
-        /* --- 6. APP WINDOWS & CONTENT --- */
-        .app-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 20; display: flex; flex-direction: column; transition: transform 0.3s ease; }
+        /* --- 6. APP WINDOWS --- */
+        .app-window { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F2F2F7; z-index: 20; display: flex; flex-direction: column; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .app-window.hidden { transform: translateX(100%); }
-        .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: rgba(255,255,255,0.9); border-bottom: 1px solid #ddd; font-weight: 600; color: #000; }
+        .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #ccc; font-weight: 700; color: #000; z-index: 25; }
         .back-btn { color: #007AFF; font-size: 17px; background: none; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; }
 
-        /* Wallet Tickets */
-        .ticket { 
-            background: white; border-radius: 12px; height: 100px; display: flex; overflow: hidden; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; margin-bottom: 15px;
-        }
-        .ticket-left { width: 90px; display: flex; justify-content: center; align-items: center; font-size: 35px; color: white; position: relative; }
-        /* Perforation Effect */
-        .ticket-left::after { 
-            content: ''; position: absolute; right: -6px; top: 0; height: 100%; width: 12px; 
-            background-image: radial-gradient(circle, #F2F2F7 6px, transparent 7px); 
-            background-size: 10px 20px; background-position: -6px 0; background-repeat: repeat-y;
-        }
-        .ticket-right { flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center; }
-        .ticket-right h3 { margin: 0; font-size: 18px; }
-        .ticket-right p { margin: 5px 0 0; font-size: 13px; color: #888; }
-
-        /* Quiz Styling */
-        .quiz-card { background: white; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .option-btn { width: 100%; padding: 12px; margin-top: 10px; background: #f0f0f0; border: none; border-radius: 10px; font-size: 16px; font-weight: 500; cursor: pointer; transition: 0.2s; }
-        .option-btn:active { transform: scale(0.98); }
-
-        /* Travel Styling */
-        .bucket-item { background: white; border-radius: 15px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); position: relative; }
-        .bucket-item img { width: 100%; height: 180px; object-fit: cover; }
-        .bucket-info { padding: 15px; position: absolute; bottom: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: white; }
-
-        /* Settings Header */
-        .profile-header { background: white; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; }
-        .profile-pic { width: 80px; height: 80px; border-radius: 50%; background: #FF9500; display: flex; justify-content: center; align-items: center; font-size: 40px; margin-bottom: 10px; border: 3px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        /* --- 7. CONTENT STYLES --- */
+        .scroll-content { padding: 20px; overflow-y: auto; padding-bottom: 80px; height: 100%; }
+        
+        /* Music */
+        .music-controls { display: flex; align-items: center; gap: 30px; margin-top: 30px; }
+        .music-btn { background: none; border: none; font-size: 35px; color: white; cursor: pointer; opacity: 0.8; }
+        .music-btn:active { opacity: 0.5; }
+        .play-btn-lg { font-size: 70px; color: #FA2D48; opacity: 1; }
+        
+        /* Wallet */
+        .ticket { background: white; border-radius: 12px; height: 90px; display: flex; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; position: relative; }
+        .ticket-left { width: 80px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: white; border-right: 2px dashed #F2F2F7; }
+        .ticket-right { flex: 1; padding: 10px 15px; display: flex; flex-direction: column; justify-content: center; }
+        
+        /* Travel */
+        .bucket-card { position: relative; height: 160px; border-radius: 15px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .bucket-card img { width: 100%; height: 100%; object-fit: cover; }
+        .bucket-text { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 15px; color: white; }
+        
+        /* Letters */
+        .envelope { background: white; padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        /* Chat */
+        .chat-feed { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: white; }
+        .msg { padding: 10px 15px; border-radius: 18px; max-width: 75%; font-size: 16px; }
+        .sent { align-self: flex-end; background: #007AFF; color: white; }
+        .received { align-self: flex-start; background: #E5E5EA; color: black; }
     </style>
 </head>
 <body>
     <div id="lock-screen" class="screen-layer">
         <div class="lock-content">
-            <div class="top-section">
+            <div class="lock-header">
                 <div id="lock-clock">00:00</div>
                 <div id="lock-date">Saturday, February 14</div>
                 
@@ -144,9 +116,7 @@
     </div>
 
     <div id="home-screen" class="screen-layer hidden">
-        <div class="status-bar" style="color:white; font-weight:bold; padding:15px 25px; display:flex; justify-content:space-between;">
-            <span>9:41</span><span>❤️ 5G</span>
-        </div>
+        <div class="status-bar"><span>9:41</span><span>❤️ 5G</span></div>
         
         <div class="app-grid">
             <div class="app-item" onclick="openApp('chat')">
@@ -181,118 +151,93 @@
             <div class="app-item" onclick="openApp('quiz')"><div class="icon" style="background: #5AC8FA;"><i class="fas fa-gamepad"></i></div></div>
         </div>
     </div>
+    <div id="app-music" class="app-window hidden">
+        <div class="app-header" style="background: #1c1c1e; color: white; border: none;"><button class="back-btn" onclick="closeApp('music')" style="color:white;">❮ Back</button><span>Music</span><div></div></div>
+        <div style="flex:1; background: #1c1c1e; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+            <div id="record" style="width: 250px; height: 250px; border-radius: 50%; background: url('https://upload.wikimedia.org/wikipedia/en/4/45/Divide_cover.png'); background-size: cover; border: 5px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.5);"></div>
+            <h2 id="song-title" style="margin-top: 30px; font-size: 24px;">Perfect</h2>
+            <p id="song-artist" style="color: #888; font-size: 16px;">Ed Sheeran</p>
+            
+            <div style="width: 80%; height: 4px; background: #333; margin-top: 20px; border-radius: 2px;"><div style="width: 30%; height: 100%; background: #FA2D48; border-radius: 2px;"></div></div>
+            <div style="width: 80%; display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-top: 5px;"><span>1:20</span><span>4:23</span></div>
+
+            <div class="music-controls">
+                <button class="music-btn" onclick="prevSong()"><i class="fas fa-step-backward"></i></button>
+                <button class="music-btn play-btn-lg" id="play-btn" onclick="toggleMusic()"><i class="fas fa-play-circle"></i></button>
+                <button class="music-btn" onclick="nextSong()"><i class="fas fa-step-forward"></i></button>
+            </div>
+            <audio id="audio-player"></audio>
+        </div>
+    </div>
+
     <div id="app-wallet" class="app-window hidden">
         <div class="app-header"><button class="back-btn" onclick="closeApp('wallet')">❮ Back</button><span>Coupons</span><div></div></div>
-        <div style="padding: 20px; overflow-y:auto; padding-bottom:50px;">
-            <div class="ticket" onclick="alert('Redeemed! 🎟️')">
-                <div class="ticket-left" style="background: #FF2D55;">❤️</div>
-                <div class="ticket-right"><h3>Free Hug</h3><p>Valid anytime, anywhere.</p></div>
-            </div>
-            <div class="ticket" onclick="alert('Redeemed! 🍕')">
-                <div class="ticket-left" style="background: #FF9500;">🍕</div>
-                <div class="ticket-right"><h3>Dinner Date</h3><p>I'm buying!</p></div>
-            </div>
-            <div class="ticket" onclick="alert('Redeemed! 💆‍♀️')">
-                <div class="ticket-left" style="background: #5856D6;">💆‍♀️</div>
-                <div class="ticket-right"><h3>Massage</h3><p>15 min stress relief.</p></div>
-            </div>
-            <div class="ticket" onclick="alert('Redeemed! 🎬')">
-                <div class="ticket-left" style="background: #34C759;">🎬</div>
-                <div class="ticket-right"><h3>Movie Night</h3><p>You pick the movie.</p></div>
-            </div>
-        </div>
-    </div>
-
-    <div id="app-quiz" class="app-window hidden">
-        <div class="app-header"><button class="back-btn" onclick="closeApp('quiz')">❮ Back</button><span>Love Quiz</span><div></div></div>
-        <div style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
-            <div class="quiz-card">
-                <h2>Where did we meet?</h2>
-                <button class="option-btn" onclick="alert('Wrong! 😝')">Instagram</button>
-                <button class="option-btn" onclick="alert('Correct! ❤️')">Jan 18 (Real Life)</button>
-                <button class="option-btn" onclick="alert('Nope!')">College</button>
-            </div>
-            <div class="quiz-card">
-                <h2>My favorite food?</h2>
-                <button class="option-btn" onclick="alert('Correct! 🍗')">Biryani</button>
-                <button class="option-btn" onclick="alert('Wrong!')">Pizza</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="app-settings" class="app-window hidden">
-        <div class="app-header"><button class="back-btn" onclick="closeApp('settings')">❮ Back</button><span>Settings</span><div></div></div>
-        <div style="background: #f2f2f7; height: 100%;">
-            <div class="profile-header">
-                <div class="profile-pic">👸</div>
-                <h2>Ayuuu</h2>
-                <p style="color: #888;">Theshu's Queen</p>
-            </div>
-            <div style="padding: 0 20px;">
-                <div style="background: white; border-radius: 12px; overflow: hidden;">
-                    <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
-                        <span>✈️ Airplane Mode</span> <span>Off</span>
-                    </div>
-                    <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between;">
-                        <span>📶 Wi-Fi</span> <span style="color: #888;">Connected to Love</span>
-                    </div>
-                    <div style="padding: 15px; display: flex; justify-content: space-between;">
-                        <span>❤️ Relationship Status</span> <span style="color: #FF2D55;">Forever</span>
-                    </div>
-                </div>
-            </div>
+        <div class="scroll-content">
+            <div class="ticket" onclick="alert('Redeemed!')"><div class="ticket-left" style="background:#FF2D55;">❤️</div><div class="ticket-right"><h3>Free Hug</h3><p>Valid anytime.</p></div></div>
+            <div class="ticket" onclick="alert('Redeemed!')"><div class="ticket-left" style="background:#007AFF;">💆‍♀️</div><div class="ticket-right"><h3>Massage</h3><p>15 mins stress relief.</p></div></div>
+            <div class="ticket" onclick="alert('Redeemed!')"><div class="ticket-left" style="background:#FF9500;">🍕</div><div class="ticket-right"><h3>Dinner Date</h3><p>I am paying! 😸</p></div></div>
+            <div class="ticket" onclick="alert('Redeemed!')"><div class="ticket-left" style="background:#34C759;">🎬</div><div class="ticket-right"><h3>Movie Night</h3><p>You pick the movie.</p></div></div>
+            <div class="ticket" onclick="alert('Redeemed!')"><div class="ticket-left" style="background:#5856D6;">🍦</div><div class="ticket-right"><h3>Ice Cream</h3><p>Late night treat.</p></div></div>
+            <div class="ticket" onclick="alert('Redeemed!')"><div class="ticket-left" style="background:#8E8E93;">🥺</div><div class="ticket-right"><h3>Forgiveness</h3><p>End one fight instantly.</p></div></div>
         </div>
     </div>
 
     <div id="app-travel" class="app-window hidden">
         <div class="app-header"><button class="back-btn" onclick="closeApp('travel')">❮ Back</button><span>Bucket List</span><div></div></div>
-        <div style="padding: 20px; padding-bottom: 60px; overflow-y: auto;">
-            <div class="bucket-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/1200px-Taj_Mahal_%28Edited%29.jpeg">
-                <div class="bucket-info"><h3>Taj Mahal</h3><p>India</p></div>
+        <div class="scroll-content">
+            <div class="bucket-card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/1200px-Taj_Mahal_%28Edited%29.jpeg"><div class="bucket-text"><h3>Taj Mahal</h3><p>India</p></div></div>
+            <div class="bucket-card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/1200px-New_york_times_square-terabass.jpg"><div class="bucket-text"><h3>Times Square</h3><p>New York</p></div></div>
+            <div class="bucket-card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Disneyland_Castle.jpg/1200px-Disneyland_Castle.jpg"><div class="bucket-text"><h3>Disneyland</h3><p>Paris</p></div></div>
+            <div class="bucket-card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Moraine_Lake_17092005.jpg/1200px-Moraine_Lake_17092005.jpg"><div class="bucket-text"><h3>Canada</h3><p>Snow Trip</p></div></div>
+        </div>
+    </div>
+
+    <div id="app-letters" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('letters')">❮ Back</button><span>Letters</span><div></div></div>
+        <div class="scroll-content">
+            <div class="envelope" onclick="alert('💌 Dear Ayuuu,\n\nI miss you every second. You are my everything! ❤️')"><div style="font-size:30px; color:#FF2D55;">😢</div><h3>Open when you miss me</h3></div>
+            <div class="envelope" onclick="alert('💌 Smile! You are the most beautiful girl in Goa! 😸')"><div style="font-size:30px; color:#FF9500;">😞</div><h3>Open when you are sad</h3></div>
+            <div class="envelope" onclick="alert('💌 You got this! I believe in you! 💪')"><div style="font-size:30px; color:#007AFF;">😖</div><h3>Open when stressed</h3></div>
+            <div class="envelope" onclick="alert('💌 Happy Birthday My Queen! 🎂')"><div style="font-size:30px; color:#34C759;">🥳</div><h3>Open on Sep 22</h3></div>
+        </div>
+    </div>
+
+    <div id="app-quiz" class="app-window hidden">
+        <div class="app-header"><button class="back-btn" onclick="closeApp('quiz')">❮ Back</button><span>Quiz</span><div></div></div>
+        <div class="scroll-content">
+            <div style="background:white; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                <h3>Where did we meet?</h3>
+                <button onclick="alert('Wrong 😝')" style="width:100%; padding:10px; margin-top:10px; background:#f0f0f0; border:none; border-radius:8px;">Instagram</button>
+                <button onclick="alert('Correct! ❤️')" style="width:100%; padding:10px; margin-top:10px; background:#4CD964; color:white; border:none; border-radius:8px;">Jan 18 (Real Life)</button>
             </div>
-            <div class="bucket-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/1200px-New_york_times_square-terabass.jpg">
-                <div class="bucket-info"><h3>Times Square</h3><p>New York</p></div>
+            <div style="background:white; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                <h3>My fav food?</h3>
+                <button onclick="alert('Correct! 🍗')" style="width:100%; padding:10px; margin-top:10px; background:#4CD964; color:white; border:none; border-radius:8px;">Biryani</button>
+                <button onclick="alert('Wrong!')" style="width:100%; padding:10px; margin-top:10px; background:#f0f0f0; border:none; border-radius:8px;">Pizza</button>
             </div>
-            <div class="bucket-item">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Disneyland_Castle.jpg/1200px-Disneyland_Castle.jpg">
-                <div class="bucket-info"><h3>Disneyland</h3><p>Paris</p></div>
+            <div style="background:white; padding:20px; border-radius:15px; margin-bottom:20px; text-align:center; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                <h3>My nickname for you?</h3>
+                <button onclick="alert('Wrong!')" style="width:100%; padding:10px; margin-top:10px; background:#f0f0f0; border:none; border-radius:8px;">Babe</button>
+                <button onclick="alert('Correct! 😽')" style="width:100%; padding:10px; margin-top:10px; background:#4CD964; color:white; border:none; border-radius:8px;">Ayuuu</button>
             </div>
         </div>
     </div>
 
-    <div id="app-phone" class="app-window hidden" style="background: white;">
-        <div class="app-header" style="background:white; border:none;"><button class="back-btn" onclick="closeApp('phone')">❮ End</button><span>Keypad</span><div></div></div>
-        <div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:40px;">
-            <div style="font-size:32px; text-align:center; margin-bottom:20px; height: 40px;" id="phone-screen"></div>
-            <div class="keypad" style="width:280px; margin:0 auto; gap:20px;">
-                <button style="background:#E5E5EA; color:black; border:none;" onclick="dial(1)">1</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(2)">2</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(3)">3</button>
-                <button style="background:#E5E5EA; color:black; border:none;" onclick="dial(4)">4</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(5)">5</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(6)">6</button>
-                <button style="background:#E5E5EA; color:black; border:none;" onclick="dial(7)">7</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(8)">8</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(9)">9</button>
-                <button style="background:#E5E5EA; color:black; border:none;" onclick="dial('*')">*</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial(0)">0</button><button style="background:#E5E5EA; color:black; border:none;" onclick="dial('#')">#</button>
-            </div>
-            <div style="display:flex; justify-content:center; gap: 30px; margin-top:20px; align-items: center;">
-                <div style="width: 40px;"></div>
-                <button onclick="startCall()" style="width:70px; height:70px; border-radius:50%; background:#34C759; border:none; color:white; font-size:30px;"><i class="fas fa-phone"></i></button>
-                <button onclick="document.getElementById('phone-screen').innerText=''" style="border:none; background:none; color:#ccc; font-size:24px;"><i class="fas fa-backspace"></i></button>
-            </div>
-        </div>
-    </div>
+    <div id="app-us" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('us')">❮ Back</button><span>Us</span><div></div></div><div style="flex:1; background:#E0F7FA; padding-top:40px; text-align:center;"><div style="display:flex; justify-content:space-around; align-items:center;"><div><h1 style="font-size:50px;">👸</h1>Goa</div><div style="font-size:30px;">✈️</div><div><h1 style="font-size:50px;">🤴</h1>Kerala</div></div><div style="background:white; width:90%; margin:30px auto; padding:20px; border-radius:20px; box-shadow:0 5px 15px rgba(0,0,0,0.05);"><p style="color:#888;">We have been together for</p><h1 id="love-timer" style="color:#FF2D55; font-size:40px;">20 Days</h1></div></div></div>
 
-    <div id="app-chat" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div></div><div class="chat-body" id="chat-feed"><div class="msg received">Hey Theshuuuu! 😽</div><div class="msg sent">Hey Ayuuu! Happy 20 days! ❤️</div></div><div style="position:absolute; bottom:0; width:100%; padding:10px; background:#f0f0f0; display:flex; gap:10px;"><input type="text" id="msg-input" placeholder="iMessage" style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc;"><button onclick="sendMessage()" style="color:#007AFF; font-weight:bold; border:none; background:none;">Send</button></div></div>
+    <div id="app-events" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('events')">❮ Back</button><span>Events</span><div></div></div><div class="scroll-content"><div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:#FF9500; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px;">JAN</div><div style="font-size:18px; font-weight:bold;">18</div></div><div><h3>We Met ❤️</h3><p>2026</p></div></div><div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; align-items:center; gap:15px;"><div style="background:#FF2D55; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px;">MAR</div><div style="font-size:18px; font-weight:bold;">14</div></div><div><h3>Theshu's Bday 🎂</h3></div></div><div style="background:white; padding:15px; border-radius:15px; display:flex; align-items:center; gap:15px;"><div style="background:#5856D6; color:white; padding:5px 12px; border-radius:10px; text-align:center;"><div style="font-size:10px;">SEP</div><div style="font-size:18px; font-weight:bold;">22</div></div><div><h3>Ayuuu's Bday 👸</h3></div></div></div></div>
+
+    <div id="app-chat" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('chat')">❮ Back</button><span>Ayuuu ❤️</span><div></div></div><div class="chat-feed" id="chat-feed"><div class="msg received">Hey Theshuuuu! 😽</div><div class="msg sent">Hey Ayuuu! ❤️</div></div><div style="position:absolute; bottom:0; width:100%; padding:10px; background:#f0f0f0; display:flex; gap:10px;"><input type="text" id="msg-input" placeholder="iMessage" style="flex:1; padding:10px; border-radius:20px; border:1px solid #ccc;"><button onclick="sendMessage()" style="color:#007AFF; font-weight:bold; border:none; background:none;">Send</button></div></div>
+    <div id="app-settings" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('settings')">❮ Back</button><span>Settings</span><div></div></div><div style="background:#f2f2f7; height:100%; padding:20px;"><div style="background:white; padding:15px; border-radius:12px; margin-bottom:10px;"><b>✈️ Airplane Mode</b></div><div style="background:white; padding:15px; border-radius:12px; margin-bottom:10px;"><b>❤️ Love Mode: ON</b></div></div></div>
+    <div id="app-phone" class="app-window hidden"><div class="app-header" style="background:white; border:none;"><button class="back-btn" onclick="closeApp('phone')">❮ End</button><span>Keypad</span><div></div></div><div style="flex:1; display:flex; flex-direction:column; justify-content:flex-end; padding-bottom:40px;"><div style="font-size:32px; text-align:center; margin-bottom:20px;" id="phone-screen"></div><div class="keypad" style="width:280px; margin:0 auto; gap:20px;"><button style="background:#eee; border:none; color:black;" onclick="dial(1)">1</button><button style="background:#eee; border:none; color:black;" onclick="dial(2)">2</button><button style="background:#eee; border:none; color:black;" onclick="dial(3)">3</button><button style="background:#eee; border:none; color:black;" onclick="dial(4)">4</button><button style="background:#eee; border:none; color:black;" onclick="dial(5)">5</button><button style="background:#eee; border:none; color:black;" onclick="dial(6)">6</button><button style="background:#eee; border:none; color:black;" onclick="dial(7)">7</button><button style="background:#eee; border:none; color:black;" onclick="dial(8)">8</button><button style="background:#eee; border:none; color:black;" onclick="dial(9)">9</button><button style="background:#eee; border:none; color:black;" onclick="dial('*')">*</button><button style="background:#eee; border:none; color:black;" onclick="dial(0)">0</button><button style="background:#eee; border:none; color:black;" onclick="dial('#')">#</button></div><div style="text-align:center; margin-top:20px;"><button onclick="alert('Calling...')" style="width:70px; height:70px; border-radius:50%; background:#34C759; border:none; color:white; font-size:30px;"><i class="fas fa-phone"></i></button></div></div></div>
     <div id="app-photos" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('photos')">❮ Back</button><span>Album</span><div></div></div><div class="gallery"><div class="polaroid"><img src="p1.jpg"><p>Us 😸</p></div><div class="polaroid"><img src="p2.jpg"><p>Love ❤️</p></div><div class="polaroid"><img src="p3.jpg"><p>Night 🌙</p></div></div></div>
-    <div id="app-music" class="app-window hidden"><div class="app-header" style="background:#1c1c1e; color:white; border:none;"><button class="back-btn" onclick="closeApp('music')" style="color:white">❮ Back</button><span>Music</span><div></div></div><div style="flex:1; background:#1c1c1e; display:flex; flex-direction:column; align-items:center; justify-content:center; color:white;"><div id="record" style="width:250px; height:250px; border-radius:50%; background:url('https://upload.wikimedia.org/wikipedia/en/4/45/Divide_cover.png'); background-size:cover; border:5px solid #111;"></div><h2 style="margin-top:30px">Perfect</h2><p>Ed Sheeran</p><div style="margin-top:40px; font-size:60px; cursor:pointer;"><i class="fas fa-play-circle" onclick="toggleMusic()" id="play-btn" style="color:#FA2D48;"></i></div><audio id="audio-player" src="m1.mp3"></audio></div></div>
-    <div id="app-events" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('events')">❮ Back</button><span>Events</span><div></div></div><div style="padding:20px;"><div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px;"><h3>We Met ❤️</h3><p>Jan 18</p></div></div></div>
-    <div id="app-us" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('us')">❮ Back</button><span>Us</span><div></div></div><div style="flex:1; background:#E0F7FA; padding-top:40px; text-align:center;"><div style="display:flex; justify-content:space-around; align-items:center;"><div><h1>👸</h1>Goa</div><div style="font-size:30px;">✈️</div><div><h1>🤴</h1>Kerala</div></div><div style="background:white; width:90%; margin:30px auto; padding:20px; border-radius:20px;"><h1 id="love-timer">20 Days</h1></div></div></div>
-    <div id="app-letters" class="app-window hidden"><div class="app-header"><button class="back-btn" onclick="closeApp('letters')">❮ Back</button><span>Letters</span><div></div></div><div style="padding:20px;"><div onclick="alert('💌 I miss you!')" style="background:white; padding:20px; border-radius:15px; margin-bottom:10px;"><h3>Open when you miss me</h3></div></div></div>
     <script>
         const PIN = "1430";
         const START_DATE = new Date("2026-01-18");
         let currentPin = "";
         let dialNumber = "";
 
-        // 1. CLOCK
+        // CLOCK
         function updateClock() {
             const now = new Date();
             document.getElementById('lock-clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -303,21 +248,21 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. NOTIFICATIONS
+        // NOTIFICATIONS
         setTimeout(() => {
             document.getElementById('notif-list').innerHTML = `
                 <div class="notif" onclick="alert('Unlock to view!')">
-                    <img src="p1.jpg" style="object-fit:cover;">
+                    <div class="notif-icon" style="background:#34C759;"><i class="fas fa-comment"></i></div>
                     <div class="notif-content"><h4>WhatsApp</h4><p>Theshu: Miss you baby! ❤️</p></div>
                 </div>
                 <div class="notif" onclick="alert('Unlock to view!')">
-                    <div style="width:30px; height:30px; background:white; border-radius:6px; display:flex; justify-content:center; align-items:center;">❤️</div>
+                    <div class="notif-icon" style="background:#FF2D55;"><i class="fas fa-heart"></i></div>
                     <div class="notif-content"><h4>LoveOS</h4><p>Happy 20 Days Together! 🎉</p></div>
                 </div>
             `;
         }, 1000);
 
-        // 3. UNLOCK
+        // LOCK SYSTEM
         function pressKey(num) {
             if (currentPin.length < 4) {
                 currentPin += num;
@@ -338,36 +283,19 @@
             }
         }
 
-        // 4. PHONE DIALER
-        function dial(num) {
-            if (dialNumber.length < 12) {
-                dialNumber += num;
-                document.getElementById('phone-screen').innerText = dialNumber;
-            }
-        }
-        function startCall() {
-            if(dialNumber === "143" || dialNumber === "1430") alert("Calling My Love... ❤️");
-            else alert("Calling " + dialNumber + "...");
-        }
-
-        // 5. CHAT
-        function sendMessage() {
-            const input = document.getElementById('msg-input');
-            const feed = document.getElementById('chat-feed');
-            if(input.value) {
-                feed.innerHTML += `<div class="msg sent">${input.value}</div>`;
-                input.value = "";
-                setTimeout(() => {
-                    feed.innerHTML += `<div class="msg received">I love you more! ❤️</div>`;
-                    feed.scrollTop = feed.scrollHeight;
-                }, 1500);
-            }
-        }
-        
-        // 6. MUSIC
+        // MUSIC PLAYER LOGIC (FIXED)
+        const songs = [
+            { title: "Perfect", artist: "Ed Sheeran", file: "m1.mp3" },
+            { title: "Love Vibe", artist: "Unknown", file: "m2.mp3" }
+        ];
+        let currentSongIdx = 0;
         let isPlaying = false;
+        const audio = document.getElementById('audio-player');
+        
+        // Init first song
+        audio.src = songs[0].file;
+
         function toggleMusic() {
-            const audio = document.getElementById('audio-player');
             const btn = document.getElementById('play-btn');
             const record = document.getElementById('record');
             
@@ -383,7 +311,46 @@
             isPlaying = !isPlaying;
         }
 
-        // 7. NAV
+        function nextSong() {
+            currentSongIdx = (currentSongIdx + 1) % songs.length;
+            loadSong();
+        }
+
+        function prevSong() {
+            currentSongIdx = (currentSongIdx - 1 + songs.length) % songs.length;
+            loadSong();
+        }
+
+        function loadSong() {
+            audio.src = songs[currentSongIdx].file;
+            document.getElementById('song-title').innerText = songs[currentSongIdx].title;
+            document.getElementById('song-artist').innerText = songs[currentSongIdx].artist;
+            if(isPlaying) audio.play();
+        }
+
+        // DIALER
+        function dial(num) {
+            if (dialNumber.length < 12) {
+                dialNumber += num;
+                document.getElementById('phone-screen').innerText = dialNumber;
+            }
+        }
+
+        // CHAT
+        function sendMessage() {
+            const input = document.getElementById('msg-input');
+            const feed = document.getElementById('chat-feed');
+            if(input.value) {
+                feed.innerHTML += `<div class="msg sent">${input.value}</div>`;
+                input.value = "";
+                setTimeout(() => {
+                    feed.innerHTML += `<div class="msg received">I love you more! ❤️</div>`;
+                    feed.scrollTop = feed.scrollHeight;
+                }, 1500);
+            }
+        }
+
+        // NAV
         function openApp(id) { document.getElementById(`app-${id}`).classList.remove('hidden'); }
         function closeApp(id) { document.getElementById(`app-${id}`).classList.add('hidden'); }
     </script>
