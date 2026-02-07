@@ -2,31 +2,272 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Phone</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Phone OS</title>
+    <style>
+        /* --- RESET & BODY --- */
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            background-color: #000;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            user-select: none;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- PHONE LAYOUT --- */
+        .phone-container {
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            position: relative;
+        }
+
+        .status-bar {
+            padding: 10px 20px;
+            display: flex; justify-content: space-between;
+            font-size: 14px; font-weight: 600;
+            z-index: 100;
+        }
+
+        /* --- SCREENS --- */
+        .screen {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: #000;
+            transition: opacity 0.3s ease;
+            opacity: 1;
+            z-index: 10;
+        }
+        
+        .screen.hidden {
+            opacity: 0; pointer-events: none; z-index: 0;
+        }
+
+        /* --- LOCK SCREEN --- */
+        input[type="password"] {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 15px;
+            border-radius: 12px;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            width: 150px;
+            margin: 20px 0;
+            outline: none;
+        }
+
+        /* --- HOME SCREEN --- */
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            padding: 20px;
+        }
+        .app-icon {
+            width: 70px; height: 70px;
+            background: #2c2c2e;
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .app-icon:active { transform: scale(0.95); opacity: 0.8; }
+
+        /* --- GAME UI --- */
+        #game-canvas {
+            background: #111;
+            border: 2px solid #333;
+            margin: 20px 0;
+            max-width: 90vw;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            gap: 10px;
+        }
+        .d-pad {
+            width: 60px; height: 60px;
+            background: #333;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            border: 1px solid #444;
+        }
+        .d-pad:active { background: #555; }
+        .up { grid-column: 2; grid-row: 1; }
+        .left { grid-column: 1; grid-row: 2; }
+        .down { grid-column: 2; grid-row: 2; }
+        .right { grid-column: 3; grid-row: 2; }
+
+        .back-btn {
+            position: absolute; top: 50px; left: 20px;
+            background: #333; border: none; color: white;
+            padding: 8px 16px; border-radius: 20px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
     <div class="phone-container">
         <div class="status-bar">
-            <span>9:41</span>
+            <span id="clock">9:41</span>
             <span>📶 🔋</span>
         </div>
-        
+
         <div id="lock-screen" class="screen">
-            <h2>Enter Passcode</h2>
+            <h2 style="font-weight: 300; margin-bottom: 10px;">Swipe up to unlock</h2>
+            <div style="font-size: 40px; margin-bottom: 20px;">🔒</div>
             <input type="password" id="pass-input" maxlength="4" placeholder="••••">
-            <button onclick="checkPass()">Unlock</button>
+            <button onclick="checkPass()" style="margin-top:10px; padding: 10px 30px; background: #0A84FF; border:none; color:white; border-radius: 20px; font-size:16px;">Enter</button>
         </div>
 
         <div id="home-screen" class="screen hidden">
             <div class="app-grid">
-                <div class="app-icon" onclick="launchGame('snake')">🐍</div>
-                <div class="app-icon" onclick="launchGame('tic-tac-toe')">❌</div>
-                <div class="app-icon" onclick="launchGame('clicker')">🖱️</div>
+                <div class="app-icon" onclick="openGame('snake')">🐍</div>
+                
+                <div class="app-icon" onclick="alert('Tic-Tac-Toe coming soon!')">❌</div>
+                
+                <div class="app-icon" onclick="alert('Settings coming soon!')">⚙️</div>
+            </div>
+        </div>
+
+        <div id="snake-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <h2 id="score-display">Score: 0</h2>
+            <canvas id="game-canvas" width="300" height="300"></canvas>
+            
+            <div class="controls">
+                <div class="d-pad up" onclick="setDir('UP')">⬆️</div>
+                <div class="d-pad left" onclick="setDir('LEFT')">⬅️</div>
+                <div class="d-pad down" onclick="setDir('DOWN')">⬇️</div>
+                <div class="d-pad right" onclick="setDir('RIGHT')">➡️</div>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    <script>
+        // --- SYSTEM SETTINGS ---
+        const CORRECT_PASS = "1234"; // Change your password here
+        
+        // --- NAVIGATION ---
+        function checkPass() {
+            const input = document.getElementById('pass-input');
+            if(input.value === CORRECT_PASS) {
+                switchScreen('home-screen');
+            } else {
+                input.value = "";
+                input.style.borderColor = "red";
+                setTimeout(() => input.style.borderColor = "rgba(255,255,255,0.3)", 500);
+            }
+        }
+
+        function switchScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function goHome() {
+            clearInterval(gameInterval); // Stop any running games
+            switchScreen('home-screen');
+        }
+
+        // --- SNAKE GAME LOGIC ---
+        let canvas, ctx, gameInterval;
+        let snake, food, direction, score;
+        const box = 20;
+
+        function openGame(game) {
+            if(game === 'snake') {
+                switchScreen('snake-screen');
+                canvas = document.getElementById('game-canvas');
+                ctx = canvas.getContext('2d');
+                startSnake();
+            }
+        }
+
+        function startSnake() {
+            snake = [{x: 10 * box, y: 10 * box}];
+            direction = "RIGHT";
+            score = 0;
+            document.getElementById('score-display').innerText = "Score: " + score;
+            spawnFood();
+            
+            if(gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(updateSnake, 150); // Speed (lower is faster)
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / box)) * box,
+                y: Math.floor(Math.random() * (canvas.height / box)) * box
+            };
+        }
+
+        function setDir(newDir) {
+            if(newDir === 'LEFT' && direction !== 'RIGHT') direction = 'LEFT';
+            if(newDir === 'UP' && direction !== 'DOWN') direction = 'UP';
+            if(newDir === 'RIGHT' && direction !== 'LEFT') direction = 'RIGHT';
+            if(newDir === 'DOWN' && direction !== 'UP') direction = 'DOWN';
+        }
+
+        function updateSnake() {
+            // Move Head
+            let headX = snake[0].x;
+            let headY = snake[0].y;
+
+            if(direction === 'LEFT') headX -= box;
+            if(direction === 'UP') headY -= box;
+            if(direction === 'RIGHT') headX += box;
+            if(direction === 'DOWN') headY += box;
+
+            // Check Collision (Walls or Self)
+            if(headX < 0 || headX >= canvas.width || headY < 0 || headY >= canvas.height || collision(headX, headY)) {
+                clearInterval(gameInterval);
+                alert("Game Over! Score: " + score);
+                startSnake(); // Restart
+                return;
+            }
+
+            // Check Food
+            if(headX === food.x && headY === food.y) {
+                score++;
+                document.getElementById('score-display').innerText = "Score: " + score;
+                spawnFood();
+            } else {
+                snake.pop(); // Remove tail
+            }
+
+            // Add New Head
+            snake.unshift({x: headX, y: headY});
+
+            // Draw Everything
+            ctx.fillStyle = "#111"; // Background
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Food
+            ctx.fillStyle = "#FF3B30";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            // Draw Snake
+            for(let i=0; i<snake.length; i++) {
+                ctx.fillStyle = (i===0) ? "#32D74B" : "#28A745";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+            }
+        }
+
+        function collision(x, y) {
+            for(let i=0; i<snake.length; i++) {
+                if(snake[i].x === x && snake[i].y === y) return true;
+            }
+            return false;
+        }
+    </script>
 </body>
 </html>
