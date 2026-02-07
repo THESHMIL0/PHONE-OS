@@ -22,7 +22,7 @@ body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
 
 /* HOME SCREEN */
 .status-bar { padding: 15px 20px; display: flex; justify-content: space-between; font-weight: bold; color: #555; }
-.app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; }
+.app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 30px 20px; }
 .app-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
 .app-icon { width: 60px; height: 60px; border-radius: 18px; display: flex; justify-content: center; align-items: center; font-size: 28px; color: white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); margin-bottom: 5px; }
 .app-item p { font-size: 11px; color: #555; font-weight: 600; }
@@ -37,6 +37,15 @@ body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
 .app-window.hidden { transform: translateX(100%); }
 .app-header { height: 50px; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; background: white; border-bottom: 1px solid #eee; font-weight: bold; }
 .app-header button { border: none; background: none; color: #ff9a9e; font-size: 16px; }
+
+/* EVENTS APP (NEW) */
+.event-list { padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
+.event-card { display: flex; background: white; border-radius: 15px; padding: 15px; align-items: center; gap: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.event-date { display: flex; flex-direction: column; align-items: center; background: #ffcc00; color: white; padding: 5px 10px; border-radius: 10px; min-width: 50px; }
+.event-date .month { font-size: 10px; font-weight: bold; }
+.event-date .day { font-size: 18px; font-weight: bold; }
+.event-details h3 { font-size: 16px; margin-bottom: 2px; color: #333; }
+.event-details p { font-size: 12px; color: #888; }
 
 /* CHAT APP */
 .chat-body { flex: 1; padding: 15px; background: #fff0f5; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
@@ -67,21 +76,17 @@ body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
 .vinyl-record { width: 200px; height: 200px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 40px; animation: spin 5s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* US APP (RELATIONSHIP DASHBOARD) */
+/* US APP */
 .map-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-
 .distance-container { width: 100%; display: flex; justify-content: space-around; align-items: center; margin-top: 20px; padding: 0 10px; }
 .location { display: flex; flex-direction: column; align-items: center; gap: 5px; font-weight: bold; color: #555; }
 .avatar { width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; font-size: 25px; }
-
 .flight-path { flex: 1; position: relative; height: 2px; background: #bbb; margin: 0 10px; margin-bottom: 20px; }
 .plane-icon { position: absolute; top: -14px; font-size: 20px; animation: fly 3s linear infinite alternate; }
 @keyframes fly { 0% { left: 0%; transform: rotate(90deg); } 100% { left: 100%; transform: rotate(90deg); } }
 .km-text { position: absolute; top: 15px; width: 100%; text-align: center; font-size: 10px; color: #888; letter-spacing: 1px; }
-
 .love-timer-box { background: white; margin-top: 30px; padding: 20px; border-radius: 20px; width: 85%; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center; }
 .love-timer-box p { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 .love-timer-box h2 { font-size: 30px; color: #ff9a9e; margin: 10px 0; }
 .timer-details { display: flex; justify-content: center; gap: 10px; font-size: 13px; color: #555; font-weight: bold; }
-
 .quote-box { margin-top: auto; margin-bottom: 30px; font-style: italic; color: #666; font-size: 13px; opacity: 0.8; padding: 0 20px; }
