@@ -1,188 +1,76 @@
-/* RESET EVERYTHING */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-}
+/* Keep previous reset and body styles */
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; user-select: none; }
+body { background-color: #000; width: 100vw; height: 100vh; overflow: hidden; }
 
-body {
-    background-color: #000;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden; /* Prevents scrolling */
-}
-
-/* --- THE LAYERS --- */
+/* LAYERS */
 .screen-layer {
-    position: fixed; /* THIS FIXES THE LAYOUT */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
-    display: flex;
-    flex-direction: column;
-    z-index: 10;
-    transition: transform 0.4s ease-in-out, opacity 0.4s;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(180deg, #ffdde1 0%, #ee9ca7 100%); /* Cute Pink Gradient */
+    display: flex; flex-direction: column; z-index: 10;
+    transition: all 0.4s ease;
 }
+.hidden { transform: scale(1.1); opacity: 0; pointer-events: none; }
 
-/* Class to hide screens */
-.hidden {
-    transform: scale(1.1);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 0;
+/* LOCK SCREEN & KEYPAD (Keep same as before) */
+.lock-content { padding-top: 60px; height: 100%; display: flex; flex-direction: column; align-items: center; color: white; }
+#lock-clock { font-size: 70px; font-weight: 300; }
+.lock-msg { margin-top: 10px; font-size: 18px; opacity: 0.9; }
+.pin-wrapper { margin-top: 30px; text-align: center; }
+.pin-display { display: flex; gap: 15px; margin-top: 10px; justify-content: center; }
+.pin-dot { width: 12px; height: 12px; border: 1.5px solid white; border-radius: 50%; transition: 0.2s; }
+.pin-dot.filled { background: white; }
+.keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: auto; margin-bottom: 40px; }
+.keypad button { width: 70px; height: 70px; border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; backdrop-filter: blur(5px); }
+
+/* HOME SCREEN & APPS */
+.status-bar { padding: 15px 25px; display: flex; justify-content: space-between; font-weight: bold; color: white; }
+.app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; }
+.app-item { display: flex; flex-direction: column; align-items: center; color: white; font-size: 12px; cursor: pointer; }
+.app-icon { width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+/* Colors */
+.green { background: #4CD964; color: white; }
+.blue { background: #007AFF; color: white; }
+.pink { background: #FF2D55; color: white; }
+.map-icon { background: #FF9500; color: white; }
+.white { background: white; color: black; }
+.grey { background: #8E8E93; color: white; }
+
+/* DOCK */
+.dock-container { margin-top: auto; padding: 20px; display: flex; justify-content: center; }
+.dock { background: rgba(255,255,255,0.3); backdrop-filter: blur(15px); padding: 15px; border-radius: 30px; display: flex; gap: 20px; }
+
+/* --- APP WINDOW STYLES --- */
+.app-window {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: white; z-index: 20; display: flex; flex-direction: column;
+    transition: transform 0.3s ease-in-out;
 }
+.app-window.hidden { transform: translateY(100%); opacity: 1; }
 
-/* --- LOCK SCREEN --- */
-.lock-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    justify-content: space-between;
-    padding: 60px 20px 40px 20px;
-    align-items: center;
-    color: white;
+.app-header {
+    height: 50px; display: flex; align-items: center; justify-content: space-between;
+    padding: 0 15px; border-bottom: 1px solid #eee; background: #f8f8f8; font-weight: bold;
 }
+.app-header button { border: none; background: none; font-size: 16px; color: #007AFF; cursor: pointer; }
 
-.lock-clock-container {
-    text-align: center;
-}
+/* CHAT APP */
+.chat-body { flex: 1; padding: 15px; background: #fff; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.msg { padding: 10px 15px; border-radius: 20px; max-width: 75%; font-size: 14px; }
+.sent { align-self: flex-end; background: #007AFF; color: white; border-bottom-right-radius: 5px; }
+.received { align-self: flex-start; background: #e5e5ea; color: black; border-bottom-left-radius: 5px; }
+.chat-input-bar { padding: 10px; border-top: 1px solid #eee; display: flex; gap: 10px; }
+.chat-input-bar input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
 
-#lock-clock {
-    font-size: 70px;
-    font-weight: 300;
-}
+/* PHOTOS APP */
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding-top: 2px; }
+.gallery-grid img { width: 100%; height: 100px; object-fit: cover; }
 
-#lock-date {
-    font-size: 18px;
-    font-weight: 500;
-}
+/* MAP APP */
+.map-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f0f4f8; padding: 20px; text-align: center; }
+.dotted-line { margin: 20px 0; font-weight: bold; color: #aaa; letter-spacing: 2px; }
 
-.pin-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-.pin-display {
-    display: flex;
-    gap: 15px;
-}
-
-.pin-dot {
-    width: 12px;
-    height: 12px;
-    border: 1.5px solid white;
-    border-radius: 50%;
-    transition: background 0.2s;
-}
-
-.pin-dot.filled {
-    background-color: white;
-}
-
-/* Keypad */
-.keypad {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    width: 100%;
-    max-width: 300px;
-}
-
-.keypad button {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: white;
-    font-size: 26px;
-    backdrop-filter: blur(10px);
-    margin: 0 auto;
-    cursor: pointer;
-}
-
-.keypad button:active {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-.delete-btn {
-    font-size: 20px !important;
-}
-
-/* --- HOME SCREEN --- */
-.status-bar {
-    padding: 15px 25px;
-    display: flex;
-    justify-content: space-between;
-    font-size: 14px;
-    font-weight: 600;
-    color: white;
-}
-
-.app-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    padding: 20px;
-    margin-top: 10px;
-}
-
-.app-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-}
-
-.app-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 14px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 30px;
-    margin-bottom: 5px;
-    background-color: white;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-.app-item p {
-    color: white;
-    font-size: 12px;
-    font-weight: 500;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-/* Icon Colors */
-.green { background: #4CD964; }
-.blue { background: #007AFF; }
-.pink { background: #FF2D55; }
-.grey { background: #8E8E93; }
-.white { background: #ffffff; }
-
-/* Dock */
-.dock-container {
-    margin-top: auto;
-    padding: 20px;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.dock {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(15px);
-    border-radius: 35px;
-    padding: 15px;
-    display: flex;
-    gap: 20px;
-    justify-content: space-around;
-}
+/* MUSIC APP */
+.music-player { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+.album-art { width: 200px; height: 200px; background: #eee; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 50px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.controls { display: flex; gap: 30px; align-items: center; margin-top: 20px; }
+.controls button { background: none; border: none; font-size: 30px; cursor: pointer; }
