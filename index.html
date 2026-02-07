@@ -3,86 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Phone OS v3</title>
+    <title>Phone OS v4</title>
     <style>
         /* --- CORE STYLES --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            margin: 0; padding: 0;
-            background-color: #111; color: white;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            overflow: hidden; user-select: none;
-            height: 100vh; width: 100vw;
+            margin: 0; padding: 0; background: #000; color: white;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden; user-select: none; height: 100vh;
         }
 
-        /* --- THEMES --- */
-        :root { --accent: #0A84FF; --bg-grad: linear-gradient(135deg, #1c1c1e, #000); }
-        .theme-love { --accent: #FF2D55; --bg-grad: linear-gradient(135deg, #500, #200); }
-        .theme-matrix { --accent: #00FF00; --bg-grad: linear-gradient(135deg, #002200, #000); }
-
+        /* --- THEMES & PHONE --- */
         .phone-container {
-            width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            background: var(--bg-grad); transition: background 0.5s;
+            width: 100%; height: 100%; display: flex; flex-direction: column;
+            background: linear-gradient(135deg, #1c1c1e, #000); position: relative;
         }
-
-        /* --- UI ELEMENTS --- */
         .status-bar { padding: 10px 20px; display: flex; justify-content: space-between; font-weight: 600; z-index: 100; }
+        
+        /* --- SCREENS --- */
         .screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            opacity: 1; z-index: 10; pointer-events: all; transition: opacity 0.3s;
+            opacity: 1; z-index: 10; background: inherit; transition: opacity 0.3s; pointer-events: all;
         }
         .screen.hidden { opacity: 0; pointer-events: none; z-index: 0; }
         
-        button { cursor: pointer; border: none; outline: none; }
         .back-btn {
-            position: absolute; top: 50px; left: 20px;
-            background: rgba(255,255,255,0.2); color: white;
-            padding: 8px 16px; border-radius: 20px; font-size: 14px;
+            position: absolute; top: 50px; left: 20px; z-index: 20;
+            background: rgba(255,255,255,0.2); color: white; border: none;
+            padding: 8px 16px; border-radius: 20px;
         }
 
         /* --- LOCK & HOME --- */
         input[type="password"] {
             background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-            padding: 15px; border-radius: 12px; color: white;
-            font-size: 24px; text-align: center; width: 150px; margin: 20px 0;
+            padding: 15px; border-radius: 12px; color: white; font-size: 24px;
+            text-align: center; width: 150px; margin: 20px 0; outline: none;
         }
-        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; padding: 20px; }
+        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; }
         .app-icon {
             width: 70px; height: 70px; background: rgba(255,255,255,0.1);
             border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            font-size: 32px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
+            font-size: 32px; cursor: pointer; transition: 0.1s;
         }
         .app-icon:active { transform: scale(0.9); }
 
-        /* --- CLICKER GAME --- */
-        .coin-btn {
-            width: 150px; height: 150px; background: #FFD700;
-            border-radius: 50%; border: 5px solid #DAA520;
-            font-size: 60px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); margin: 20px;
-            transition: transform 0.05s;
+        /* --- MESSAGES APP --- */
+        .msg-list { width: 90%; height: 70%; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .msg-bubble {
+            max-width: 80%; padding: 10px 15px; border-radius: 20px; font-size: 16px;
         }
-        .coin-btn:active { transform: scale(0.95); }
-        .shop-item {
-            background: rgba(255,255,255,0.1); width: 80%; padding: 10px;
-            margin: 5px; border-radius: 10px; display: flex; justify-content: space-between;
-            align-items: center;
-        }
+        .msg-left { align-self: flex-start; background: #333; color: white; border-bottom-left-radius: 5px; }
+        .msg-right { align-self: flex-end; background: #0A84FF; color: white; border-bottom-right-radius: 5px; }
 
-        /* --- SETTINGS --- */
-        .setting-row {
-            width: 80%; padding: 15px; margin: 5px;
-            background: rgba(255,255,255,0.1); border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .theme-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; }
+        /* --- GAME STYLES --- */
+        .coin-btn { width: 120px; height: 120px; background: #FFD700; border-radius: 50%; font-size: 50px; display: flex; align-items: center; justify-content: center; margin: 20px; border: 5px solid orange; }
+        .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .ttt-cell { width: 80px; height: 80px; background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .controls { display: grid; grid-template-columns: 60px 60px 60px; gap: 10px; margin-top: 10px; }
+        .d-pad { width: 60px; height: 60px; background: #333; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #555; }
+        .up { grid-column: 2; grid-row: 1; } .left { grid-column: 1; grid-row: 2; }
+        .down { grid-column: 2; grid-row: 2; } .right { grid-column: 3; grid-row: 2; }
     </style>
 </head>
 <body>
-    <div id="phone" class="phone-container">
+    <div class="phone-container">
         <div class="status-bar">
             <span id="clock">12:00</span>
             <span>5G 🔋</span>
@@ -91,7 +76,7 @@
         <div id="lock-screen" class="screen">
             <div style="font-size: 50px; margin-bottom: 20px;">🔒</div>
             <input type="password" id="pass-input" maxlength="4" placeholder="••••">
-            <button onclick="checkPass()" style="padding: 10px 30px; background: var(--accent); color:white; border-radius: 20px;">Unlock</button>
+            <button onclick="checkPass()" style="padding: 10px 30px; background: #0A84FF; border:none; color:white; border-radius: 20px;">Unlock</button>
         </div>
 
         <div id="home-screen" class="screen hidden">
@@ -99,126 +84,178 @@
                 <div class="app-icon" onclick="openApp('snake')">🐍</div>
                 <div class="app-icon" onclick="openApp('ttt')">❌</div>
                 <div class="app-icon" onclick="openApp('clicker')">💰</div>
-                <div class="app-icon" onclick="openApp('settings')">⚙️</div>
+                <div class="app-icon" onclick="openApp('msg')">💬</div>
+                <div class="app-icon" onclick="alert('Settings coming soon!')">⚙️</div>
+            </div>
+        </div>
+
+        <div id="msg-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <div style="margin-top: 80px; width: 100%; padding: 0 20px;">
+                <h2 style="margin: 0;">Ayuuu ❤️</h2>
+                <small style="opacity: 0.7;">Online</small>
+            </div>
+            <div class="msg-list" id="chat-box">
+                </div>
+            <div style="display: flex; gap: 10px; padding: 10px; width: 100%;">
+                <input type="text" id="msg-input" placeholder="Message..." style="flex:1; padding: 10px; border-radius: 20px; border: none; background: #333; color: white;">
+                <button onclick="sendMsg()" style="background: #0A84FF; color: white; border: none; padding: 10px 15px; border-radius: 50%;">➤</button>
             </div>
         </div>
 
         <div id="clicker-screen" class="screen hidden">
             <button class="back-btn" onclick="goHome()">← Back</button>
-            <h1 id="money-display" style="color: #FFD700; text-shadow: 0 0 10px orange;">$0</h1>
+            <h1 id="money-display" style="color: #FFD700;">$0</h1>
             <div class="coin-btn" onclick="clickCoin()">🪙</div>
-            
-            <div style="width: 100%; display: flex; flex-direction: column; align-items: center; overflow-y: auto; height: 40%;">
-                <h3>🛒 Shop</h3>
-                <div class="shop-item" onclick="buyUpgrade('auto')">
-                    <span>🤖 Auto-Miner</span>
-                    <span id="cost-auto" style="color: #FFD700">$50</span>
-                </div>
-                <div class="shop-item" onclick="buyUpgrade('multi')">
-                    <span>⚡ Power Tap</span>
-                    <span id="cost-multi" style="color: #FFD700">$100</span>
-                </div>
-            </div>
+            <button onclick="buyAuto()" style="background: #333; color: white; padding: 10px 20px; border-radius: 10px;">🤖 Buy Auto-Miner ($50)</button>
         </div>
 
-        <div id="settings-screen" class="screen hidden">
+        <div id="ttt-screen" class="screen hidden">
             <button class="back-btn" onclick="goHome()">← Back</button>
-            <h2>Settings</h2>
-            
-            <div class="setting-row" onclick="setTheme('default')">
-                <span>Dark Mode (Default)</span>
-                <div class="theme-dot" style="background: #1c1c1e;"></div>
-            </div>
-            <div class="setting-row" onclick="setTheme('love')">
-                <span>Valentine Mode</span>
-                <div class="theme-dot" style="background: #a30030;"></div>
-            </div>
-            <div class="setting-row" onclick="setTheme('matrix')">
-                <span>Hacker Mode</span>
-                <div class="theme-dot" style="background: #004400;"></div>
-            </div>
-            
-            <button onclick="lockPhone()" style="margin-top: 30px; color: red; background: none; font-size: 16px;">🔒 Lock Phone</button>
+            <h2 id="ttt-status" style="margin-top: 80px;">Your Turn</h2>
+            <div class="ttt-board" id="ttt-board"></div>
+            <button onclick="startTTT()" style="margin-top: 20px; padding: 10px; background: #32D74B; border:none; border-radius: 10px; color:white;">Restart</button>
         </div>
 
-        <div id="snake-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">Back</button><canvas id="snake-canvas" style="background:#000; border:1px solid #333;" width="300" height="300"></canvas></div>
-        <div id="ttt-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">Back</button><h2 style="margin-top:100px;">Tic Tac Toe</h2><div id="ttt-board" style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;"></div></div>
+        <div id="snake-screen" class="screen hidden">
+            <button class="back-btn" onclick="goHome()">← Back</button>
+            <canvas id="snake-canvas" width="300" height="300" style="background:#000; border:2px solid #333; margin-top: 60px;"></canvas>
+            <div class="controls">
+                <div class="d-pad up" onclick="setDir('UP')">⬆️</div>
+                <div class="d-pad left" onclick="setDir('LEFT')">⬅️</div>
+                <div class="d-pad down" onclick="setDir('DOWN')">⬇️</div>
+                <div class="d-pad right" onclick="setDir('RIGHT')">➡️</div>
+            </div>
+        </div>
     </div>
     <script>
         const PASS = "1234";
-        let money = parseInt(localStorage.getItem('money')) || 0;
-        let autoClickers = parseInt(localStorage.getItem('auto')) || 0;
-        let multiplier = parseInt(localStorage.getItem('multi')) || 1;
+        let money = 0, autoMiners = 0;
 
-        // --- CORE SYSTEM ---
+        // --- SYSTEM ---
         setInterval(() => {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-            
-            // Auto Clicker Logic
-            if(autoClickers > 0) {
-                money += autoClickers;
-                updateMoney();
-            }
+            if(autoMiners > 0) { money += autoMiners; updateMoney(); }
         }, 1000);
 
         function checkPass() {
             if(document.getElementById('pass-input').value === PASS) switchScreen('home-screen');
-            else alert("Wrong Password!");
+            else alert("Wrong Pass!");
         }
 
         function switchScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
-        function goHome() { switchScreen('home-screen'); saveData(); }
-        function lockPhone() { switchScreen('lock-screen'); document.getElementById('pass-input').value = ""; }
+
+        function goHome() {
+            clearInterval(gameInterval); // Stop Snake
+            switchScreen('home-screen');
+        }
 
         function openApp(app) {
-            if(app === 'clicker') { switchScreen('clicker-screen'); updateMoney(); updateShopUI(); }
-            else if(app === 'settings') switchScreen('settings-screen');
-            else if(app === 'snake') { alert("Snake is sleeping... (Code stripped to fit Update 3)"); }
-            else if(app === 'ttt') { alert("Tic-Tac-Toe is on break..."); }
+            switchScreen(app + '-screen');
+            if(app === 'snake') startSnake();
+            if(app === 'ttt') startTTT();
+            if(app === 'msg') loadMessages();
         }
 
-        // --- SETTINGS LOGIC ---
-        function setTheme(theme) {
-            const body = document.getElementById('phone');
-            body.classList.remove('theme-love', 'theme-matrix');
-            if(theme !== 'default') body.classList.add('theme-' + theme);
-        }
-
-        // --- CLICKER GAME LOGIC ---
-        function clickCoin() {
-            money += (1 * multiplier);
-            updateMoney();
-            // Simple bounce animation effect
-            const btn = document.querySelector('.coin-btn');
-            btn.style.transform = "scale(0.9)";
-            setTimeout(() => btn.style.transform = "scale(1)", 50);
-        }
-
-        function buyUpgrade(type) {
-            if(type === 'auto' && money >= 50) {
-                money -= 50; autoClickers++;
-            } else if (type === 'multi' && money >= 100) {
-                money -= 100; multiplier++;
+        // --- MESSAGES APP ---
+        function loadMessages() {
+            const chat = document.getElementById('chat-box');
+            if(chat.innerHTML.trim() === "") {
+                addMsg("left", "Hey Theshu! ❤️");
+                setTimeout(() => addMsg("left", "Did you finish the website?"), 1000);
             }
-            updateMoney(); updateShopUI(); saveData();
+        }
+        function addMsg(side, text) {
+            const div = document.createElement('div');
+            div.className = `msg-bubble msg-${side}`;
+            div.innerText = text;
+            document.getElementById('chat-box').appendChild(div);
+        }
+        function sendMsg() {
+            const input = document.getElementById('msg-input');
+            if(input.value) {
+                addMsg("right", input.value);
+                input.value = "";
+                setTimeout(() => addMsg("left", "Aww that's cute 😸"), 2000);
+            }
         }
 
-        function updateMoney() {
-            document.getElementById('money-display').innerText = "$" + money;
+        // --- CLICKER APP ---
+        function clickCoin() { money++; updateMoney(); }
+        function buyAuto() {
+            if(money >= 50) { money -= 50; autoMiners++; updateMoney(); }
+        }
+        function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
+        // --- TIC TAC TOE ---
+        let board = ["","","","","","","","",""], turn = "X", active = true;
+        function startTTT() {
+            board.fill(""); active = true; turn = "X";
+            document.getElementById('ttt-status').innerText = "Your Turn (X)";
+            renderTTT();
+        }
+        function renderTTT() {
+            const el = document.getElementById('ttt-board'); el.innerHTML = "";
+            board.forEach((val, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'ttt-cell'; cell.innerText = val;
+                cell.onclick = () => moveTTT(i);
+                if(val === "X") cell.style.color = "#32D74B";
+                if(val === "O") cell.style.color = "#FF3B30";
+                el.appendChild(cell);
+            });
+        }
+        function moveTTT(i) {
+            if(board[i] || !active) return;
+            board[i] = turn; renderTTT();
+            if(checkWin()) { active = false; document.getElementById('ttt-status').innerText = turn + " Wins!"; return; }
+            if(!board.includes("")) { active = false; document.getElementById('ttt-status').innerText = "Draw!"; return; }
+            turn = turn === "X" ? "O" : "X";
+            if(turn === "O") setTimeout(cpuMove, 500);
+        }
+        function cpuMove() {
+            let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+            moveTTT(empty[Math.floor(Math.random() * empty.length)]);
+        }
+        function checkWin() {
+            const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return wins.some(c => board[c[0]] && board[c[0]] === board[c[1]] && board[c[0]] === board[c[2]]);
         }
 
-        function updateShopUI() {
-            document.getElementById('cost-auto').innerText = "$50 (Own: " + autoClickers + ")";
-            document.getElementById('cost-multi').innerText = "$100 (Lvl: " + multiplier + ")";
+        // --- SNAKE GAME ---
+        let ctx, snake, food, dir, gameInterval;
+        const box = 20;
+        function startSnake() {
+            const c = document.getElementById('snake-canvas');
+            ctx = c.getContext('2d');
+            snake = [{x:10*box, y:10*box}]; dir = "RIGHT"; spawnFood();
+            if(gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(drawSnake, 150);
         }
-
-        function saveData() {
-            localStorage.setItem('money', money);
-            localStorage.setItem('auto', autoClickers);
-            localStorage.setItem('multi', multiplier);
+        function spawnFood() { food = {x: Math.floor(Math.random()*15)*box, y: Math.floor(Math.random()*15)*box}; }
+        function setDir(d) {
+            if(d === 'LEFT' && dir !== 'RIGHT') dir = 'LEFT';
+            if(d === 'UP' && dir !== 'DOWN') dir = 'UP';
+            if(d === 'RIGHT' && dir !== 'LEFT') dir = 'RIGHT';
+            if(d === 'DOWN' && dir !== 'UP') dir = 'DOWN';
+        }
+        function drawSnake() {
+            let hX = snake[0].x, hY = snake[0].y;
+            if(dir === 'LEFT') hX -= box; if(dir === 'UP') hY -= box;
+            if(dir === 'RIGHT') hX += box; if(dir === 'DOWN') hY += box;
+            
+            if(hX < 0 || hX >= 300 || hY < 0 || hY >= 300 || snake.some(s => s.x === hX && s.y === hY)) {
+                clearInterval(gameInterval); alert("Game Over!"); return;
+            }
+            if(hX === food.x && hY === food.y) spawnFood(); else snake.pop();
+            
+            snake.unshift({x:hX, y:hY});
+            ctx.fillStyle = "#000"; ctx.fillRect(0,0,300,300);
+            ctx.fillStyle = "red"; ctx.fillRect(food.x, food.y, box, box);
+            ctx.fillStyle = "#0F0";
+            snake.forEach(s => ctx.fillRect(s.x, s.y, box, box));
         }
     </script>
 </body>
