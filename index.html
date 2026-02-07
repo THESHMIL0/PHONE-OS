@@ -3,32 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Snake App v6</title>
+    <title>Snake App v7</title>
     <style>
         /* --- THEME VARIABLES --- */
-        :root { --bg: #050505; --panel: #111; --primary: #0f0; --text: #fff; --danger: #f05; }
+        :root { --bg: #050505; --panel: #111; --primary: #0f0; --text: #fff; --accent: #00eaff; }
         
-        /* SKINS (Defined here for preview logic) */
-        body.skin-neon { --primary: #0f0; --glow: 0 0 10px #0f0; }
-        body.skin-gold { --primary: #ffd700; --glow: 0 0 10px #ffaa00; }
-        body.skin-ice { --primary: #00eaff; --glow: 0 0 10px #0088ff; }
-        body.skin-void { --primary: #ff0000; --glow: 0 0 10px #880000; }
-        body.skin-retro { --primary: #fff; --glow: none; }
+        /* SKINS */
+        body.skin-neon { --primary: #0f0; --glow: 0 0 15px #0f0; }
+        body.skin-gold { --primary: #ffd700; --glow: 0 0 15px #ffaa00; }
+        body.skin-ice { --primary: #00eaff; --glow: 0 0 15px #0088ff; }
+        body.skin-void { --primary: #ff0000; --glow: 0 0 15px #880000; }
+        body.skin-retro { --primary: #fff; --glow: none; --bg: #000; }
 
-        /* --- CORE SETUP --- */
+        /* --- CORE --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; touch-action: none; font-family: 'Segoe UI', sans-serif; }
         body { 
             margin: 0; background: var(--bg); color: var(--text); 
-            overflow: hidden; height: 100vh; width: 100vw; position: relative;
+            overflow: hidden; height: 100vh; width: 100vw; position: relative; transition: background 0.3s;
         }
 
-        /* --- VISUALS --- */
-        .scanlines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;
-            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 4px;
-        }
-
-        /* --- APP SCREENS --- */
+        /* --- APP NAVIGATION --- */
         .app-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; align-items: center; 
@@ -39,150 +33,140 @@
         .screen-hidden-right { transform: translateX(100%); }
         .screen-active { transform: translateX(0); z-index: 20; }
 
-        /* --- MAIN MENU --- */
-        .logo-area { margin-top: 60px; text-align: center; }
-        .logo-main { font-size: 60px; font-weight: 900; font-style: italic; color: var(--primary); text-shadow: var(--glow); letter-spacing: -2px; margin: 0; }
-        .logo-sub { font-size: 14px; letter-spacing: 4px; color: #888; text-transform: uppercase; }
+        /* --- VISUALS --- */
+        .scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;
+            background: linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.1) 50%); background-size: 100% 4px;
+        }
         
-        .menu-buttons { margin-top: auto; margin-bottom: 50px; width: 100%; display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        /* --- MAIN MENU --- */
+        .logo-area { margin-top: 40px; text-align: center; }
+        .logo-main { font-size: 70px; font-weight: 900; font-style: italic; color: var(--primary); text-shadow: var(--glow); letter-spacing: -3px; margin: 0; }
+        
+        .mode-selector { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center; }
+        .mode-btn { 
+            padding: 10px 15px; border: 1px solid #333; background: #111; color: #666; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .mode-btn.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: var(--glow); transform: scale(1.05); }
+
         .btn-play {
             width: 80%; padding: 20px; border-radius: 40px; border: none;
             background: var(--primary); color: #000; font-size: 24px; font-weight: 900;
             box-shadow: var(--glow); cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-            transition: transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 10px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .btn-play:active { transform: scale(0.96); }
-        
-        .icon-row { display: flex; gap: 20px; }
-        .btn-icon {
-            width: 60px; height: 60px; border-radius: 18px; background: var(--panel); border: 1px solid #333;
-            color: #fff; font-size: 24px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: 0.1s;
-        }
-        .btn-icon:active { transform: scale(0.9); border-color: var(--primary); color: var(--primary); }
 
-        /* --- SHOP SCREEN --- */
+        /* --- SHOP UI --- */
         .top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; height: 50px; margin-bottom: 20px; }
-        .title-text { font-size: 20px; font-weight: bold; }
-        .currency-badge { background: #222; padding: 5px 15px; border-radius: 20px; color: #ffd700; font-weight: bold; border: 1px solid #444; }
-        
-        .preview-box {
-            width: 100%; height: 120px; background: #111; border-radius: 15px; border: 2px solid #333;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 20px; position: relative; overflow: hidden;
-        }
-        .skin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; overflow-y: auto; padding-bottom: 20px; }
+        .currency-badge { background: #222; padding: 5px 15px; border-radius: 20px; color: #ffd700; font-weight: bold; border: 1px solid #444; display: flex; align-items: center; gap: 5px; }
+        .skin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; overflow-y: auto; padding-bottom: 50px; }
         .skin-card {
             background: #111; border-radius: 15px; padding: 15px; border: 2px solid #222;
             display: flex; flex-direction: column; align-items: center; gap: 5px; position: relative;
         }
         .skin-card.active { border-color: var(--primary); box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
-        .skin-name { font-size: 14px; font-weight: bold; text-transform: uppercase; }
-        .skin-price { font-size: 12px; color: #ffd700; }
-        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-
-        /* --- SETTINGS SCREEN --- */
-        .settings-list { width: 100%; display: flex; flex-direction: column; gap: 10px; }
-        .setting-item {
-            background: #111; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid #222;
-        }
-        .toggle-switch {
-            width: 50px; height: 26px; background: #333; border-radius: 13px; position: relative; transition: 0.3s;
-        }
-        .toggle-knob {
-            width: 22px; height: 22px; background: #fff; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s;
-        }
-        .active .toggle-switch { background: var(--primary); }
-        .active .toggle-knob { transform: translateX(24px); }
+        .lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); border-radius: 13px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
 
         /* --- GAME UI --- */
-        canvas { background: #000; border: 2px solid #333; border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.5); margin-top: 10px; }
-        .score-hud { font-size: 40px; font-weight: 900; color: rgba(255,255,255,0.1); position: absolute; top: 80px; z-index: 0; }
-        .controls { margin-top: auto; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; z-index: 30; }
+        .game-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; z-index: 30; }
+        .score-big { font-size: 32px; font-weight: 900; color: #fff; font-family: monospace; }
+        
+        .combo-bar-box { width: 100%; height: 4px; background: #222; border-radius: 2px; margin-bottom: 10px; overflow: hidden; }
+        .combo-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #ff0, #f00); transition: width 0.1s linear; }
+
+        canvas { background: #000; border: 2px solid #333; border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; aspect-ratio: 1; }
+        
+        .controls { margin-top: auto; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; }
         .d-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 50%; border: 1px solid #333; }
         .btn { width: 55px; height: 55px; background: #222; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #444; color: var(--primary); }
         .btn:active { background: #333; transform: scale(0.95); border-color: var(--primary); }
-        .ability-btn { position: absolute; bottom: 40px; right: 20px; width: 60px; height: 60px; border-radius: 50%; background: #00eaff; color:#000; font-size: 24px; display: flex; align-items: center; justify-content: center; border: 3px solid #fff; box-shadow: 0 0 15px #00eaff; }
         
-        /* --- GAME OVER MODAL --- */
+        /* ABILITY BUTTON */
+        .ability-btn { 
+            position: absolute; bottom: 20px; right: 20px; width: 65px; height: 65px; border-radius: 50%; 
+            background: var(--accent); color:#000; font-size: 24px; display: flex; align-items: center; justify-content: center; 
+            border: 3px solid #fff; box-shadow: 0 0 15px var(--accent); transition: 0.3s;
+        }
+        .ability-btn.cooldown { filter: grayscale(1); opacity: 0.5; transform: scale(0.9); }
+        .ability-btn:active { transform: scale(0.9); }
+
+        /* --- FX --- */
+        .float-text { position: absolute; font-weight: bold; pointer-events: none; animation: floatUp 0.8s ease-out forwards; text-shadow: 0 0 5px #000; font-size: 20px; z-index: 50; }
+        @keyframes floatUp { 0% { opacity:1; transform:translateY(0) scale(1); } 100% { opacity:0; transform:translateY(-40px) scale(1.2); } }
+        
+        /* --- MODAL --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-visible { opacity: 1; pointer-events: all; }
         .modal-box { background: #151515; border: 1px solid #333; padding: 30px; border-radius: 20px; text-align: center; width: 80%; transform: scale(0.8); transition: 0.3s; }
         .modal-visible .modal-box { transform: scale(1); }
+        .shaking { animation: shake 0.3s; }
+        @keyframes shake { 0% { transform: translate(2px, 2px); } 25% { transform: translate(-2px, -2px); } 50% { transform: translate(2px, -2px); } 75% { transform: translate(-2px, 2px); } 100% { transform: translate(0, 0); } }
     </style>
 </head>
 <body class="skin-neon">
     <div class="scanlines"></div>
 
     <div id="screen-menu" class="app-screen screen-active">
+        <div class="top-bar" style="justify-content: flex-end;">
+            <div class="currency-badge">🪙 <span id="menu-bits">0</span></div>
+        </div>
+
         <div class="logo-area">
             <h1 class="logo-main">SNAKE</h1>
-            <div class="logo-sub">APP EDITION</div>
+            <div style="color:#666; letter-spacing:3px; font-size:12px;">ULTIMATE v7.0</div>
         </div>
-        
-        <div class="menu-buttons">
-            <button class="btn-play" onclick="nav('game')">
-                <span>▶</span> PLAY
-            </button>
-            <div class="icon-row">
-                <div class="btn-icon" onclick="nav('shop')">🎨</div>
-                <div class="btn-icon" onclick="nav('settings')">⚙️</div>
+
+        <div style="margin-top:auto; margin-bottom:40px; width:100%; display:flex; flex-direction:column; align-items:center; gap:20px;">
+            <div class="mode-selector">
+                <div class="mode-btn active" onclick="setMode('classic', this)">CLASSIC</div>
+                <div class="mode-btn" onclick="setMode('portal', this)">PORTAL</div>
+                <div class="mode-btn" onclick="setMode('speed', this)">SPEED</div>
+            </div>
+
+            <button class="btn-play" onclick="nav('game')"><span>▶</span> PLAY</button>
+            
+            <div style="display:flex; gap:20px;">
+                <div class="btn" style="width:60px; height:60px; border-radius:20px;" onclick="nav('shop')">🎨</div>
+                <div class="btn" style="width:60px; height:60px; border-radius:20px;" onclick="nav('settings')">⚙️</div>
             </div>
         </div>
-        <div style="font-size: 10px; color: #444; margin-top: auto;">v6.0.0</div>
     </div>
 
     <div id="screen-shop" class="app-screen screen-hidden-right">
         <div class="top-bar">
-            <div class="btn-icon" style="width:40px; height:40px; font-size:18px;" onclick="nav('menu')">←</div>
-            <div class="title-text">SKIN STORE</div>
+            <div class="btn" style="width:40px; height:40px; font-size:18px;" onclick="nav('menu')">←</div>
+            <div style="font-weight:bold;">SKIN SHOP</div>
             <div class="currency-badge">🪙 <span id="shop-bits">0</span></div>
         </div>
-
-        <div class="preview-box">
-            <div style="display:flex; gap:2px; align-items:center;">
-                <div style="width:20px; height:20px; background:var(--primary); box-shadow:var(--glow);"></div>
-                <div style="width:18px; height:18px; background:var(--primary); opacity:0.8;"></div>
-                <div style="width:16px; height:16px; background:var(--primary); opacity:0.6;"></div>
-            </div>
-            <div style="position:absolute; bottom:10px; font-size:10px; color:#555;">PREVIEW</div>
-        </div>
-
-        <div class="skin-grid" id="skin-grid">
-            </div>
+        <div class="skin-grid" id="skin-grid"></div>
     </div>
 
     <div id="screen-settings" class="app-screen screen-hidden-right">
-        <div class="top-bar">
-            <div class="btn-icon" style="width:40px; height:40px; font-size:18px;" onclick="nav('menu')">←</div>
-            <div class="title-text">SETTINGS</div>
-            <div style="width:40px;"></div>
-        </div>
-
-        <div class="settings-list">
-            <div class="setting-item" id="opt-sound" onclick="toggleSetting('sound')">
-                <span>🔊 Sound Effects</span>
-                <div class="toggle-switch"><div class="toggle-knob"></div></div>
+        <div class="top-bar"><div class="btn" style="width:40px; height:40px; font-size:18px;" onclick="nav('menu')">←</div><div style="font-weight:bold;">SETTINGS</div><div></div></div>
+        <div style="width:100%; display:flex; flex-direction:column; gap:15px;">
+            <div class="btn" style="width:100%; justify-content:space-between; padding:0 20px; font-size:16px;" onclick="toggleSound()">
+                <span>🔊 Sound Effects</span> <span id="st-sound" style="color:var(--primary)">ON</span>
             </div>
-            <div class="setting-item" id="opt-vibro" onclick="toggleSetting('vibro')">
-                <span>📳 Vibration</span>
-                <div class="toggle-switch"><div class="toggle-knob"></div></div>
-            </div>
-            <div class="setting-item" onclick="resetData()" style="border-color:#522;">
-                <span style="color:#f55;">⚠️ Reset Data</span>
+            <div class="btn" style="width:100%; justify-content:space-between; padding:0 20px; font-size:16px; border-color:#522; color:#f55;" onclick="resetData()">
+                <span>⚠️ Reset Data</span>
             </div>
         </div>
     </div>
 
-    <div id="screen-game" class="app-screen screen-hidden-right" style="padding:0; justify-content:flex-start;">
-        <div class="top-bar" style="padding: 10px 20px; background:rgba(0,0,0,0.5);">
-            <div class="btn-icon" style="width:40px; height:40px; font-size:18px;" onclick="quitGame()">✕</div>
-            <div class="title-text" style="font-family:monospace; font-size:24px;" id="game-score">0</div>
-            <div class="currency-badge">🪙 <span id="game-bits">0</span></div>
+    <div id="screen-game" class="app-screen screen-hidden-right" style="padding:10px;">
+        <div class="game-header">
+            <div class="btn" style="width:40px; height:40px; font-size:18px;" onclick="gameOver()">✕</div>
+            <div class="score-big" id="game-score">0</div>
+            <div class="currency-badge" id="combo-badge" style="opacity:0;">x1</div>
         </div>
-
-        <div class="score-hud" id="bg-score">0</div>
-        <canvas id="game-canvas" width="340" height="400"></canvas>
+        
+        <div class="combo-bar-box"><div class="combo-bar-fill" id="combo-bar"></div></div>
+        
+        <div style="position:relative; width:100%; display:flex; justify-content:center;">
+            <canvas id="game-canvas" width="340" height="340"></canvas>
+            <div id="fx-container" style="position:absolute; top:0; left:50%; transform:translateX(-50%); width:340px; height:340px; pointer-events:none;"></div>
+        </div>
 
         <div class="controls">
             <div class="d-pad">
@@ -191,8 +175,8 @@
                 <div class="btn" ontouchstart="input('DOWN')" onmousedown="input('DOWN')">▼</div>
                 <div class="btn" ontouchstart="input('RIGHT')" onmousedown="input('RIGHT')">▶</div>
             </div>
+            <div id="ability-btn" class="ability-btn" onclick="activateAbility()">⏳</div>
         </div>
-        <div class="ability-btn" onclick="activateAbility()">⚡</div>
     </div>
 
     <div id="modal-gameover" class="modal-overlay">
@@ -202,8 +186,8 @@
             <div style="background:#222; padding:10px; border-radius:10px; margin-bottom:20px;">
                 Earned: <span id="final-bits" style="color:#ffd700;">+0</span> 🪙
             </div>
-            <div class="btn-play" style="width:100%; font-size:18px; margin-bottom:10px;" onclick="restartGame()">PLAY AGAIN</div>
-            <div class="btn-icon" style="width:100%; border-radius:30px; font-size:16px;" onclick="nav('menu'); hideModal()">MENU</div>
+            <div class="btn-play" style="width:100%; font-size:18px; margin-bottom:10px;" onclick="startGame()">RETRY</div>
+            <div class="btn" style="width:100%; border-radius:30px; font-size:16px;" onclick="nav('menu'); hideModal()">MENU</div>
         </div>
     </div>
     <script>
@@ -212,15 +196,14 @@
         const ctx = canvas.getContext('2d');
         const BOX = 20;
         const GRID_W = 17; // 340/20
-        const GRID_H = 20; // 400/20
+        const GRID_H = 17; // 340/20
         let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Save Data
         let user = {
             bits: parseInt(localStorage.getItem('snake_bits')) || 0,
             skins: JSON.parse(localStorage.getItem('snake_skins')) || ['neon'],
-            currentSkin: localStorage.getItem('snake_skin') || 'neon',
-            settings: JSON.parse(localStorage.getItem('snake_settings')) || { sound: true, vibro: true }
+            skin: localStorage.getItem('snake_skin') || 'neon',
+            sound: true
         };
 
         const SKINS = {
@@ -231,222 +214,255 @@
             'retro':{ name: 'Classic BW', price: 100, color: '#fff' }
         };
 
-        // Game State
-        let snake=[], food={}, dir={x:0,y:0}, nextDir={x:0,y:0}, score=0;
-        let gameLoop, isRunning=false, speed=130, slowMo=false;
+        // Game Variables
+        let snake=[], food={}, dir={x:0,y:0}, nextDir={x:0,y:0};
+        let score=0, speed=120, baseSpeed=120, isRunning=false;
+        let gameMode='classic'; // classic, portal, speed
+        let lastTime=0;
+        
+        // Ability & Combo
+        let combo=1, comboTimer=0, maxComboTime=3000;
+        let slowMo=false, canAbility=true;
 
         // --- NAVIGATION ---
-        function nav(screenName) {
-            // Hide all
+        function nav(screen) {
             document.querySelectorAll('.app-screen').forEach(s => {
-                s.classList.remove('screen-active');
-                s.classList.add('screen-hidden-left'); // Move old to left
+                s.classList.remove('screen-active'); s.classList.add('screen-hidden-left');
             });
-            
-            const target = document.getElementById('screen-' + screenName);
+            let target = document.getElementById('screen-'+screen);
             target.classList.remove('screen-hidden-left', 'screen-hidden-right');
             target.classList.add('screen-active');
-
-            if (screenName === 'shop') loadShop();
-            if (screenName === 'game') startGame();
-            if (screenName === 'settings') loadSettings();
             
+            if(screen === 'shop') loadShop();
+            if(screen === 'game') startGame();
+            if(screen === 'menu') updateUI();
             sfx('swish');
         }
 
         function hideModal() { document.getElementById('modal-gameover').classList.remove('modal-visible'); }
+        function updateUI() { 
+            document.getElementById('menu-bits').innerText = user.bits;
+            document.body.className = `skin-${user.skin}`;
+        }
 
-        // --- SHOP SYSTEM ---
+        // --- SHOP & SETTINGS ---
         function loadShop() {
             document.getElementById('shop-bits').innerText = user.bits;
             const grid = document.getElementById('skin-grid');
             grid.innerHTML = "";
-            
             for (let id in SKINS) {
-                let skin = SKINS[id];
+                let s = SKINS[id];
                 let owned = user.skins.includes(id);
-                let active = user.currentSkin === id;
-                
+                let active = user.skin === id;
                 let el = document.createElement('div');
-                el.className = `skin-card ${active ? 'active' : ''}`;
-                el.onclick = () => selectSkin(id);
-                
+                el.className = `skin-card ${active?'active':''}`;
+                el.onclick = () => buySkin(id);
                 el.innerHTML = `
-                    <div style="width:30px; height:30px; border-radius:50%; background:${skin.color}; box-shadow:0 0 10px ${skin.color}"></div>
-                    <div class="skin-name" style="color:${skin.color}">${skin.name}</div>
-                    ${owned ? (active ? '<span style="font-size:10px;">SELECTED</span>' : '') : `<div class="skin-price">${skin.price} 🪙</div>`}
-                    ${!owned ? `<div class="lock-overlay">🔒</div>` : ''}
+                    <div style="width:30px;height:30px;background:${s.color};border-radius:50%;box-shadow:0 0 10px ${s.color};margin-bottom:5px;"></div>
+                    <div style="font-size:12px;font-weight:bold;color:#fff;">${s.name}</div>
+                    ${owned ? (active?'<span style="font-size:10px;color:#0f0">EQUIPPED</span>':'') : `<div style="color:#ffd700;font-size:12px;">${s.price} 🪙</div><div class="lock-overlay">🔒</div>`}
                 `;
                 grid.appendChild(el);
             }
-            applyTheme(user.currentSkin); // Preview
         }
 
-        function selectSkin(id) {
+        function buySkin(id) {
             if (user.skins.includes(id)) {
-                user.currentSkin = id;
-                saveData();
-                loadShop();
-                sfx('tap');
-            } else {
-                if (user.bits >= SKINS[id].price) {
-                    if(confirm(`Buy ${SKINS[id].name} for ${SKINS[id].price}?`)) {
-                        user.bits -= SKINS[id].price;
-                        user.skins.push(id);
-                        user.currentSkin = id;
-                        saveData();
-                        loadShop();
-                        sfx('buy');
-                    }
-                } else {
-                    alert("Need more bits!");
+                user.skin = id; saveData(); loadShop(); sfx('tap');
+            } else if (user.bits >= SKINS[id].price) {
+                if(confirm("Buy "+SKINS[id].name+"?")) {
+                    user.bits -= SKINS[id].price;
+                    user.skins.push(id);
+                    user.skin = id;
+                    saveData(); loadShop(); sfx('buy');
                 }
             }
         }
 
-        function applyTheme(id) { document.body.className = `skin-${id}`; }
-
-        // --- SETTINGS ---
-        function loadSettings() {
-            updateToggle('sound', user.settings.sound);
-            updateToggle('vibro', user.settings.vibro);
-        }
-        function toggleSetting(key) {
-            user.settings[key] = !user.settings[key];
-            updateToggle(key, user.settings[key]);
-            saveData();
-            sfx('tap');
-        }
-        function updateToggle(id, val) {
-            const el = document.getElementById('opt-'+id);
-            if(val) el.classList.add('active'); else el.classList.remove('active');
-        }
-        function resetData() {
-            if(confirm("Reset all progress?")) { localStorage.clear(); location.reload(); }
-        }
-
-        // --- DATA ---
         function saveData() {
             localStorage.setItem('snake_bits', user.bits);
             localStorage.setItem('snake_skins', JSON.stringify(user.skins));
-            localStorage.setItem('snake_skin', user.currentSkin);
-            localStorage.setItem('snake_settings', JSON.stringify(user.settings));
+            localStorage.setItem('snake_skin', user.skin);
         }
-
-        // --- GAME ENGINE ---
+        
+        function setMode(m, btn) {
+            gameMode = m;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            sfx('tap');
+        }
+        
+        function toggleSound() {
+            user.sound = !user.sound;
+            document.getElementById('st-sound').innerText = user.sound ? "ON" : "OFF";
+        }
+        function resetData() { localStorage.clear(); location.reload(); }
+        // --- GAME LOGIC ---
         function startGame() {
             hideModal();
-            applyTheme(user.currentSkin);
             snake = [{x:8, y:10}, {x:8, y:11}, {x:8, y:12}];
             dir = {x:0, y:-1}; nextDir = {x:0, y:-1};
-            score = 0; speed = 120;
+            score = 0; combo = 1; comboTimer = 0;
+            baseSpeed = gameMode === 'speed' ? 100 : 130; speed = baseSpeed;
+            isRunning = true; slowMo = false; canAbility = true;
+            
             document.getElementById('game-score').innerText = 0;
-            document.getElementById('bg-score').innerText = 0;
-            document.getElementById('game-bits').innerText = user.bits;
+            document.getElementById('ability-btn').classList.remove('cooldown');
             spawnFood();
             
             if(audioCtx.state === 'suspended') audioCtx.resume();
-            isRunning = true;
-            loop();
+            lastTime = 0;
+            requestAnimationFrame(loop);
         }
 
-        function loop() {
+        function loop(timestamp) {
             if(!isRunning) return;
-            update();
+            
+            // Combo Decay
+            if (combo > 1) {
+                comboTimer -= (timestamp - lastTime);
+                let pct = Math.max(0, (comboTimer / maxComboTime) * 100);
+                document.getElementById('combo-bar').style.width = pct + "%";
+                if (comboTimer <= 0) { combo = 1; updateComboUI(); }
+            } else {
+                document.getElementById('combo-bar').style.width = "0%";
+            }
+
+            if (timestamp - lastTime > (slowMo ? 300 : speed)) {
+                update();
+                lastTime = timestamp;
+            }
             draw();
-            setTimeout(loop, slowMo ? 300 : speed);
+            requestAnimationFrame(loop);
         }
 
         function update() {
             dir = nextDir;
             let head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
 
-            // Collisions
-            if (head.x < 0 || head.x >= GRID_W || head.y < 0 || head.y >= GRID_H || checkSelf(head)) {
-                return gameOver();
+            // Mode: Portal (Wrap around)
+            if (gameMode === 'portal') {
+                if(head.x < 0) head.x = GRID_W - 1;
+                else if(head.x >= GRID_W) head.x = 0;
+                if(head.y < 0) head.y = GRID_H - 1;
+                else if(head.y >= GRID_H) head.y = 0;
+            } else {
+                // Classic: Die on wall
+                if (head.x < 0 || head.x >= GRID_W || head.y < 0 || head.y >= GRID_H) return gameOver();
             }
+
+            // Self Collision
+            for(let p of snake) if(head.x === p.x && head.y === p.y) return gameOver();
 
             snake.unshift(head);
 
+            // Eat
             if (head.x === food.x && head.y === food.y) {
-                score++;
-                if(score > 0 && score % 5 === 0 && speed > 60) speed -= 5;
+                combo++;
+                comboTimer = maxComboTime;
+                updateComboUI();
+                
+                let pts = combo;
+                score += pts;
                 document.getElementById('game-score').innerText = score;
-                document.getElementById('bg-score').innerText = score;
+                spawnFloatText(head.x, head.y, "+" + pts, '#fff');
                 sfx('eat');
+                
+                // Mode: Speed
+                if (gameMode === 'speed' && baseSpeed > 50) baseSpeed -= 2;
+                speed = baseSpeed;
+                
                 spawnFood();
             } else {
                 snake.pop();
             }
         }
 
-        function checkSelf(h) {
-            for(let p of snake) if(p.x === h.x && p.y === h.y) return true;
-            return false;
-        }
-
         function draw() {
-            // Clear
             ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg');
             ctx.fillRect(0,0,canvas.width, canvas.height);
 
             // Food
-            let fc = getComputedStyle(document.body).getPropertyValue('--primary');
-            ctx.fillStyle = "#ff0055"; // Food always red-ish contrast
-            ctx.shadowBlur = 15; ctx.shadowColor = "#ff0055";
+            let fc = "#ff0055";
+            ctx.fillStyle = fc; ctx.shadowBlur = 15; ctx.shadowColor = fc;
             ctx.beginPath(); ctx.arc(food.x*BOX+10, food.y*BOX+10, 7, 0, Math.PI*2); ctx.fill();
             ctx.shadowBlur = 0;
 
             // Snake
-            ctx.fillStyle = fc;
+            let sc = getComputedStyle(document.body).getPropertyValue('--primary');
             snake.forEach((p,i)=>{
-                if(i===0) { ctx.fillStyle="#fff"; ctx.shadowBlur=15; ctx.shadowColor=fc; }
-                else { ctx.fillStyle=fc; ctx.shadowBlur=0; }
+                ctx.fillStyle = sc;
+                if(i===0) { ctx.fillStyle="#fff"; ctx.shadowBlur=15; ctx.shadowColor=sc; }
+                else ctx.shadowBlur=0;
                 ctx.fillRect(p.x*BOX+1, p.y*BOX+1, 18, 18);
             });
         }
 
         function spawnFood() {
-            food = {x: Math.floor(Math.random()*GRID_W), y: Math.floor(Math.random()*GRID_H)};
-            for(let p of snake) if(p.x===food.x && p.y===food.y) spawnFood();
+            let valid = false;
+            while(!valid) {
+                food = {x: Math.floor(Math.random()*GRID_W), y: Math.floor(Math.random()*GRID_H)};
+                valid = true;
+                for(let p of snake) if(p.x===food.x && p.y===food.y) valid = false;
+            }
+        }
+
+        // --- ABILITY (TIME FREEZE) ---
+        function activateAbility() {
+            if(!isRunning || !canAbility) return;
+            slowMo = true; canAbility = false;
+            document.getElementById('ability-btn').classList.add('cooldown');
+            document.body.style.filter = "saturation(0)"; // Visual FX
+            sfx('buy');
+            spawnFloatText(snake[0].x, snake[0].y, "SLOW MO!", "#00eaff");
+            
+            setTimeout(()=>{
+                slowMo = false;
+                document.body.style.filter = "none";
+                // Cooldown logic could go here
+            }, 3000);
+        }
+
+        function updateComboUI() {
+            const el = document.getElementById('combo-badge');
+            el.innerText = "x" + combo;
+            el.style.opacity = combo > 1 ? 1 : 0;
+            if(combo > 1) {
+                el.style.transform = "scale(1.5)";
+                setTimeout(()=>el.style.transform = "scale(1)", 100);
+            }
+        }
+
+        function spawnFloatText(x, y, text, color) {
+            const el = document.createElement('div');
+            el.className = 'float-text';
+            el.innerText = text;
+            el.style.color = color;
+            el.style.left = (x * 20 + 20) + 'px'; // Adjust for canvas pos roughly
+            el.style.top = (y * 20 + 80) + 'px';
+            document.getElementById('fx-container').appendChild(el);
+            setTimeout(()=>el.remove(), 800);
         }
 
         function gameOver() {
             isRunning = false;
             sfx('die');
-            if(user.settings.vibro) navigator.vibrate(200);
-            
+            document.body.classList.add('shaking');
+            setTimeout(()=>document.body.classList.remove('shaking'), 300);
             user.bits += score;
             saveData();
-            
             document.getElementById('final-score').innerText = score;
             document.getElementById('final-bits').innerText = "+" + score;
             document.getElementById('modal-gameover').classList.add('modal-visible');
         }
 
-        function quitGame() { isRunning = false; nav('menu'); }
-        function restartGame() { hideModal(); startGame(); }
-
-        // --- CONTROLS & ABILITY ---
+        // --- CONTROLS ---
         function input(d) {
             if(d==='UP' && dir.y!==1) nextDir={x:0, y:-1};
             if(d==='DOWN' && dir.y!==-1) nextDir={x:0, y:1};
             if(d==='LEFT' && dir.x!==1) nextDir={x:-1, y:0};
             if(d==='RIGHT' && dir.x!==-1) nextDir={x:1, y:0};
         }
-        
-        function activateAbility() {
-            if(slowMo || !isRunning) return;
-            slowMo = true;
-            document.body.style.filter = "saturation(0)"; // Visual FX
-            sfx('buy');
-            setTimeout(()=>{
-                slowMo = false;
-                document.body.style.filter = "none";
-            }, 3000);
-        }
-
-        // Swipe
         let tX=0, tY=0;
         document.body.addEventListener('touchstart', e=>{tX=e.touches[0].clientX; tY=e.touches[0].clientY;}, {passive:false});
         document.body.addEventListener('touchend', e=>{
@@ -456,16 +472,15 @@
 
         // --- SFX ---
         function sfx(type) {
-            if(!user.settings.sound) return;
+            if(!user.sound) return;
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
             const t = audioCtx.currentTime;
-            
-            if (type === 'eat') { osc.frequency.setValueAtTime(600, t); osc.frequency.exponentialRampToValueAtTime(1000, t+0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.1); }
+            if (type === 'eat') { osc.frequency.setValueAtTime(500 + (combo*50), t); osc.frequency.linearRampToValueAtTime(800, t+0.1); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.1); }
             else if (type === 'die') { osc.type='sawtooth'; osc.frequency.setValueAtTime(200, t); osc.frequency.linearRampToValueAtTime(50, t+0.5); gain.gain.setValueAtTime(0.2, t); gain.gain.linearRampToValueAtTime(0, t+0.5); }
             else if (type === 'tap') { osc.frequency.setValueAtTime(800, t); gain.gain.setValueAtTime(0.05, t); gain.gain.linearRampToValueAtTime(0, t+0.05); }
             else if (type === 'swish') { osc.type='triangle'; osc.frequency.setValueAtTime(300, t); osc.frequency.linearRampToValueAtTime(100, t+0.2); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.2); }
-            
+            else if (type === 'buy') { osc.type='square'; osc.frequency.setValueAtTime(400, t); osc.frequency.linearRampToValueAtTime(800, t+0.3); gain.gain.setValueAtTime(0.1, t); gain.gain.linearRampToValueAtTime(0, t+0.3); }
             osc.start(t); osc.stop(t+0.5);
         }
     </script>
