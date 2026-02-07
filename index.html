@@ -3,160 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Arcade OS v13</title>
+    <title>Mega Arcade v14</title>
     <style>
         /* --- CORE --- */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: #050505; color: white; font-family: 'Segoe UI', sans-serif; overflow: hidden; height: 100vh; }
-        
-        /* --- CRT EFFECT --- */
-        body::after {
+        .hidden { display: none !important; }
+
+        /* --- VISUALS --- */
+        body::after { /* CRT SCANLINE */
             content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
             z-index: 999; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
-
-        /* --- TURBO FX --- */
         body.turbo .phone-container { border-color: #f00; animation: shake 0.5s infinite; }
-        body.turbo { color: #f00; text-shadow: 2px 0 yellow; }
         @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
 
-        /* --- PHONE --- */
-        .phone-container {
-            width: 100%; height: 100%; display: flex; flex-direction: column;
-            background: linear-gradient(to bottom, #111, #000);
-            border: 2px solid #333; transition: 0.3s; position: relative;
-        }
-        .status-bar { 
-            padding: 10px 20px; display: flex; justify-content: space-between; 
-            background: #111; border-bottom: 1px solid #333; font-weight: bold; color: #0f0; 
-            height: 50px; align-items: center; z-index: 100;
-        }
-        
-        /* --- SCREENS --- */
-        .screen {
-            position: absolute; top: 50px; left: 0; width: 100%; height: calc(100% - 50px);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: #000; z-index: 10; transition: 0.2s;
-        }
-        .hidden { display: none !important; }
+        /* --- LAYOUT --- */
+        .phone-container { width: 100%; height: 100%; display: flex; flex-direction: column; background: linear-gradient(to bottom, #111, #000); border: 2px solid #333; position: relative; }
+        .status-bar { padding: 0 15px; height: 50px; display: flex; justify-content: space-between; align-items: center; background: #111; border-bottom: 1px solid #333; font-weight: bold; color: #0f0; z-index: 100; }
+        .screen { position: absolute; top: 50px; left: 0; width: 100%; height: calc(100% - 50px); display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; z-index: 10; transition: 0.2s; }
 
-        /* --- MENU --- */
-        .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 20px; width: 100%; overflow-y: auto; }
+        /* --- APP DRAWER (NEW ORGANIZATION) --- */
+        .app-drawer { 
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; padding: 20px; 
+            width: 100%; height: 100%; align-content: start; overflow-y: auto; 
+        }
         .app-icon {
-            aspect-ratio: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 15px;
+            aspect-ratio: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 12px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 30px; cursor: pointer; transition: 0.1s;
+            font-size: 24px; cursor: pointer; transition: 0.1s;
         }
         .app-icon:active { transform: scale(0.9); background: #333; border-color: #0f0; }
+        .app-icon span { font-size: 9px; margin-top: 2px; opacity: 0.7; text-align: center; }
 
-        /* --- CONTROLS --- */
+        /* --- UI ELEMENTS --- */
         .back-btn { position: absolute; top: 10px; left: 10px; background: #222; color: white; border: 1px solid #444; padding: 5px 15px; border-radius: 5px; z-index: 20; }
         canvas { background: #000; border: 2px solid #333; max-width: 100%; image-rendering: pixelated; }
-        .controls { display: flex; gap: 15px; margin-top: 15px; }
-        .btn { width: 65px; height: 65px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 1px solid #444; }
+        .controls { display: flex; gap: 10px; margin-top: 10px; justify-content: center; }
+        .btn { width: 60px; height: 60px; background: #222; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid #444; }
         .btn:active { background: #444; transform: scale(0.95); }
 
         /* --- OVERLAY --- */
-        .game-over-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 100;
-            backdrop-filter: blur(5px);
-        }
-        .game-over-box {
-            background: #222; border: 1px solid #444; padding: 30px; border-radius: 20px;
-            text-align: center; box-shadow: 0 0 30px rgba(0,255,0,0.2); width: 85%;
-        }
-        .restart-btn {
-            background: #0f0; color: black; border: none; padding: 12px 30px;
-            border-radius: 25px; font-weight: bold; font-size: 18px; margin-top: 20px;
-            cursor: pointer; width: 100%;
-        }
+        .game-over-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(5px); }
+        .game-over-box { background: #222; border: 1px solid #444; padding: 20px; border-radius: 15px; text-align: center; width: 80%; }
+        .restart-btn { background: #0f0; color: black; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; margin-top: 15px; width: 100%; }
 
-        /* --- GAMES SPECIFIC --- */
-        .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .ttt-cell { width: 80px; height: 80px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 1px solid #333; }
-        .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .mem-card { width: 60px; height: 60px; background: #222; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
-        .coin-btn { width: 140px; height: 140px; border-radius: 50%; background: gold; color: black; font-size: 60px; display: flex; align-items: center; justify-content: center; border: 6px solid orange; box-shadow: 0 0 30px gold; }
+        /* --- GAME SPECIFIC --- */
+        .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .ttt-cell { width: 70px; height: 70px; background: #111; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 1px solid #333; }
+        .mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+        .mem-card { width: 50px; height: 50px; background: #222; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .whack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .whack-hole { width: 80px; height: 80px; background: #333; border-radius: 50%; border: 3px solid #555; }
+        .whack-mole { background: #f00 !important; border-color: #f00 !important; }
+        .simon-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .simon-btn { width: 100px; height: 100px; opacity: 0.5; border-radius: 10px; }
+        .simon-active { opacity: 1; transform: scale(0.95); }
     </style>
 </head>
 <body>
     <div class="phone-container">
         <div class="status-bar">
-            <span>ARCADE v13</span>
-            <div onclick="toggleTurbo()" style="border:1px solid #333; padding:5px 10px; border-radius:10px; font-size:12px; cursor:pointer;">
-                <span id="turbo-badge" style="color:#555">TURBO</span>
-            </div>
+            <span>MEGA OS v14</span>
+            <div onclick="toggleTurbo()" style="border:1px solid #333; padding:2px 8px; border-radius:10px; font-size:10px; cursor:pointer;"><span id="turbo-badge" style="color:#555">TURBO</span></div>
             <span onclick="activateGodMode()" style="cursor:pointer;">🔋</span>
         </div>
 
-        <div id="cheat-toast" style="position:absolute; top:60px; width:100%; text-align:center; color:gold; font-weight:bold; display:none; z-index:200; text-shadow:0 0 10px gold;">GOD MODE ACTIVATED! ⚡</div>
+        <div id="cheat-toast" style="position:absolute; top:60px; width:100%; text-align:center; color:gold; display:none; z-index:200;">GOD MODE!</div>
 
         <div id="game-overlay" class="game-over-overlay hidden">
             <div class="game-over-box">
                 <h2 id="overlay-title" style="margin:0 0 10px 0; color:#ff4444;">GAME OVER</h2>
-                <div id="overlay-msg" style="font-size:18px; color:#ccc;">Score: 0</div>
-                <div id="overlay-hiscore" style="font-size:14px; color:gold; margin-top:5px;">Best: 0</div>
-                <button class="restart-btn" onclick="restartCurrentGame()">TRY AGAIN</button>
-                <button class="restart-btn" style="background:#333; color:white; margin-top:10px;" onclick="closeOverlay(); goHome();">EXIT</button>
+                <div id="overlay-msg" style="font-size:16px; color:#ccc;">Score: 0</div>
+                <button class="restart-btn" onclick="restartCurrentGame()">AGAIN</button>
+                <button class="restart-btn" style="background:#333; color:white; margin-top:5px;" onclick="goHome()">EXIT</button>
             </div>
         </div>
 
         <div id="lock-screen" class="screen">
-            <h1>WELCOME</h1>
+            <h1>LOCKED</h1>
             <input type="password" id="pass-input" maxlength="4" placeholder="••••" style="background:transparent; border:none; border-bottom:2px solid #0f0; color:white; font-size:30px; text-align:center; width:100px; margin:20px;">
-            <button onclick="unlock()" style="padding:10px 30px; background:#0f0; border:none; font-weight:bold;">PLAY</button>
+            <button onclick="unlock()" style="padding:10px 30px; background:#0f0; border:none; font-weight:bold;">ENTER</button>
         </div>
 
-        <div id="home-screen" class="screen hidden">
-            <div class="app-grid">
+        <div id="home-screen" class="screen hidden" style="align-items: flex-start;">
+            <div class="app-drawer">
                 <div class="app-icon" onclick="openApp('snake')">🐍<span>Snake</span></div>
                 <div class="app-icon" onclick="openApp('space')">🚀<span>Space</span></div>
                 <div class="app-icon" onclick="openApp('runner')">🏃<span>Dash</span></div>
+                <div class="app-icon" onclick="openApp('pong')">🏓<span>Pong</span></div>
+                <div class="app-icon" onclick="openApp('breakout')">🧱<span>Break</span></div>
+                <div class="app-icon" onclick="openApp('flappy')">🐦<span>Flappy</span></div>
+                
                 <div class="app-icon" onclick="openApp('ttt')">❌<span>TicTac</span></div>
                 <div class="app-icon" onclick="openApp('memory')">🧠<span>Memory</span></div>
+                <div class="app-icon" onclick="openApp('simon')">🔔<span>Simon</span></div>
+                <div class="app-icon" onclick="openApp('math')">➗<span>Math</span></div>
+                <div class="app-icon" onclick="openApp('guess')">❓<span>Guess</span></div>
+
+                <div class="app-icon" onclick="openApp('whack')">🔨<span>Whack</span></div>
+                <div class="app-icon" onclick="openApp('reflex')">⚡<span>Reflex</span></div>
+                <div class="app-icon" onclick="openApp('rps')">✂️<span>RPS</span></div>
                 <div class="app-icon" onclick="openApp('clicker')">💰<span>Tycoon</span></div>
+                <div class="app-icon" onclick="openApp('paint')">🎨<span>Paint</span></div>
             </div>
         </div>
 
-        <div id="snake-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h3>Score: <span id="snake-score">0</span></h3>
-            <canvas id="snake-canvas" width="300" height="300"></canvas>
-            <div class="controls">
-                <div class="btn" onclick="setDir('LEFT')">⬅️</div>
-                <div class="btn" onclick="setDir('UP')">⬆️</div>
-                <div class="btn" onclick="setDir('DOWN')">⬇️</div>
-                <div class="btn" onclick="setDir('RIGHT')">➡️</div>
-            </div>
-        </div>
+        <div id="snake-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><canvas id="snake-canvas" width="300" height="300"></canvas><div class="controls"><div class="btn" onclick="setDir('LEFT')">⬅️</div><div class="btn" onclick="setDir('UP')">⬆️</div><div class="btn" onclick="setDir('DOWN')">⬇️</div><div class="btn" onclick="setDir('RIGHT')">➡️</div></div></div>
+        <div id="space-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><canvas id="space-canvas" width="300" height="400"></canvas><div class="controls"><div class="btn" onmousedown="moveShip(-1)" onmouseup="stopShip()" ontouchstart="moveShip(-1)" ontouchend="stopShip()">⬅️</div><div class="btn" style="color:red;" onclick="fireLaser()">🔥</div><div class="btn" onmousedown="moveShip(1)" onmouseup="stopShip()" ontouchstart="moveShip(1)" ontouchend="stopShip()">➡️</div></div></div>
+        <div id="runner-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2 id="run-score">0</h2><canvas id="run-canvas" width="300" height="200"></canvas><div style="width:300px; height:100px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; margin-top:10px;" onmousedown="jump()" ontouchstart="jump()">TAP TO JUMP</div></div>
+        
+        <div id="pong-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><canvas id="pong-canvas" width="300" height="400"></canvas><div class="controls"><div class="btn" onmousedown="movePaddle(-1)" onmouseup="stopPaddle()" ontouchstart="movePaddle(-1)" ontouchend="stopPaddle()">⬅️</div><div class="btn" onmousedown="movePaddle(1)" onmouseup="stopPaddle()" ontouchstart="movePaddle(1)" ontouchend="stopPaddle()">➡️</div></div></div>
+        <div id="breakout-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><canvas id="break-canvas" width="300" height="400"></canvas><div class="controls"><div class="btn" onmousedown="moveBrk(-1)" onmouseup="stopBrk()" ontouchstart="moveBrk(-1)" ontouchend="stopBrk()">⬅️</div><div class="btn" onmousedown="moveBrk(1)" onmouseup="stopBrk()" ontouchstart="moveBrk(1)" ontouchend="stopBrk()">➡️</div></div></div>
+        <div id="flappy-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2 id="flap-score">0</h2><canvas id="flap-canvas" width="300" height="400"></canvas><div style="width:300px; height:60px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; margin-top:10px;" onmousedown="flap()" ontouchstart="flap()">TAP TO FLAP</div></div>
+        <div id="whack-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2>Score: <span id="whack-score">0</span></h2><div id="whack-grid" class="whack-grid"></div></div>
+        <div id="math-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2>Math Quiz</h2><h1 id="math-q" style="font-size:40px; margin:20px;">2 + 2 = ?</h1><div class="controls"><button class="btn" onclick="ansMath(0)" id="math-a0">4</button><button class="btn" onclick="ansMath(1)" id="math-a1">5</button><button class="btn" onclick="ansMath(2)" id="math-a2">6</button></div></div>
+        <div id="reflex-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2>Reflex Test</h2><div id="reflex-btn" style="width:200px; height:200px; background:red; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:24px; text-align:center;" onclick="clickReflex()">WAIT...</div></div>
+        <div id="rps-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2>Rock Paper Scissors</h2><h1 id="rps-result" style="height:50px;">CHOOSE</h1><div style="font-size:60px; margin:20px;">🤖 <span id="rps-cpu">❓</span></div><div class="controls"><div class="btn" onclick="playRPS('🪨')">🪨</div><div class="btn" onclick="playRPS('📄')">📄</div><div class="btn" onclick="playRPS('✂️')">✂️</div></div></div>
+        <div id="simon-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2>Simon Says</h2><div class="simon-grid"><div id="simon-0" class="simon-btn" style="background:red;" onclick="simonInput(0)"></div><div id="simon-1" class="simon-btn" style="background:lime;" onclick="simonInput(1)"></div><div id="simon-2" class="simon-btn" style="background:blue;" onclick="simonInput(2)"></div><div id="simon-3" class="simon-btn" style="background:yellow;" onclick="simonInput(3)"></div></div></div>
+        <div id="guess-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2>Guess (1-100)</h2><h1 id="guess-msg">Start!</h1><input type="number" id="guess-in" style="font-size:20px; padding:5px; width:80px;"><button onclick="checkGuess()" style="padding:10px;">GUESS</button></div>
+        <div id="paint-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><canvas id="paint-canvas" width="300" height="400" style="background:#222;"></canvas><div class="controls"><div class="btn" onclick="setPaint('red')" style="background:red;"></div><div class="btn" onclick="setPaint('lime')" style="background:lime;"></div><div class="btn" onclick="setPaint('blue')" style="background:blue;"></div><div class="btn" onclick="clearPaint()">🗑️</div></div></div>
 
-        <div id="space-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <canvas id="space-canvas" width="300" height="400"></canvas>
-            <div class="controls">
-                <div class="btn" ontouchstart="moveShip(-1)" ontouchend="stopShip()" onmousedown="moveShip(-1)" onmouseup="stopShip()">⬅️</div>
-                <div class="btn" style="border-color:red; color:red;" onclick="fireLaser()">🔥</div>
-                <div class="btn" ontouchstart="moveShip(1)" ontouchend="stopShip()" onmousedown="moveShip(1)" onmouseup="stopShip()">➡️</div>
-            </div>
-        </div>
-
-        <div id="runner-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h2 id="run-score">0</h2>
-            <canvas id="run-canvas" width="300" height="200"></canvas>
-            <div style="width:300px; height:100px; border:1px dashed #555; display:flex; align-items:center; justify-content:center; margin-top:10px; border-radius:10px;" onmousedown="jump()" ontouchstart="jump()">TAP TO JUMP</div>
-        </div>
-
-        <div id="ttt-screen" class="screen hidden">
-            <button class="back-btn" onclick="goHome()">EXIT</button>
-            <h2 id="ttt-msg">VS CPU</h2>
-            <div id="ttt-board" class="ttt-board"></div>
-            <button onclick="startTTT()" style="margin-top:20px; padding:10px 30px; background:#0f0; border:none; border-radius:5px;">RESTART</button>
-        </div>
-
+        <div id="ttt-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h2 id="ttt-msg">VS CPU</h2><div id="ttt-board" class="ttt-board"></div></div>
         <div id="memory-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><div id="mem-grid" class="mem-grid"></div></div>
         <div id="clicker-screen" class="screen hidden"><button class="back-btn" onclick="goHome()">EXIT</button><h1 id="money-display" style="color:gold">$0</h1><div class="coin-btn" onclick="clickCoin()">$</div></div>
     </div>
@@ -165,7 +134,7 @@
         let turbo = false, godMode = false;
         let money = parseInt(localStorage.getItem('money')) || 0;
         let currentGame = '', audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let cheatClicks = 0;
+        let cheatClicks = 0, loops = {};
 
         // --- AUDIO ---
         function sfx(type) {
@@ -173,153 +142,239 @@
             const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
             osc.connect(gain); gain.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
-            if (type==='jump') { osc.frequency.setValueAtTime(150,now); osc.frequency.linearRampToValueAtTime(300,now+0.1); gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0,now+0.1); }
-            else if (type==='shoot') { osc.type='sawtooth'; osc.frequency.setValueAtTime(800,now); osc.frequency.exponentialRampToValueAtTime(100,now+0.1); gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0,now+0.1); }
-            else if (type==='die') { osc.type='sawtooth'; osc.frequency.setValueAtTime(200,now); osc.frequency.exponentialRampToValueAtTime(10,now+0.3); gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0,now+0.3); }
-            else if (type==='win') { osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.linearRampToValueAtTime(600,now+0.1); gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0,now+0.3); }
-            else if (type==='boss') { osc.type='square'; osc.frequency.setValueAtTime(100,now); osc.frequency.linearRampToValueAtTime(50,now+1.0); gain.gain.setValueAtTime(0.3,now); gain.gain.linearRampToValueAtTime(0,now+1.0); }
-            osc.start(now); osc.stop(now+(type==='boss'?1.0:0.3));
+            if (type==='jump'||type==='tap') { osc.frequency.setValueAtTime(150,now); osc.frequency.linearRampToValueAtTime(300,now+0.1); gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0,now+0.1); }
+            else if (type==='die') { osc.type='sawtooth'; osc.frequency.setValueAtTime(200,now); osc.frequency.linearRampToValueAtTime(50,now+0.3); gain.gain.setValueAtTime(0.2,now); gain.gain.linearRampToValueAtTime(0,now+0.3); }
+            else if (type==='win') { osc.type='sine'; osc.frequency.setValueAtTime(400,now); osc.frequency.linearRampToValueAtTime(800,now+0.2); gain.gain.setValueAtTime(0.1,now); gain.gain.linearRampToValueAtTime(0,now+0.2); }
+            osc.start(now); osc.stop(now+0.3);
         }
 
         // --- SYSTEM ---
         function unlock() { if(document.getElementById('pass-input').value === PASS) { switchScreen('home-screen'); sfx('win'); } }
-        function goHome() { stopAllGames(); closeOverlay(); switchScreen('home-screen'); }
+        function goHome() { 
+            Object.values(loops).forEach(l => cancelAnimationFrame(l)); 
+            Object.values(intervals).forEach(i => clearInterval(i));
+            closeOverlay(); switchScreen('home-screen'); 
+        }
         function switchScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden')); document.getElementById(id).classList.remove('hidden'); }
-        
-        function activateGodMode() {
-            cheatClicks++;
-            if(cheatClicks === 5) {
-                godMode = !godMode; sfx('win');
-                const toast = document.getElementById('cheat-toast');
-                toast.innerText = godMode ? "GOD MODE ACTIVATED! ⚡" : "GOD MODE OFF";
-                toast.style.display = "block"; setTimeout(() => toast.style.display = "none", 2000);
-                cheatClicks = 0;
-            }
-        }
-        function toggleTurbo() {
-            turbo = !turbo; document.body.classList.toggle('turbo');
-            const badge = document.getElementById('turbo-badge'); badge.innerText = turbo ? "TURBO: ON" : "TURBO: OFF"; badge.style.color = turbo ? "red" : "#555";
-            if(turbo) sfx('shoot');
-        }
+        function toggleTurbo() { turbo = !turbo; document.body.classList.toggle('turbo'); document.getElementById('turbo-badge').style.color = turbo ? "red" : "#555"; }
+        function activateGodMode() { if(++cheatClicks===5) { godMode=!godMode; document.getElementById('cheat-toast').style.display='block'; setTimeout(()=>document.getElementById('cheat-toast').style.display='none',2000); cheatClicks=0; } }
 
-        function showGameOver(title, score, game) {
-            if(godMode) return;
-            sfx('die');
-            let hiscore = parseInt(localStorage.getItem(game+'High')) || 0;
-            if(score > hiscore) { hiscore = score; localStorage.setItem(game+'High', hiscore); }
+        function showGameOver(title, score) {
+            if(godMode) return; sfx('die');
             document.getElementById('overlay-title').innerText = title;
             document.getElementById('overlay-msg').innerText = "Score: " + score;
-            document.getElementById('overlay-hiscore').innerText = "High Score: " + hiscore;
             document.getElementById('game-overlay').classList.remove('hidden');
-            currentGame = game;
         }
         function closeOverlay() { document.getElementById('game-overlay').classList.add('hidden'); }
-        function restartCurrentGame() { closeOverlay(); if(currentGame==='snake') startSnake(); if(currentGame==='runner') startRunner(); if(currentGame==='space') startSpace(); }
-        function openApp(app) { switchScreen(app+'-screen'); if(app==='snake') startSnake(); if(app==='space') startSpace(); if(app==='runner') startRunner(); if(app==='ttt') startTTT(); if(app==='memory') startMemory(); if(app==='clicker') updateMoney(); }
-        function stopAllGames() { clearInterval(snakeInt); cancelAnimationFrame(spaceLoop); cancelAnimationFrame(runLoop); active=false; } // Added active=false to kill TTT
-
-        // --- PARTICLES ---
-        let particles = [];
-        function createExplosion(x, y, color) { for(let i=0; i<10; i++) particles.push({x:x, y:y, dx:(Math.random()-0.5)*5, dy:(Math.random()-0.5)*5, life:1.0, color:color}); }
-        function drawParticles(ctx) {
-            for(let i=particles.length-1; i>=0; i--) {
-                let p = particles[i]; p.x += p.dx; p.y += p.dy; p.life -= 0.05;
-                ctx.fillStyle = p.color; ctx.globalAlpha = p.life; ctx.fillRect(p.x, p.y, 4, 4); ctx.globalAlpha = 1.0;
-                if(p.life <= 0) particles.splice(i, 1);
-            }
-        }
-
-        // --- SNAKE ---
-        let snake, food, sDir, snakeInt;
-        function startSnake() { const ctx = document.getElementById('snake-canvas').getContext('2d'); snake=[{x:100,y:100}]; sDir='RIGHT'; spawnFood(); particles=[]; if(snakeInt) clearInterval(snakeInt); snakeInt = setInterval(()=>updateSnake(ctx), turbo?50:150); }
+        function restartCurrentGame() { closeOverlay(); window[currentGame](); } // Dynamic call
+        
+        function openApp(app) { switchScreen(app+'-screen'); currentGame = 'start'+app.charAt(0).toUpperCase()+app.slice(1); window[currentGame](); }
+        let intervals = {};
+        // --- 1. SNAKE ---
+        let snake, food, sDir;
+        function startSnake() { const ctx=document.getElementById('snake-canvas').getContext('2d'); snake=[{x:100,y:100}]; sDir='RIGHT'; spawnFood(); if(intervals.snake) clearInterval(intervals.snake); intervals.snake = setInterval(()=>upSnake(ctx), turbo?50:150); }
         function spawnFood() { food={x:Math.floor(Math.random()*15)*20, y:Math.floor(Math.random()*15)*20}; }
         function setDir(d) { if(d==='LEFT'&&sDir!=='RIGHT') sDir='LEFT'; if(d==='UP'&&sDir!=='DOWN') sDir='UP'; if(d==='RIGHT'&&sDir!=='LEFT') sDir='RIGHT'; if(d==='DOWN'&&sDir!=='UP') sDir='DOWN'; }
-        function updateSnake(ctx) {
-            let h={x:snake[0].x, y:snake[0].y};
-            if(sDir==='LEFT') h.x-=20; if(sDir==='UP') h.y-=20; if(sDir==='RIGHT') h.x+=20; if(sDir==='DOWN') h.y+=20;
-            if(h.x<0||h.x>=300||h.y<0||h.y>=300||snake.some(s=>s.x===h.x&&s.y===h.y)) { clearInterval(snakeInt); showGameOver("GAME OVER", snake.length, 'snake'); return; }
-            if(h.x===food.x && h.y===food.y) { spawnFood(); sfx('win'); createExplosion(h.x, h.y, 'gold'); document.getElementById('snake-score').innerText=snake.length; } else snake.pop();
-            snake.unshift(h);
-            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,300); ctx.fillStyle="red"; ctx.fillRect(food.x,food.y,18,18); ctx.fillStyle=godMode?"gold":"#0f0"; snake.forEach(s=>ctx.fillRect(s.x,s.y,18,18)); drawParticles(ctx);
+        function upSnake(ctx) {
+            let h={x:snake[0].x, y:snake[0].y}; if(sDir==='LEFT') h.x-=20; if(sDir==='UP') h.y-=20; if(sDir==='RIGHT') h.x+=20; if(sDir==='DOWN') h.y+=20;
+            if(h.x<0||h.x>=300||h.y<0||h.y>=300||snake.some(s=>s.x===h.x&&s.y===h.y)) { clearInterval(intervals.snake); showGameOver("GAME OVER", snake.length); return; }
+            if(h.x===food.x && h.y===food.y) { spawnFood(); sfx('win'); } else snake.pop();
+            snake.unshift(h); ctx.fillStyle="#000"; ctx.fillRect(0,0,300,300); ctx.fillStyle="red"; ctx.fillRect(food.x,food.y,18,18); ctx.fillStyle="#0f0"; snake.forEach(s=>ctx.fillRect(s.x,s.y,18,18));
         }
 
-        // --- SPACE SHOOTER (FIXED BOSS) ---
-        let ship, bullets=[], aliens=[], boss=null, spaceLoop, spaceScore=0;
-        function startSpace() { ship={x:135,dx:0}; bullets=[]; aliens=[]; boss=null; spaceScore=0; particles=[]; loopSpace(document.getElementById('space-canvas').getContext('2d')); }
-        function moveShip(d) { ship.dx=d*5; } function stopShip() { ship.dx=0; } function fireLaser() { bullets.push({x:ship.x+12,y:360}); sfx('shoot'); }
+        // --- 2. SPACE ---
+        let ship, bullets=[], aliens=[], spScore=0;
+        function startSpace() { ship={x:135,dx:0}; bullets=[]; aliens=[]; spScore=0; loopSpace(document.getElementById('space-canvas').getContext('2d')); }
+        function moveShip(d) { ship.dx=d*5; } function stopShip() { ship.dx=0; } function fireLaser() { bullets.push({x:ship.x+12,y:360}); sfx('tap'); }
         function loopSpace(ctx) {
-            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,400); ship.x+=ship.dx; if(ship.x<0) ship.x=0; if(ship.x>270) ship.x=270;
-            ctx.fillStyle=godMode?"gold":"#0ff"; ctx.fillRect(ship.x,370,30,30);
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,400); ship.x+=ship.dx; ctx.fillStyle="#0ff"; ctx.fillRect(ship.x,370,30,30);
             bullets.forEach((b,i)=>{ b.y-=10; ctx.fillStyle="yellow"; ctx.fillRect(b.x,b.y,5,10); if(b.y<0) bullets.splice(i,1); });
-            
-            // BOSS (Shoots Back Now!)
-            if(spaceScore > 0 && spaceScore % 500 === 0 && !boss) { boss = {x:100, y:20, hp:10, dir:1, cooldown:0}; sfx('boss'); }
-            if(boss) {
-                boss.x += boss.dir * 2; if(boss.x > 240 || boss.x < 0) boss.dir *= -1;
-                boss.cooldown++;
-                if(boss.cooldown > 50) { aliens.push({x:boss.x+20, y:boss.y+20}); boss.cooldown=0; } // BOSS ATTACK
-                ctx.fillStyle = "purple"; ctx.fillRect(boss.x, boss.y, 60, 40); ctx.fillStyle="white"; ctx.fillText("HP: "+boss.hp, boss.x+10, boss.y-5);
-                bullets.forEach((b,j)=>{ if(b.x>boss.x && b.x<boss.x+60 && b.y<boss.y+40) { boss.hp--; bullets.splice(j,1); createExplosion(b.x, b.y, 'purple'); if(boss.hp<=0) { boss=null; spaceScore+=200; createExplosion(150,50,'white'); sfx('win'); } } });
-            } else {
-                if(Math.random()<0.03) aliens.push({x:Math.random()*270,y:0});
-                for(let i=0; i<aliens.length; i++) {
-                    let a = aliens[i]; a.y+=(turbo?4:2); ctx.fillStyle="red"; ctx.fillRect(a.x,a.y,20,20);
-                    bullets.forEach((b,j)=>{ if(b.x>a.x&&b.x<a.x+20&&b.y<a.y+20) { aliens.splice(i,1); bullets.splice(j,1); spaceScore+=10; sfx('die'); createExplosion(a.x, a.y, 'orange'); } });
-                    if(a.y>370) { cancelAnimationFrame(spaceLoop); showGameOver("INVASION!", spaceScore, 'space'); return; }
-                }
-            }
-            drawParticles(ctx); spaceLoop = requestAnimationFrame(()=>loopSpace(ctx));
+            if(Math.random()<0.03) aliens.push({x:Math.random()*270,y:0});
+            aliens.forEach((a,i)=>{
+                a.y+=(turbo?4:2); ctx.fillStyle="red"; ctx.fillRect(a.x,a.y,20,20);
+                bullets.forEach((b,j)=>{ if(b.x>a.x&&b.x<a.x+20&&b.y<a.y+20) { aliens.splice(i,1); bullets.splice(j,1); spScore+=10; sfx('win'); } });
+                if(a.y>370) { cancelAnimationFrame(loops.space); showGameOver("INVASION", spScore); return; }
+            });
+            loops.space = requestAnimationFrame(()=>loopSpace(ctx));
         }
 
-        // --- RUNNER (FIXED LOGIC) ---
-        let dino, obstacles=[], runLoop, rScore=0, rTime=0;
-        function startRunner() { dino={y:160,dy:0,jump:false}; obstacles=[]; rScore=0; rTime=0; particles=[]; loopRunner(document.getElementById('run-canvas').getContext('2d')); }
+        // --- 3. PONG ---
+        let pad={x:100,dx:0}, ball={x:150,y:200,dx:3,dy:3}, pScore=0;
+        function startPong() { pad.x=100; ball={x:150,y:200,dx:3,dy:3}; pScore=0; loopPong(document.getElementById('pong-canvas').getContext('2d')); }
+        function movePaddle(d) { pad.dx=d*6; } function stopPaddle() { pad.dx=0; }
+        function loopPong(ctx) {
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,400); pad.x+=pad.dx; if(pad.x<0)pad.x=0; if(pad.x>240)pad.x=240;
+            ball.x+=ball.dx; ball.y+=ball.dy;
+            if(ball.x<0||ball.x>290) ball.dx*=-1; if(ball.y<0) ball.dy*=-1;
+            if(ball.y>360 && ball.x>pad.x && ball.x<pad.x+60) { ball.dy*=-1; pScore++; sfx('tap'); }
+            if(ball.y>400) { cancelAnimationFrame(loops.pong); showGameOver("MISSED", pScore); return; }
+            ctx.fillStyle="#fff"; ctx.fillRect(pad.x,370,60,10); ctx.fillRect(ball.x,ball.y,10,10);
+            loops.pong = requestAnimationFrame(()=>loopPong(ctx));
+        }
+
+        // --- 4. BREAKOUT ---
+        let brkPad={x:100,dx:0}, brkBall={x:150,y:200,dx:3,dy:-3}, bricks=[], bScore=0;
+        function startBreakout() { 
+            brkPad.x=100; brkBall={x:150,y:200,dx:3,dy:-3}; bScore=0; bricks=[];
+            for(let i=0;i<5;i++) for(let j=0;j<8;j++) bricks.push({x:j*35+10, y:i*20+30, status:1});
+            loopBreak(document.getElementById('break-canvas').getContext('2d')); 
+        }
+        function moveBrk(d) { brkPad.dx=d*6; } function stopBrk() { brkPad.dx=0; }
+        function loopBreak(ctx) {
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,400); brkPad.x+=brkPad.dx;
+            brkBall.x+=brkBall.dx; brkBall.y+=brkBall.dy;
+            if(brkBall.x<0||brkBall.x>290) brkBall.dx*=-1; if(brkBall.y<0) brkBall.dy*=-1;
+            if(brkBall.y>360 && brkBall.x>brkPad.x && brkBall.x<brkPad.x+60) { brkBall.dy*=-1; sfx('tap'); }
+            if(brkBall.y>400) { cancelAnimationFrame(loops.break); showGameOver("LOST", bScore); return; }
+            bricks.forEach(b=>{
+                if(b.status && brkBall.x>b.x && brkBall.x<b.x+30 && brkBall.y>b.y && brkBall.y<b.y+15) {
+                    brkBall.dy*=-1; b.status=0; bScore+=10; sfx('win');
+                }
+                if(b.status) { ctx.fillStyle=b.y<50?"red":b.y<80?"orange":"yellow"; ctx.fillRect(b.x,b.y,30,15); }
+            });
+            ctx.fillStyle="#fff"; ctx.fillRect(brkPad.x,370,60,10); ctx.fillRect(brkBall.x,brkBall.y,8,8);
+            loops.break = requestAnimationFrame(()=>loopBreak(ctx));
+        }
+
+        // --- 5. FLAPPY ---
+        let bird={y:200,dy:0}, pipes=[], fScore=0, flapFrame=0;
+        function startFlappy() { bird={y:200,dy:0}; pipes=[]; fScore=0; flapFrame=0; loopFlappy(document.getElementById('flap-canvas').getContext('2d')); }
+        function flap() { bird.dy=-6; sfx('jump'); }
+        function loopFlappy(ctx) {
+            ctx.fillStyle="#87CEEB"; ctx.fillRect(0,0,300,400);
+            bird.dy+=0.4; bird.y+=bird.dy;
+            if(flapFrame%100===0) pipes.push({x:300, h:Math.random()*200+50});
+            pipes.forEach((p,i)=>{
+                p.x-=2; ctx.fillStyle="green"; ctx.fillRect(p.x,0,40,p.h); ctx.fillRect(p.x,p.h+100,40,300);
+                if(bird.x>p.x && bird.x<p.x+40 && (bird.y<p.h || bird.y>p.h+100)) { cancelAnimationFrame(loops.flappy); showGameOver("SPLAT", fScore); return; }
+            });
+            if(bird.y>400) { cancelAnimationFrame(loops.flappy); showGameOver("SPLAT", fScore); return; }
+            ctx.fillStyle="yellow"; ctx.fillRect(50,bird.y,20,20);
+            flapFrame++; fScore=Math.floor(flapFrame/100); document.getElementById('flap-score').innerText=fScore;
+            loops.flappy = requestAnimationFrame(()=>loopFlappy(ctx));
+        }
+
+        // --- 6. RUNNER ---
+        let dino, obstacles=[], rScore=0;
+        function startRunner() { dino={y:160,dy:0,jump:false}; obstacles=[]; rScore=0; loopRunner(document.getElementById('run-canvas').getContext('2d')); }
         function jump() { if(!dino.jump) { dino.dy=-10; dino.jump=true; sfx('jump'); } }
         function loopRunner(ctx) {
             dino.dy+=0.6; dino.y+=dino.dy; if(dino.y>160) { dino.y=160; dino.dy=0; dino.jump=false; }
             if(Math.random()<0.02) obstacles.push({x:300});
-            rTime++; let bg = rTime % 1000 < 500 ? "#87CEEB" : "#000033";
-            ctx.fillStyle=bg; ctx.fillRect(0,0,300,200);
-            ctx.fillStyle=godMode?"gold":"#0ff"; ctx.fillRect(30,dino.y,20,20);
-            for(let i=0; i<obstacles.length; i++) {
-                let o = obstacles[i]; o.x-=(turbo?8:5); ctx.fillStyle="red"; ctx.fillRect(o.x,160,20,40);
-                if(o.x<45 && o.x>15 && dino.y>140) { // FIXED HITBOX
-                    cancelAnimationFrame(runLoop); showGameOver("CRASHED!", rScore, 'runner'); return; 
-                }
-            }
-            rScore++; document.getElementById('run-score').innerText=rScore; runLoop = requestAnimationFrame(()=>loopRunner(ctx));
+            ctx.fillStyle="#000"; ctx.fillRect(0,0,300,200); ctx.fillStyle="#0ff"; ctx.fillRect(30,dino.y,20,20);
+            obstacles.forEach(o=>{
+                o.x-=(turbo?8:5); ctx.fillStyle="red"; ctx.fillRect(o.x,160,20,40);
+                if(o.x<45 && o.x>15 && dino.y>140) { cancelAnimationFrame(loops.run); showGameOver("CRASH", rScore); return; }
+            });
+            rScore++; document.getElementById('run-score').innerText=rScore; loops.run = requestAnimationFrame(()=>loopRunner(ctx));
+        }
+        // --- 7. WHACK A MOLE ---
+        let moles=[], wScore=0, wTime=0;
+        function startWhack() { 
+            const g=document.getElementById('whack-grid'); g.innerHTML=""; wScore=0; wTime=30; moles=[];
+            for(let i=0;i<9;i++){ let h=document.createElement('div'); h.className='whack-hole'; h.onclick=()=>hitMole(i); g.appendChild(h); moles.push({el:h, active:false}); }
+            document.getElementById('whack-score').innerText=0;
+            if(intervals.whack) clearInterval(intervals.whack);
+            intervals.whack = setInterval(()=>{
+                moles.forEach(m=>{ m.active=false; m.el.classList.remove('whack-mole'); });
+                let r=Math.floor(Math.random()*9); moles[r].active=true; moles[r].el.classList.add('whack-mole');
+                wTime--; if(wTime<=0) { clearInterval(intervals.whack); showGameOver("TIME UP", wScore); }
+            }, 800);
+        }
+        function hitMole(i) { if(moles[i].active) { wScore++; document.getElementById('whack-score').innerText=wScore; sfx('win'); moles[i].active=false; moles[i].el.classList.remove('whack-mole'); } }
+
+        // --- 8. REFLEX ---
+        let refState=0, refStart=0;
+        function startReflex() { document.getElementById('reflex-btn').style.background='red'; document.getElementById('reflex-btn').innerText='WAIT...'; refState=0; setTimeout(()=>{ refState=1; refStart=Date.now(); document.getElementById('reflex-btn').style.background='lime'; document.getElementById('reflex-btn').innerText='CLICK!'; }, Math.random()*2000+1000); }
+        function clickReflex() { if(refState===0) alert("Too early!"); else if(refState===1) { let t=Date.now()-refStart; alert(t+"ms"); refState=2; goHome(); } }
+
+        // --- 9. RPS ---
+        function startRps() { document.getElementById('rps-cpu').innerText="❓"; document.getElementById('rps-result').innerText="CHOOSE"; }
+        function playRPS(p) {
+            let ops=['🪨','📄','✂️'], c=ops[Math.floor(Math.random()*3)];
+            document.getElementById('rps-cpu').innerText=c;
+            if(p===c) document.getElementById('rps-result').innerText="DRAW";
+            else if((p=='🪨'&&c=='✂️')||(p=='📄'&&c=='🪨')||(p=='✂️'&&c=='📄')) { document.getElementById('rps-result').innerText="WIN!"; sfx('win'); }
+            else { document.getElementById('rps-result').innerText="LOSE"; sfx('die'); }
         }
 
-        // --- SIMPLE APPS (FIXED GHOSTS) ---
-        function clickCoin() { money += (turbo?2:1); localStorage.setItem('money', money); updateMoney(); sfx('win'); }
-        function updateMoney() { document.getElementById('money-display').innerText = "$" + money; }
-        
-        let board=[], turn='X', active=true, lockBoard=false;
-        function startTTT() { board=Array(9).fill(""); active=true; turn='X'; const el=document.getElementById('ttt-board'); el.innerHTML=""; board.forEach((_,i)=>{ let c=document.createElement('div'); c.className='ttt-cell'; c.onclick=()=>moveTTT(i,c); el.appendChild(c); }); document.getElementById('ttt-msg').innerText = "VS CPU"; }
-        function moveTTT(i,c) { 
-            if(board[i] || !active) return;
-            board[i]=turn; c.innerText=turn; c.style.color = turn==='X'?'#0f0':'#f00'; sfx('jump');
-            if(checkWin(turn)) { active=false; document.getElementById('ttt-msg').innerText=turn+" WINS!"; sfx('win'); return; }
-            if(!board.includes("")) { active=false; document.getElementById('ttt-msg').innerText="DRAW"; return; }
-            turn = turn==='X'?'O':'X';
-            if(turn==='O') setTimeout(()=>{
-                if(!active) return; // FIXED GHOST MOVE
-                let empty = board.map((v,k)=>v===""?k:null).filter(v=>v!==null);
-                if(empty.length) document.getElementById('ttt-board').children[empty[Math.floor(Math.random()*empty.length)]].click();
-            }, turbo?100:500);
+        // --- 10. SIMON ---
+        let seq=[], uSeq=[], simonLvl=0;
+        function startSimon() { seq=[]; simonLvl=0; nextSimon(); }
+        function nextSimon() {
+            uSeq=[]; simonLvl++; seq.push(Math.floor(Math.random()*4));
+            let i=0; let itv = setInterval(()=>{
+                flashSimon(seq[i]); i++; if(i>=seq.length) clearInterval(itv);
+            }, 600);
         }
-        function checkWin(p) { return [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(w=>board[w[0]]===p && board[w[1]]===p && board[w[2]]===p); }
-        
-        let cards=[], flipped=[], matched=[];
-        const emojis = ['🍎','🍎','👻','👻','⚡','⚡','💎','💎','🚀','🚀','🎮','🎮'];
-        function startMemory() { const g=document.getElementById('mem-grid'); g.innerHTML=""; flipped=[]; matched=[]; cards = emojis.sort(()=>Math.random()-0.5); cards.forEach((e,i)=>{ let c=document.createElement('div'); c.className='mem-card'; c.onclick=()=>flipCard(c,e); g.appendChild(c); }); }
-        function flipCard(c,e) { 
-            if(flipped.length<2 && !flipped.includes(c) && !matched.includes(c)) { 
-                c.innerText=e; c.style.background='#fff'; flipped.push({el:c,val:e}); sfx('jump'); 
-                if(flipped.length===2) setTimeout(checkMatch, turbo?200:800); 
-            } 
+        function flashSimon(id) {
+            let el=document.getElementById('simon-'+id); el.classList.add('simon-active'); sfx('tap');
+            setTimeout(()=>el.classList.remove('simon-active'), 300);
         }
-        function checkMatch() { const [c1,c2] = flipped; if(c1.val===c2.val) { matched.push(c1.el,c2.el); c1.el.style.background='#0f0'; c2.el.style.background='#0f0'; sfx('win'); } else { c1.el.innerText=""; c1.el.style.background="#222"; c2.el.innerText=""; c2.el.style.background="#222"; } flipped=[]; }
+        function simonInput(id) {
+            flashSimon(id); uSeq.push(id);
+            if(uSeq[uSeq.length-1] !== seq[uSeq.length-1]) { showGameOver("WRONG", simonLvl); return; }
+            if(uSeq.length === seq.length) setTimeout(nextSimon, 1000);
+        }
+
+        // --- 11. MATH ---
+        let mq, ma;
+        function startMath() { nextMath(); }
+        function nextMath() {
+            let a=Math.floor(Math.random()*10), b=Math.floor(Math.random()*10); ma=a+b;
+            document.getElementById('math-q').innerText = a + " + " + b;
+            let ans = [ma, ma+1, ma-1].sort(()=>Math.random()-0.5);
+            document.getElementById('math-a0').innerText=ans[0]; document.getElementById('math-a0').onclick=()=>checkMath(ans[0]);
+            document.getElementById('math-a1').innerText=ans[1]; document.getElementById('math-a1').onclick=()=>checkMath(ans[1]);
+            document.getElementById('math-a2').innerText=ans[2]; document.getElementById('math-a2').onclick=()=>checkMath(ans[2]);
+        }
+        function checkMath(v) { if(v===ma) { sfx('win'); nextMath(); } else showGameOver("WRONG", 0); }
+
+        // --- 12. GUESS ---
+        let gNum;
+        function startGuess() { gNum=Math.floor(Math.random()*100)+1; document.getElementById('guess-msg').innerText="1-100"; }
+        function checkGuess() {
+            let v=parseInt(document.getElementById('guess-in').value);
+            if(v===gNum) { document.getElementById('guess-msg').innerText="WIN!"; sfx('win'); }
+            else if(v<gNum) document.getElementById('guess-msg').innerText="Higher";
+            else document.getElementById('guess-msg').innerText="Lower";
+        }
+
+        // --- 13. PAINT ---
+        let pColor='red';
+        function startPaint() { 
+            const c=document.getElementById('paint-canvas'); const ctx=c.getContext('2d');
+            ctx.fillStyle="#222"; ctx.fillRect(0,0,300,400);
+            let drawing=false;
+            c.ontouchstart=(e)=>{ drawing=true; draw(e.touches[0]); };
+            c.ontouchmove=(e)=>{ if(drawing) draw(e.touches[0]); };
+            c.ontouchend=()=>{ drawing=false; };
+            function draw(t) { 
+                let rect=c.getBoundingClientRect(); ctx.fillStyle=pColor; 
+                ctx.fillRect(t.clientX-rect.left, t.clientY-rect.top, 5, 5); 
+            }
+        }
+        function setPaint(c) { pColor=c; } function clearPaint() { startPaint(); }
+
+        // --- EXTRAS ---
+        function clickCoin() { money+=(turbo?2:1); localStorage.setItem('money',money); document.getElementById('money-display').innerText="$"+money; sfx('win'); }
+        // Memory & TTT Logic (Shortened)
+        function startMemory() { 
+            const g=document.getElementById('mem-grid'); g.innerHTML=""; let cards=['A','A','B','B','C','C','D','D'].sort(()=>Math.random()-0.5); 
+            let f=[]; cards.forEach(c=>{ 
+                let d=document.createElement('div'); d.className='mem-card'; d.onclick=()=>{ 
+                    if(f.length<2 && d.innerText==='') { d.innerText=c; d.style.background='#fff'; f.push({el:d,val:c}); if(f.length==2) setTimeout(()=>{ if(f[0].val==f[1].val)f.forEach(x=>x.el.style.background='lime'); else f.forEach(x=>{x.el.innerText='';x.el.style.background='#222'}); f=[]; },500); } 
+                }; g.appendChild(d); 
+            }); 
+        }
+        function startTtt() {
+            let b=Array(9).fill(''), t='X', act=true; const el=document.getElementById('ttt-board'); el.innerHTML="";
+            b.forEach((_,i)=>{ let c=document.createElement('div'); c.className='ttt-cell'; c.onclick=()=>{
+                if(b[i]||!act)return; b[i]=t; c.innerText=t; c.style.color=t=='X'?'lime':'red';
+                if(b[0]==t&&b[1]==t&&b[2]==t || b[3]==t&&b[4]==t&&b[5]==t || b[6]==t&&b[7]==t&&b[8]==t || b[0]==t&&b[3]==t&&b[6]==t || b[1]==t&&b[4]==t&&b[7]==t || b[2]==t&&b[5]==t&&b[8]==t || b[0]==t&&b[4]==t&&b[8]==t || b[2]==t&&b[4]==t&&b[6]==t) { act=false; document.getElementById('ttt-msg').innerText=t+" WIN"; return; }
+                t=t=='X'?'O':'X'; if(t=='O') setTimeout(()=>{ let e=b.map((v,k)=>v==''?k:null).filter(v=>v!==null); if(e.length) el.children[e[Math.floor(Math.random()*e.length)]].click(); }, 300);
+            }; el.appendChild(c); });
+        }
     </script>
 </body>
 </html>
