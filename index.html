@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Phone</title>
+    <title>For Ayushka ❤️</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
     <div id="lock-screen" class="screen-layer">
         <div class="lock-content">
             <div class="lock-clock-container">
-                <div id="lock-clock">12:00</div>
-                <div id="lock-date">Tuesday, February 14</div>
+                <div id="lock-clock">00:00</div>
+                <div id="lock-date">Saturday, February 14</div>
+                <p class="lock-msg">Miss you, Ayuuu! ❤️</p>
             </div>
 
             <div class="pin-wrapper">
-                <p class="instruction">Enter Passcode</p>
+                <p class="instruction">Enter Our Date or 1430</p>
                 <div class="pin-display">
                     <div class="pin-dot"></div>
                     <div class="pin-dot"></div>
@@ -45,45 +47,112 @@
     <div id="home-screen" class="screen-layer hidden">
         
         <div class="status-bar">
-            <span id="small-clock">12:00</span>
-            <span>5G 100%</span>
+            <span id="small-clock">00:00</span>
+            <span>❤️ 5G</span>
         </div>
 
         <div class="app-grid">
-            <div class="app-item" onclick="openApp('Messages')">
-                <div class="app-icon green">💬</div>
-                <p>Chat</p>
+            <div class="app-item" onclick="openApp('chat')">
+                <div class="app-icon green"><i class="fas fa-comment"></i></div>
+                <p>Messages</p>
             </div>
-            <div class="app-item" onclick="openApp('Photos')">
-                <div class="app-icon blue">📸</div>
+            <div class="app-item" onclick="openApp('photos')">
+                <div class="app-icon blue"><i class="fas fa-images"></i></div>
                 <p>Photos</p>
             </div>
-            <div class="app-item" onclick="openApp('Music')">
-                <div class="app-icon pink">🎵</div>
-                <p>Music</p>
+            <div class="app-item" onclick="openApp('music')">
+                <div class="app-icon pink"><i class="fas fa-music"></i></div>
+                <p>Our Song</p>
             </div>
-            <div class="app-item" onclick="openApp('Settings')">
-                <div class="app-icon grey">⚙️</div>
-                <p>Settings</p>
+            <div class="app-item" onclick="openApp('map')">
+                <div class="app-icon map-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <p>Distance</p>
             </div>
         </div>
 
         <div class="dock-container">
             <div class="dock">
-                <div class="app-item">
-                    <div class="app-icon green">📞</div>
+                <div class="app-item"><div class="app-icon green"><i class="fas fa-phone"></i></div></div>
+                <div class="app-item"><div class="app-icon white"><i class="fas fa-globe"></i></div></div>
+                <div class="app-item"><div class="app-icon grey"><i class="fas fa-cog"></i></div></div>
+            </div>
+        </div>
+
+        <div id="app-chat" class="app-window hidden">
+            <div class="app-header">
+                <button onclick="closeApp('chat')">❮ Back</button>
+                <span>Theshuuuu ❤️</span>
+                <div style="width: 30px;"></div> </div>
+            <div class="chat-body">
+                <div class="msg received">Hey Ayuuu! 😽</div>
+                <div class="msg sent">Hey Theshu! Miss you!</div>
+                <div class="msg received">I miss you more! Even though I'm in Kerala and you're in Goa...</div>
+                <div class="msg received">You are always in my heart! ❤️</div>
+                <div class="msg received">Check the Gallery app! 📸</div>
+            </div>
+            <div class="chat-input-bar">
+                <input type="text" placeholder="Text Message">
+                <button>⬆</button>
+            </div>
+        </div>
+
+        <div id="app-photos" class="app-window hidden" style="background: black;">
+            <div class="app-header" style="background: rgba(20,20,20,0.9); color: white;">
+                <button onclick="closeApp('photos')" style="color: white;">❮ Albums</button>
+                <span>Us ❤️</span>
+                <div style="width: 30px;"></div>
+            </div>
+            <div class="gallery-grid">
+                <img src="https://via.placeholder.com/150/FFB6C1/000000?text=Us+1" alt="Photo">
+                <img src="https://via.placeholder.com/150/87CEEB/000000?text=Us+2" alt="Photo">
+                <img src="https://via.placeholder.com/150/FF69B4/000000?text=Date" alt="Photo">
+                <img src="https://via.placeholder.com/150/90EE90/000000?text=Cute" alt="Photo">
+            </div>
+        </div>
+
+        <div id="app-map" class="app-window hidden">
+            <div class="app-header">
+                <button onclick="closeApp('map')">❮ Back</button>
+                <span>Together</span>
+                <div style="width: 30px;"></div>
+            </div>
+            <div class="map-content">
+                <div class="location-point">
+                    <i class="fas fa-map-pin" style="color: red; font-size: 40px;"></i>
+                    <h2>Goa</h2>
+                    <p>Ayushka is here 👸</p>
                 </div>
-                <div class="app-item">
-                    <div class="app-icon white">🌐</div>
+                <div class="dotted-line">
+                    ❤️❤️❤️ 500km ❤️❤️❤️
                 </div>
-                <div class="app-item">
-                    <div class="app-icon grey">📧</div>
+                <div class="location-point">
+                    <i class="fas fa-map-pin" style="color: blue; font-size: 40px;"></i>
+                    <h2>Kerala</h2>
+                    <p>Theshmil is here 🤴</p>
                 </div>
-                <div class="app-item">
-                    <div class="app-icon blue">👤</div>
+                <p style="margin-top: 30px; color: #666;">Distance means so little when someone means so much.</p>
+            </div>
+        </div>
+
+        <div id="app-music" class="app-window hidden">
+            <div class="app-header">
+                <button onclick="closeApp('music')">❮ Down</button>
+                <span>Now Playing</span>
+                <div style="width: 30px;"></div>
+            </div>
+            <div class="music-player">
+                <div class="album-art">🎵</div>
+                <h2>Our Favorite Song</h2>
+                <p>Theshu & Ayuuu</p>
+                <div class="progress-bar"><div class="fill"></div></div>
+                <div class="controls">
+                    <button>⏮</button>
+                    <button style="font-size: 50px;">▶</button>
+                    <button>⏭</button>
                 </div>
             </div>
         </div>
+
     </div>
 
     <script src="script.js"></script>
